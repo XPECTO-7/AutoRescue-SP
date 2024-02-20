@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "991103430423",
+    "project_id": "autorescue-b8564",
+    "storage_bucket": "autorescue-b8564.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:991103430423:android:86e037ebfb6b318d8e5152",
+        "android_client_info": {
+          "package_name": "com.example.auto_rescue"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoBpEyozf5A46xJA96B6-RscxxZqXozCw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:991103430423:android:db17480e3d0d04268e5152",
+        "android_client_info": {
+          "package_name": "com.example.provider"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoBpEyozf5A46xJA96B6-RscxxZqXozCw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
