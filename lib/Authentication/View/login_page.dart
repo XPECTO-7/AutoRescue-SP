@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/Authentication/View/forgot_password_page.dart';
-import 'package:provider/Components/alert_box.dart';
+import 'package:provider/Components/myalert_box.dart';
 import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Components/log_textfield.dart';
 
@@ -142,7 +142,7 @@ class _LoginPageState extends State<LoginPage> {
                         showDialog(
                           context: context,
                           builder: (context) =>
-                              MyAlert(message: " Fill all fields"),
+                          MyAlertBox(message: 'Fill all the Fields',)
                         );
                       }
                     },
@@ -166,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: const Text(
                         'Create an account!',
                         style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 17,
                             color: Colors.deepOrange,
                             fontWeight: FontWeight.bold),
                       ),

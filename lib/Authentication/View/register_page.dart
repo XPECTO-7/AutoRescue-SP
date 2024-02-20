@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:provider/Components/alert_box.dart';
+import 'package:provider/Components/myalert_box.dart';
 import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Components/pwcontrol.dart';
 import 'package:provider/Components/reg_textfield.dart';
@@ -37,21 +37,27 @@ class _RegisterPageState extends State<RegisterPage> {
           //pw didnt match
           showDialog(
             context: context,
-            builder: (context) => const MyAlert(message: "Password didnt match"),
+            builder: (context) => const MyAlertBox(
+              message: "Password didnt match",
+            ),
           );
         }
       } else {
         //Display pw didnt meet requirements
         showDialog(
           context: context,
-          builder: (context) => const MyAlert(message: " pw didnt meet requirements"),
+          builder: (context) => const MyAlertBox(
+            message: " Password didnt meet requirements",
+          ),
         );
       }
     } else {
       //Display fill all fields
       showDialog(
         context: context,
-        builder: (context) => const MyAlert(message: " fill all fields"),
+        builder: (context) => const MyAlertBox(
+          message: " Fill all fields",
+        ),
       );
     }
   }
@@ -72,7 +78,9 @@ class _RegisterPageState extends State<RegisterPage> {
     } on FirebaseAuthException catch (e) {
       showDialog(
         context: context,
-        builder: (context) => MyAlert(message: e.code),
+        builder: (context) => MyAlertBox(
+          message: e.code,
+        ),
       );
     }
   }
@@ -90,6 +98,8 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Icon(Icons.person_pin,
+                  size: 50,),
                   Text(
                     'Create Your Account',
                     style: TextStyle(
@@ -200,8 +210,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: const Text(
                           ' Login',
                           style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
+                              fontSize: 17,
+                              color: Colors.deepOrange,
                               fontWeight: FontWeight.bold),
                         ),
                       )
