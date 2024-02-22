@@ -73,7 +73,8 @@ class _RegisterPageState extends State<RegisterPage> {
           .set({
         'Fullname': fullNameController.text.trim(),
         'Phone Number': numberController.text.trim(),
-        'Email': emailController.text.trim()
+        'Email': emailController.text.trim(),
+        'Approved':false
       });
     } on FirebaseAuthException catch (e) {
       showDialog(
