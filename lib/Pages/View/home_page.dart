@@ -22,12 +22,12 @@ class _HomePageState extends State<HomePage> {
   String name = "";
   String currentDate = DateFormat.yMMMMd('en_US').format(DateTime.now());
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    getUserData();
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   getUserData();
+  //   super.initState();
+  // }
 
   void getUserData() async {
     final currentUser = FirebaseAuth.instance.currentUser!;
@@ -56,86 +56,117 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.appPrimary,
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.miscellaneous_services_sharp), label: 'Manage'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle_rounded), label: 'Account'),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        backgroundColor: AppColors.appPrimary,
-        selectedItemColor: AppColors.OxfordBlue, // Customize the selected item color
-        unselectedItemColor: Colors.black, // Customize the unselected item color
-      ),
-      body: SafeArea(
-        child: Column(children: [
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Hi  " + name,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                          color: Colors.black),
-                    ),
-                    Text(
-                      currentDate,
-                      style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 18,
-                          color: Colors.black),
-                    ),
-                  ],
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => NotificationPage()));
-                      },
-                      child: Icon(
-                        Icons.notifications,
-                        color: AppColors.whiteSmoke,
-                        size: 40,
-                      ),
-                    ),
-                  ),
-                )
+    final currentUser = FirebaseAuth.instance.currentUser!;
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection('USERS')
+          .doc(currentUser.email)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final userDetails = snapshot.data!.data() as Map<String, dynamic>;
+          return Scaffold(
+            backgroundColor: AppColors.appPrimary,
+            bottomNavigationBar: BottomNavigationBar(
+              items: [
+                BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.miscellaneous_services_sharp),
+                    label: 'Manage'),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.account_circle_rounded), label: 'Account'),
               ],
-            ),
-          ),
-          MyButton(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return AddServicePage();
-                }));
+              currentIndex: _selectedIndex,
+              onTap: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
               },
-              text: 'Add Service',
-              color: Colors.black)
-        ]),
-      ),
+              backgroundColor: AppColors.appPrimary,
+              selectedItemColor:
+                  AppColors.OxfordBlue, // Customize the selected item color
+              unselectedItemColor:
+                  Colors.black, // Customize the unselected item color
+            ),
+            body: SafeArea(
+              child: Column(children: [
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Hi  " + userDetails['Fullname'],
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                                color: Colors.black),
+                          ),
+                          Text(
+                            currentDate,
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 18,
+                                color: Colors.black),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          NotificationPage()));
+                            },
+                            child: Icon(
+                              Icons.notifications,
+                              color: AppColors.whiteSmoke,
+                              size: 40,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                MyButton(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return AddServicePage();
+                      }));
+                    },
+                    text: 'Complete Your Profile',
+                    color: Colors.red),
+                if (userDetails['Aadhar Photo'] == '')
+                 Text('Complete your profile to Add Service Details',style: TextStyle(color: Colors.black),),
+                if (userDetails['Aadhar Photo'] != '')
+                  MyButton(
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return AddServicePage();
+                        }));
+                      },
+                      text: 'Add Service',
+                      color: Colors.black)
+              ]),
+            ),
+          );
+        } else {
+          return Scaffold();
+        }
+      },
     );
   }
 }
