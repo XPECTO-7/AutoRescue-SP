@@ -1,7 +1,8 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/Colors/appcolor.dart';
-import 'package:provider/Pages/Components/label_textfield.dart';
+import 'package:provider/Components/mybutton.dart';
 
 class AddServicePage extends StatefulWidget {
   const AddServicePage({Key? key}) : super(key: key);
@@ -13,59 +14,140 @@ class AddServicePage extends StatefulWidget {
 class _AddServicePageState extends State<AddServicePage> {
   TextEditingController serviceTypeController = TextEditingController();
   TextEditingController companyNameController = TextEditingController();
-
-
+  TextEditingController descriptionController = TextEditingController();
+  TextEditingController licenseController = TextEditingController();
+  TextEditingController insuranceController = TextEditingController();
+  TextEditingController locationController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.OxfordBlue,
       appBar: AppBar(
         toolbarHeight: 70,
+        elevation: 1,
         backgroundColor: AppColors.OxfordBlue,
-        centerTitle: true,
-        title: const Text(
-          'Service',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
+        title: Row(
+          children: [
+            const Icon(
+              Icons.add,
+              size: 25,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 10),
+            Text(
+              'Service',
+              style: TextStyle(
+                fontFamily: GoogleFonts.ubuntu().fontFamily,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+          ],
         ),
       ),
       body: SingleChildScrollView(
-        child: Container(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 10),
-              LabelTextField(
+              TextField(
                 controller: companyNameController,
-                hintText: 'Company Name',
-                iconData: Icons.business_sharp,
-                labelText: 'Company Name',
+                decoration: const InputDecoration(
+                  suffixIcon: Icon(Icons.business),
+                  hintText: "Company / Shop Name",
+                  hintStyle: TextStyle(color: Colors.white),
+                  border: OutlineInputBorder(),
+                ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
+              TextField(
+                controller: descriptionController,
+                keyboardType: TextInputType.multiline,
+                minLines: 1,
+                maxLines: 7,
+                decoration: const InputDecoration(
+                  hintText: "Description",
+                  hintStyle: TextStyle(color: Colors.white),
+                  border: OutlineInputBorder(),
+                  suffixIcon: Icon(Icons.description_sharp),
+                ),
+              ),
+              const SizedBox(height: 10),
               DropdownSearch<String>(
                 popupProps: PopupProps.menu(
                   showSelectedItems: true,
                   disabledItemFn: (String s) => s.startsWith('I'),
                 ),
-                items: [
-                  "Fuel Delivery Service",
-                  "Tyre Related Service",
-                  "Vehicle Engine Related Service",
-                  'Towing Service',
-                  'EV Charging service'
+                items: const [
+                  'Emergency Fuel Refilling',
+                  'Flat Tyre',
+                  'Vehicle Engine Related Service',
+                  'Emergency Towing',
+                  'EV Charging service',
+                  'Key Lockout'
                 ],
                 dropdownDecoratorProps: const DropDownDecoratorProps(
+                  baseStyle: TextStyle(fontSize: 16),
                   dropdownSearchDecoration: InputDecoration(
-                    border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                    labelText: "Select Service",
-                  ),
+                      hintText: 'Select Service',
+                      hintStyle: TextStyle(color: Colors.white, fontSize: 16),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey))),
                 ),
                 onChanged: print,
-                selectedItem: "Fuel Delivery Service",
-              )
+              ),
+              const SizedBox(height: 10),
+              // Add Location
+              TextField(
+                controller: licenseController,
+                decoration: const InputDecoration(
+                  suffixIcon: Icon(Icons.edit_document),
+                  hintText: 'License Number',
+                  hintStyle: TextStyle(color: Colors.white),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: insuranceController,
+                decoration: const InputDecoration(
+                  suffixIcon: Icon(Icons.edit_document),
+                  hintText: 'Insurance Number',
+                  hintStyle: TextStyle(color: Colors.white),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: locationController,
+                decoration: const InputDecoration(
+                  suffixIcon: Icon(Icons.location_on_outlined),
+                  hintText: 'Location',
+                  hintStyle: TextStyle(color: Colors.white),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 30),
+              const Divider(
+                thickness: 0.5,
+                color: Colors.grey,
+              ),
+              const Center(
+                child: Text(
+                  'All provided details are currently undergoing verification. Once verified, Service will be activated',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+              MyButton(onTap: () {}, text: 'Submit', color: Colors.cyan)
             ],
           ),
         ),
