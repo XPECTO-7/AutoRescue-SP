@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/Authentication/Controller/main_page.dart';
 import 'package:provider/Pages/Utils/cont.dart';
 
@@ -41,8 +42,8 @@ class _AccountPageState extends State<AccountPage> {
       (route) => false,
     );
   }
-bool hasImage = true;
 
+  bool hasImage = true;
 
   @override
   Widget build(BuildContext context) {
@@ -56,42 +57,77 @@ bool hasImage = true;
         if (snapshot.hasData) {
           final userDetails = snapshot.data!.data() as Map<String, dynamic>;
           return Scaffold(
-            backgroundColor: Colors.black,
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 150,
                   ),
-                  Container(
-        height: 100.0,
-        width: 100.0,
-        color: Colors.grey,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8.0),
-          child: hasImage
-              ? Image.network(
-                  'https://cdn.pixabay.com/photo/2017/07/18/23/23/user-2517433_640.png',
-                  fit: BoxFit.contain,
-                )
-              : Center(
-                  child: Text('no data'),
-                ),
-        ),
-      ),
-      SizedBox(height: 30,),
+                  const Icon(
+                    Icons.person_pin_rounded,
+                    size: 100,
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
                   MyContainer(text: userDetails['Fullname']),
-                  SizedBox(height: 17,),
+                  const SizedBox(
+                    height: 17,
+                  ),
                   MyContainer(text: userDetails['Email']),
-                  SizedBox(height: 17,),
+                  const SizedBox(
+                    height: 17,
+                  ),
                   MyContainer(text: userDetails['Phone Number']),
+                  const SizedBox(
+                    height: 17,
+                  ),
+                  MyContainer(text: userDetails['Aadhar Number']),
+                  const SizedBox(
+                    height: 100,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 80.0),
+                    child: Divider(
+                      thickness: 0.2,
+                      color: Colors.white70,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.circle_sharp,
+                        size: 3,
+                      ),
+                      const SizedBox(
+                        width: 17,
+                      ),
+                      GestureDetector(
+                        onTap: logout,
+                        child: Text(
+                          'Logout',
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontFamily: GoogleFonts.dmSans().fontFamily),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 17,
+                      ),
+                      const Icon(
+                        Icons.circle_sharp,
+                        size: 3,
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),
           );
         } else {
-          return Scaffold();
+          return const Scaffold();
         }
       },
     );

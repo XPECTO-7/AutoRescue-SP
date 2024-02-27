@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/Colors/appcolor.dart';
 
 
 class MyAlertBox extends StatelessWidget {
@@ -36,7 +37,7 @@ class MyAlertBox extends StatelessWidget {
       onPressed: () {
       Navigator.pop(context);
     },
-    child:const  Text("OK",style: TextStyle(fontSize:18,color: Colors.deepOrange,fontWeight: FontWeight.bold),),
+    child:const  Text("OK",style: TextStyle(fontSize:18,color: AppColors.appPrimary,fontWeight: FontWeight.bold),),
     )
   ],
    );

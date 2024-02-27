@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/Authentication/View/forgot_password_page.dart';
+import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Components/myalert_box.dart';
 import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Components/log_textfield.dart';
@@ -64,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
                             style: TextStyle(
                               fontSize: 25,
                               fontFamily: GoogleFonts.ubuntu().fontFamily,
-                              color: Colors.deepOrange,
+                              color: AppColors.appPrimary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -167,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                         'Create an account!',
                         style: TextStyle(
                             fontSize: 17,
-                            color: Colors.deepOrange,
+                            color: AppColors.appPrimary,
                             fontWeight: FontWeight.bold),
                       ),
                     )

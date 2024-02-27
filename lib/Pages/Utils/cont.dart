@@ -14,9 +14,9 @@ class MyContainer extends StatelessWidget {
         height: 60,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: Colors.white, // Set background color to white
+          color: Colors.black, 
           borderRadius: BorderRadius.circular(5),
-          border: Border.all(color: Colors.black87),
+          border: Border.all(color: Colors.white70),
         ),
         child: Text(
           text,
@@ -24,7 +24,7 @@ class MyContainer extends StatelessWidget {
           style: TextStyle(
             fontFamily: GoogleFonts.ubuntu().fontFamily,
             fontSize: 20,
-            color: Colors.black,
+            color: Colors.white,
           ),
         ),
       ),

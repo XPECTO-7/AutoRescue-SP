@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Components/myalert_box.dart';
 import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Components/pwcontrol.dart';
@@ -144,7 +145,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             borderRadius: BorderRadius.all(Radius.circular(8)),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.deepOrange),
+                            borderSide: BorderSide(color: AppColors.appPrimary),
                             borderRadius: BorderRadius.all(Radius.circular(8)),
                           ),
                           fillColor: Colors.black,
@@ -214,7 +215,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           ' Login',
                           style: TextStyle(
                               fontSize: 17,
-                              color: Colors.deepOrange,
+                              color: AppColors.appPrimary,
                               fontWeight: FontWeight.bold),
                         ),
                       )

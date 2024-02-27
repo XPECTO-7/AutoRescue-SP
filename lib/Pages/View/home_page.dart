@@ -1,14 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/Authentication/Controller/main_page.dart';
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/Colors/appcolor.dart';
+import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Pages/View/account.dart';
 import 'package:provider/Pages/View/add_service_page.dart';
 import 'package:provider/Pages/View/manage.dart';
-import 'package:provider/Pages/View/notification_page.dart';
-import 'package:provider/Components/mybutton.dart';
-import 'package:provider/Colors/appcolor.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -18,6 +18,55 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 1;
+
+  static const List<Widget> _widgetOptions = <Widget>[
+    ManagePage(),
+    HomePageContent(),
+    AccountPage(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: _widgetOptions.elementAt(_selectedIndex),
+      ),
+      bottomNavigationBar: ConvexAppBar(
+        items: const [
+          TabItem(icon: Icons.verified_rounded, title: 'Services'),
+          TabItem(icon: Icons.home_rounded, title: 'Home'),
+          TabItem(icon: Icons.settings_suggest_rounded, title: 'Settings'),
+        ],
+        style: TabStyle.textIn,
+        color:Colors.white,
+        activeColor: Colors.white,
+        backgroundColor: Colors.black87,
+        height: 50,
+        initialActiveIndex: 1,
+        elevation: 5,
+        onTap: (int index) => setState(() {
+          _selectedIndex = index;
+        }),
+      ),
+    );
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+}
+
+class HomePageContent extends StatefulWidget {
+  const HomePageContent({Key? key}) : super(key: key);
+
+  @override
+  _HomePageContentState createState() => _HomePageContentState();
+}
+
+class _HomePageContentState extends State<HomePageContent> {
   late Map<String, dynamic> userDetails;
   String currentDate = DateFormat.yMMMMd('en_US').format(DateTime.now());
 
@@ -34,15 +83,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-
-  
-  int currentIndex = 1;
-  final screens= const[
-    ManagePage(),
-    HomePage(),
-    AccountPage()
-  ];
-
   @override
   Widget build(BuildContext context) {
     final currentUser = FirebaseAuth.instance.currentUser!;
@@ -55,24 +95,6 @@ class _HomePageState extends State<HomePage> {
         if (snapshot.hasData) {
           final userDetails = snapshot.data!.data() as Map<String, dynamic>;
           return Scaffold(
-            backgroundColor: AppColors.appPrimary,
-            bottomNavigationBar: BottomNavigationBar(
-                currentIndex: currentIndex,
-                onTap: (index) => setState(() {
-                  currentIndex = index;
-                }),
-                backgroundColor: AppColors.appPrimary,
-                selectedItemColor: Colors.black,
-                unselectedItemColor:Colors.grey[600],
-                elevation: 100,
-                items: const [
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.verified_rounded), label: ''),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.home_rounded), label: ''),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.settings_suggest_rounded), label: ''),
-                ]),
             body: SafeArea(
               child: Column(
                 children: [
@@ -89,7 +111,6 @@ class _HomePageState extends State<HomePage> {
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 24,
-                                color: Colors.black,
                               ),
                             ),
                             Text(
@@ -97,7 +118,6 @@ class _HomePageState extends State<HomePage> {
                               style: const TextStyle(
                                 fontWeight: FontWeight.normal,
                                 fontSize: 18,
-                                color: Colors.black,
                               ),
                             ),
                           ],
@@ -114,14 +134,13 @@ class _HomePageState extends State<HomePage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        const AccountPage(),
+                                    builder: (context) => const AccountPage(),
                                   ),
                                 );
                               },
                               child: const Icon(
                                 Icons.notifications,
-                                color: AppColors.whiteSmoke,
+                                color: Colors.white,
                                 size: 40,
                               ),
                             ),
@@ -142,7 +161,8 @@ class _HomePageState extends State<HomePage> {
                       );
                     },
                     text: 'Complete Your Profile',
-                    color: Colors.red,
+                    
+                    color: AppColors.appPrimary,
                   ),
                   if (userDetails['Aadhar Photo'] == '')
                     const Text(
@@ -170,7 +190,7 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         } else {
-          return const Scaffold();
+          return Scaffold();
         }
       },
     );

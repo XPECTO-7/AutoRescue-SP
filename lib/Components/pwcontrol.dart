@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/Colors/appcolor.dart';
 
 class MyPWTField extends StatefulWidget {
   final controller;
@@ -56,7 +57,7 @@ class _MyPWTFieldState extends State<MyPWTField> {
                       borderSide: BorderSide(color: Colors.white)),
                   focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(8)),
-                      borderSide: const BorderSide(color: Colors.deepOrange)),
+                      borderSide: const BorderSide(color: AppColors.appPrimary)),
                   filled: true,
                   fillColor: Colors.black,
                   hintText: widget.hintText,
@@ -78,7 +79,7 @@ class _MyPWTFieldState extends State<MyPWTField> {
               height: 20,
               decoration: BoxDecoration(
                   color: _isPasswordEightCharacters
-                      ? Colors.deepOrange
+                      ? AppColors.appPrimary
                       : Colors.transparent,
                   border: _isPasswordEightCharacters
                       ? Border.all(color: Colors.transparent)
@@ -116,7 +117,7 @@ class _MyPWTFieldState extends State<MyPWTField> {
               height: 20,
               decoration: BoxDecoration(
                   color:
-                      _hasPasswordOneNumber ? Colors.deepOrange : Colors.transparent,
+                      _hasPasswordOneNumber ? AppColors.appPrimary : Colors.transparent,
                   border: _hasPasswordOneNumber
                       ? Border.all(color: Colors.transparent)
                       : Border.all(color: Colors.grey.shade400),

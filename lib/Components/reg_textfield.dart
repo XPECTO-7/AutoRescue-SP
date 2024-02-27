@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/Colors/appcolor.dart';
 
 class RegTextField extends StatelessWidget {
   final controller;
@@ -27,7 +28,7 @@ class RegTextField extends StatelessWidget {
                       borderRadius: BorderRadius.all(Radius.circular(8)),
           ),
           focusedBorder:  OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.deepOrange),
+            borderSide: const BorderSide(color:AppColors.appPrimary),
                       borderRadius: BorderRadius.all(Radius.circular(8)),
           ),
           fillColor: Colors.black,

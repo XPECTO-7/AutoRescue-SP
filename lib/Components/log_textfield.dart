@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/Colors/appcolor.dart';
 
 class LogTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -27,7 +28,7 @@ class LogTextField extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(8)),
             ),
             focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.deepOrange),
+              borderSide: BorderSide(color: AppColors.appPrimary),
               borderRadius: BorderRadius.all(Radius.circular(8)),
             ),
             fillColor: Colors.black,
