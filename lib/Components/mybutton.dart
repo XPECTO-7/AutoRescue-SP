@@ -4,9 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 class MyButton extends StatelessWidget {
   final Function()? onTap;
   final String text;
-  final color;
+  final buttonColor;
+  final textColor;
 
-  const MyButton({super.key, required this.onTap, required this.text,required this.color});
+  const MyButton({super.key, required this.onTap, required this.text,required this.textColor, this.buttonColor});
 
   @override
   Widget build(BuildContext context) {
@@ -17,14 +18,14 @@ class MyButton extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         margin: const EdgeInsets.symmetric(horizontal: 25),
         decoration: BoxDecoration(
-          color: color,
+          color: buttonColor,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Center(
           child: Text(
             text,
             style:  TextStyle(
-              color: Colors.white,
+              color: textColor,
               fontWeight: FontWeight.bold,
               fontFamily: GoogleFonts.ubuntu().fontFamily,
               fontSize: 20,

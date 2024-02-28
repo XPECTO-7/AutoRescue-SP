@@ -1,9 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/Authentication/Controller/main_page.dart';
-import 'package:provider/Pages/Utils/cont.dart';
+import 'package:provider/Colors/appcolor.dart';
+import 'package:provider/Components/mybutton.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
@@ -13,21 +16,73 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
-  late Map<String, dynamic> userDetails;
-  String name = "";
+  late TextEditingController _nameController;
+  late TextEditingController _emailController;
+  late TextEditingController _phoneNumberController;
+  late TextEditingController _aadharNumberController;
 
-  void getUserData() async {
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _emailController = TextEditingController();
+    _phoneNumberController = TextEditingController();
+    _aadharNumberController = TextEditingController();
+    getUserData();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneNumberController.dispose();
+    _aadharNumberController.dispose();
+    super.dispose();
+  }
+
+  Future<void> getUserData() async {
     final currentUser = FirebaseAuth.instance.currentUser!;
-    final user = await FirebaseFirestore.instance
+    final userSnapshot = await FirebaseFirestore.instance
         .collection('USERS')
         .doc(currentUser.email)
-        .get()
-        .then((value) {
+        .get();
+    if (userSnapshot.exists) {
+      final userDetails = userSnapshot.data() as Map<String, dynamic>;
       setState(() {
-        userDetails = value.data() as Map<String, dynamic>;
-        name = userDetails["Fullname"];
+        _nameController.text = userDetails['Fullname'];
+        _emailController.text = userDetails['Email'];
+        _phoneNumberController.text = userDetails['Phone Number'];
+        _aadharNumberController.text = userDetails['Aadhar Number'];
       });
+    }
+  }
+
+  void updateUserData() async {
+    final currentUser = FirebaseAuth.instance.currentUser!;
+    await FirebaseFirestore.instance
+        .collection('USERS')
+        .doc(currentUser.email)
+        .update({
+      'Fullname': _nameController.text,
+      'Phone Number': _phoneNumberController.text,
+      'Aadhar Number': _aadharNumberController.text,
     });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Update Successful"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void logout() async {
@@ -41,29 +96,72 @@ class _AccountPageState extends State<AccountPage> {
       ),
       (route) => false,
     );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Account Logged Out"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  bool hasImage = true;
+  Future<void> _refresh() async {
+    await getUserData();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = FirebaseAuth.instance.currentUser!;
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('USERS')
-          .doc(currentUser.email)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final userDetails = snapshot.data!.data() as Map<String, dynamic>;
-          return Scaffold(
-            body: Center(
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 70,
+        elevation: 0,
+        title: Row(
+          children: [
+            Image.asset(
+              'lib/images/user.png',
+              height: 30,
+              width: 30,
+              alignment: Alignment.centerLeft,
+              color: AppColors.appPrimary,
+            ),
+            const SizedBox(width: 10),
+            Text(
+              'My Profile',
+              style: TextStyle(
+                fontFamily: GoogleFonts.ubuntu().fontFamily,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.logout,
+              color: AppColors.appPrimary,
+            ),
+            onPressed: () => logout(),
+          ),
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: _refresh,
+        child: Center(
+          child: SafeArea(
+            child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const SizedBox(
-                    height: 150,
-                  ),
                   const Icon(
                     Icons.person_pin_rounded,
                     size: 100,
@@ -71,65 +169,63 @@ class _AccountPageState extends State<AccountPage> {
                   const SizedBox(
                     height: 30,
                   ),
-                  MyContainer(text: userDetails['Fullname']),
+                  buildEditableField("Fullname", _nameController),
                   const SizedBox(
                     height: 17,
                   ),
-                  MyContainer(text: userDetails['Email']),
+                  buildEditableField("Email", _emailController),
                   const SizedBox(
                     height: 17,
                   ),
-                  MyContainer(text: userDetails['Phone Number']),
+                  buildEditableField("Phone Number", _phoneNumberController),
                   const SizedBox(
                     height: 17,
                   ),
-                  MyContainer(text: userDetails['Aadhar Number']),
+                  buildEditableField("Aadhar Number", _aadharNumberController),
+                  const SizedBox(
+                    height: 34,
+                  ),
+                  MyButton(
+                    onTap: updateUserData,
+                    text: 'Update Details',
+                    textColor: Colors.black,
+                    buttonColor: AppColors.appPrimary,
+                  ),
                   const SizedBox(
                     height: 100,
                   ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 80.0),
-                    child: Divider(
-                      thickness: 0.2,
-                      color: Colors.white70,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.circle_sharp,
-                        size: 3,
-                      ),
-                      const SizedBox(
-                        width: 17,
-                      ),
-                      GestureDetector(
-                        onTap: logout,
-                        child: Text(
-                          'Logout',
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontFamily: GoogleFonts.dmSans().fontFamily),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 17,
-                      ),
-                      const Icon(
-                        Icons.circle_sharp,
-                        size: 3,
-                      ),
-                    ],
-                  )
                 ],
               ),
             ),
-          );
-        } else {
-          return const Scaffold();
-        }
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildEditableField(String label, TextEditingController controller) {
+    return GestureDetector(
+      onTap: () {
+        // You can implement any editing mechanism here
+        // For simplicity, we will just focus on the field when tapped
+        FocusScope.of(context).requestFocus(FocusNode());
       },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: label,
+            border: const OutlineInputBorder(),
+            suffixIcon: controller.text.isEmpty
+                ? const Icon(
+                    Icons.error_outline_rounded,
+                    color: Colors.red,
+                  )
+                : null,
+          ),
+        ),
+      ),
     );
   }
 }

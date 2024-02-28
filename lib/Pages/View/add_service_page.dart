@@ -22,11 +22,9 @@ class _AddServicePageState extends State<AddServicePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.OxfordBlue,
       appBar: AppBar(
         toolbarHeight: 70,
-        elevation: 1,
-        backgroundColor: AppColors.OxfordBlue,
+        elevation: 0,
         title: Row(
           children: [
             const Icon(
@@ -52,7 +50,18 @@ class _AddServicePageState extends State<AddServicePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 10),
+              const SizedBox(height: 30),
+             const Text(
+                  'Please Provide Accurate Company Details for Verification.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                
+              ),
+              const SizedBox(height: 30),
               TextField(
                 controller: companyNameController,
                 decoration: const InputDecoration(
@@ -125,29 +134,20 @@ class _AddServicePageState extends State<AddServicePage> {
                 controller: locationController,
                 decoration: const InputDecoration(
                   suffixIcon: Icon(Icons.location_on_outlined),
-                  hintText: 'Location',
+                  hintText: 'Set Location',
                   hintStyle: TextStyle(color: Colors.white),
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 30),
-              const Divider(
-                thickness: 0.5,
-                color: Colors.grey,
-              ),
-              const Center(
-                child: Text(
-                  'All provided details are currently undergoing verification. Once verified, Service will be activated',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+
               const SizedBox(
                 height: 40,
               ),
-              MyButton(onTap: () {}, text: 'Submit', color: Colors.cyan)
+              MyButton(
+                  onTap: () {},
+                  text: 'Submit',
+                  textColor: Colors.white,
+                  buttonColor: Colors.cyan)
             ],
           ),
         ),

@@ -133,7 +133,8 @@ class _LoginPageState extends State<LoginPage> {
                 GestureDetector(
                   onTap: signIn,
                   child: MyButton(
-                    color: Colors.black,
+                    buttonColor: Colors.black,
+                    textColor: Colors.white,
                     text: 'Sign In',
                     onTap: () {
                       if (emailController.text.isNotEmpty &&

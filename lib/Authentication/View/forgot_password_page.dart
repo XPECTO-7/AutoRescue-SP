@@ -148,7 +148,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               const SizedBox(height: 15),
               // Reset Password Button
               MyButton(onTap: passwordReset,
-               text: 'Send Link', color: Colors.black),
+               text: 'Send Link', buttonColor: Colors.black,textColor: Colors.white,),
             ],
           ),
         ),
