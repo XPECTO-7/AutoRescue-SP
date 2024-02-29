@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/Authentication/View/forgot_password_page.dart';
 import 'package:provider/Colors/appcolor.dart';
+import 'package:provider/Components/log_pfield.dart';
 import 'package:provider/Components/myalert_box.dart';
 import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Components/log_textfield.dart';
@@ -61,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: 'SP ',
+                            text: 'SERVICE ',
                             style: TextStyle(
                               fontSize: 25,
                               fontFamily: GoogleFonts.ubuntu().fontFamily,
@@ -98,11 +99,11 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(
                   height: 10,
                 ),
-                LogTextField(
+                LogPField(
                   controller: passwordController,
                   hintText: 'Password',
                   obscureText: true,
-                  iconData: Icons.lock,
+                  iconData: Icons.remove_red_eye_rounded,
                 ),
                 const SizedBox(
                   height: 10,

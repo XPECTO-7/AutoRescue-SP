@@ -34,14 +34,14 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: ConvexAppBar(
         items: const [
-          TabItem(icon: Icons.verified_rounded, title: 'Services'),
+          TabItem(icon: Icons.settings_suggest_rounded, title: 'Service'),
           TabItem(icon: Icons.home_rounded, title: 'Home'),
-          TabItem(icon: Icons.settings_suggest_rounded, title: 'Settings'),
+          TabItem(icon: Icons.person, title: 'Account'),
         ],
         style: TabStyle.textIn,
-        color: Colors.white,
-        activeColor: Colors.white,
-        backgroundColor: Colors.black87,
+        color:Colors.black54,
+        activeColor: Colors.black,
+        backgroundColor: Colors.white,
         height: 50,
         initialActiveIndex: 1,
         elevation: 5,
@@ -69,6 +69,7 @@ class HomePageContent extends StatefulWidget {
 class _HomePageContentState extends State<HomePageContent> {
   late Map<String, dynamic> userDetails;
   String currentDate = DateFormat.yMMMMd('en_US').format(DateTime.now());
+  String currentTime = DateFormat.jms().format(DateTime.now());
 
   Future<void> _refreshData() async {
     // Fetch updated user data
@@ -100,130 +101,62 @@ class _HomePageContentState extends State<HomePageContent> {
         if (snapshot.hasData) {
           final userDetails = snapshot.data!.data() as Map<String, dynamic>;
 
-          return RefreshIndicator(
-            onRefresh: _refreshData,
-            child: Scaffold(
-              body: SafeArea(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Hi  " + userDetails['Fullname'],
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 24,
-                                ),
-                              ),
-                              Text(
-                                currentDate,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[900],
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const AccountPage(),
-                                    ),
-                                  );
-                                },
-                                child: const Icon(
-                                  Icons.notifications,
-                                  color: AppColors.appPrimary,
-                                  size: 40,
-                                ),
+          return Scaffold(
+            body: SafeArea(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Hi  " + userDetails['Fullname'],
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
                               ),
                             ),
-                          )
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[900],
-                          borderRadius: BorderRadius.circular(
-                              15), // Adjust the radius as needed
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            children: [
-                              MyButton(
-                                onTap: () {
-                                  if (userDetails['Aadhar Photo'] != '' &&
-                                      userDetails['Aadhar Number'] != '') {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const AddServicePage(),
-                                      ),
-                                    );
-                                  } else {
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          title: const Text(
-                                              'Complete Your Profile'),
-                                          content: const Text(
-                                              'Please complete your profile to Add Service.'),
-                                          actions: <Widget>[
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                                Navigator.pushNamed(
-                                                    context, '/AccountPage');
-                                              },
-                                              child: const Text(
-                                                  'Go to Profile Page'),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                  }
-                                },
-                                text: 'Add Service',
-                                textColor: Colors.white,
-                                buttonColor: Colors.black,
+                            Text(
+                              '$currentDate'+' ,  '+'$currentTime',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 18,
                               ),
-                              Expanded(
-                                child: Container(
-                                   decoration: BoxDecoration(
-                          color: Colors.grey[900],
-                          borderRadius: BorderRadius.circular(
-                              15), // Adjust the radius as needed
+                            ),
+                          ],
                         ),
-                                ))
-                            ],
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[900],
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        ),
-                      ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const AccountPage(),
+                                  ),
+                                );
+                              },
+                              child: const Icon(
+                                Icons.notifications,
+                                color: AppColors.appPrimary,
+                                size: 40,
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           );

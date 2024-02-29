@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/Authentication/Controller/main_page.dart';
+import 'package:provider/Authentication/View/login_page.dart';
 import 'package:provider/Pages/View/account.dart';
 import 'package:provider/Pages/View/home_page.dart';
 import 'package:provider/Pages/View/manage.dart';
@@ -26,9 +27,9 @@ class MyApp extends StatelessWidget {
       theme: darktheme,
       home: const MainPage(),
       routes: {
-        '/HomePage': (context) =>  HomePage(),
-        '/ManagePage': (context) =>  const ManagePage(),
-        '/AccountPage': (context) =>  const AccountPage(),
+        '/HomePage': (context) => HomePage(),
+        '/ManagePage': (context) => const ManagePage(),
+        '/AccountPage': (context) => const AccountPage(),
       },
     );
   }

@@ -61,7 +61,7 @@ class _MyPWTFieldState extends State<MyPWTField> {
                   filled: true,
                   fillColor: Colors.black,
                   hintText: widget.hintText,
-                  hintStyle: TextStyle(color: Colors.grey[500])),
+                  hintStyle: TextStyle(color: Colors.white)),
             ),
           ),
         ),

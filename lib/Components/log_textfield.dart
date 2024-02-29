@@ -41,7 +41,8 @@ class LogTextField extends StatelessWidget {
                 const EdgeInsets.only(left: 20, top: 20, bottom: 20),
             suffixIcon: Padding(
               padding: const EdgeInsetsDirectional.only(end: 12.0),
-              child: GestureDetector(child: Icon(iconData)),
+              child: GestureDetector(
+                child: Icon(iconData)),
             ),
           )),
     );
