@@ -36,6 +36,8 @@ class _RegisterPageState extends State<RegisterPage>
   TextEditingController insuranceController = TextEditingController();
   TextEditingController locationController = TextEditingController();
   TextEditingController MecPriceController = TextEditingController();
+  TextEditingController aadharNoController = TextEditingController();
+  TextEditingController aadharImgController = TextEditingController();
 
   @override
   void initState() {
@@ -57,7 +59,9 @@ class _RegisterPageState extends State<RegisterPage>
         licenseController.text.isNotEmpty &&
         insuranceController.text.isNotEmpty &&
         serviceTypeController.text.isNotEmpty &&
-        MecPriceController.text.isNotEmpty) {
+        MecPriceController.text.isNotEmpty &&
+        aadharNoController.text.isNotEmpty &&
+        aadharImgController.text.isNotEmpty) {
       regCheck = true;
     } else {
       regCheck = false;
@@ -74,13 +78,13 @@ class _RegisterPageState extends State<RegisterPage>
         if (passwordController.text == confirmPasswordController.text) {
           if (regCheck == true) {
             signUp();
-          }else{
+          } else {
             showDialog(
-            context: context,
-            builder: (context) => const MyAlertBox(
-              message: "Complete Service Registration",
-            ),
-          );
+              context: context,
+              builder: (context) => const MyAlertBox(
+                message: "Complete Service Registration",
+              ),
+            );
           }
         } else {
           // Passwords didn't match
@@ -123,8 +127,15 @@ class _RegisterPageState extends State<RegisterPage>
         'Fullname': fullNameController.text.trim(),
         'Phone Number': numberController.text.trim(),
         'Email': emailController.text.trim(),
-        'Aadhar Photo': '',
-        'Aadhar Number': '',
+        'Aadhar Photo': 'aadharImgController',
+        'Aadhar Number': 'aadharNoController',
+        'Company Name': 'companyNameController',
+        'Location': 'locationController',
+        'Experience': 'expController',
+        'License No': 'licenseController',
+        'Insurance No': 'insuranceController',
+        'Service Type': 'serviceTypeController',
+        'MecSerCharge': 'MecPriceController',
         'Approved': false
       });
     } on FirebaseAuthException catch (e) {
@@ -154,7 +165,7 @@ class _RegisterPageState extends State<RegisterPage>
         toolbarHeight: 70,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: widget.showLoginPage,
         ),
         title: Row(
@@ -236,6 +247,20 @@ class _RegisterPageState extends State<RegisterPage>
                               initialCountryCode: 'IN',
                               controller: numberController,
                             ),
+                          ),
+                          const SizedBox(height: 15),
+                          RegTextField(
+                            controller: aadharNoController,
+                            hintText: 'Aadhar Number',
+                            obscureText: false,
+                            iconData: Icons.numbers_rounded,
+                          ),
+                          const SizedBox(height: 15),
+                          RegTextField(
+                            controller: aadharImgController,
+                            hintText: 'Aadhar doc',
+                            obscureText: false,
+                            iconData: Icons.add_a_photo_rounded,
                           ),
                           const SizedBox(height: 15),
                           RegTextField(
@@ -405,7 +430,7 @@ class _RegisterPageState extends State<RegisterPage>
                                   },
                                 ),
                                 const SizedBox(height: 15),
-                                Text('Service Charge Details :'),
+                                const Text('Service Charge Details :'),
                                 if (serviceTypeController.text ==
                                     'Mechanical Service')
                                   Padding(
