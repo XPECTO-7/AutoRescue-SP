@@ -242,10 +242,10 @@ class _RegisterPageState extends State<RegisterPage>
                         child:  Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.add_a_photo),
+                            const Icon(Icons.add_a_photo),
                             Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child:pickedImage==null? Text("Add Aadhar Image"):Text("Update Image"),
+                              padding: const EdgeInsets.all(8.0),
+                              child:pickedImage==null? const Text("Add Aadhar Image"):const Text("Update Image"),
                             ),
                             if(pickedImage!=null)
                             Container(

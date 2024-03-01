@@ -4,10 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/Authentication/Controller/main_page.dart';
+import 'package:provider/Authentication/View/Widgets/custom_slider.dart';
 import 'package:provider/Authentication/View/Widgets/pick_location_pop_up.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Components/myalert_box.dart';
@@ -17,13 +18,14 @@ class ServiceDetailsView extends StatefulWidget {
   final String fullName, phoneNumber, adhaarImg, adhaarNum, email, password;
 
   const ServiceDetailsView(
-      {super.key,
+      {Key? key,
       required this.fullName,
       required this.phoneNumber,
       required this.adhaarNum,
       required this.adhaarImg,
       required this.email,
-      required this.password});
+      required this.password})
+      : super(key: key);
 
   @override
   State<ServiceDetailsView> createState() => _ServiceDetailsViewState();
@@ -183,51 +185,45 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
-                      child: InkWell(
-                        onTap: pickLocation,
-                        child: SizedBox(
-                          height: 60,
-                          width: MediaQuery.of(context).size.width,
-                          child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: Colors.black,
-                                  border: Border.all(color: Colors.white)),
-                              child: longitude == ""
-                                  ? const Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(Icons.map),
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                              "Set Company/Workshop location"),
-                                        ),
-                                      ],
-                                    )
-                                  : const Center(
-                                      child: Icon(
-                                        Icons.check,
-                                        color: Colors.green,
-                                      ),
-                                    )),
+                    InkWell(
+                      onTap: pickLocation,
+                      child: Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.appPrimary),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.map),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                longitude.isEmpty
+                                    ? "Set Company / Workshop Location"
+                                    : "Location set",
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 14),
+                              ),
+                            ),
+                            if (longitude.isNotEmpty)
+                              const Icon(
+                                Icons.check,
+                                color: Colors.green,
+                              ),
+                          ],
                         ),
                       ),
                     ),
                     const SizedBox(height: 15),
                     TextField(
                       controller: expController,
-                      // keyboardType: const TextInputType
-                      //     .numberWithOptions(
-                      //     decimal:
-                      //         false),
-                      // inputFormatters: <TextInputFormatter>[
-                      //   FilteringTextInputFormatter
-                      //       .digitsOnly
-                      // ],
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: false),
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
                       decoration: const InputDecoration(
                         hintText: "Experience In Years",
                         hintStyle: TextStyle(color: Colors.white),
@@ -295,36 +291,21 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                                 ),
                               ))
                           .toList(),
-                      onChanged: (value) {},
                       validator: (value) {
                         if (value == null) {
                           return 'Please Select Service Type.';
                         }
                         return null;
                       },
+                      onChanged: (value) {
+                        setState(() {
+                          serviceTypeController.text = value!;
+                        });
+                      },
                     ),
                     const SizedBox(height: 15),
                     const Text('Service Charge Details :'),
-                    if (serviceTypeController.text == 'Mechanical Service')
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: TextField(
-                          controller: mecPriceController,
-                          decoration: const InputDecoration(
-                            hintText: ' ₹ INR',
-                            hintStyle:
-                                TextStyle(color: Colors.white, fontSize: 16),
-                            border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: AppColors.appPrimary),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: AppColors.appPrimary),
-                            ),
-                          ),
-                        ),
-                      ),
+                    CustomRangeSlider(serviceType: serviceTypeController.text, controller: mecPriceController, whichtype: "Mechanical Service"),
                     const SizedBox(
                       height: 40,
                     ),
