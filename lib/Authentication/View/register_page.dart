@@ -1,8 +1,14 @@
+
+
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:provider/Authentication/View/service_details_view.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Components/myalert_box.dart';
 import 'package:provider/Components/mybutton.dart';
@@ -28,7 +34,8 @@ class _RegisterPageState extends State<RegisterPage>
   final confirmPasswordController = TextEditingController();
   final numericRegex = RegExp(r'[0-9]');
   bool profileCreation = true;
-
+  String adharImage="";
+  XFile? pickedImage;
   TextEditingController aadharNoController = TextEditingController();
   TextEditingController aadharImgController = TextEditingController();
   @override
@@ -68,16 +75,18 @@ class _RegisterPageState extends State<RegisterPage>
       if (passwordController.text.length >= 8 &&
           numericRegex.hasMatch(passwordController.text)) {
         if (passwordController.text == confirmPasswordController.text) {
-          if (regCheck == true) {
-            signUp();
-          } else {
-            showDialog(
-              context: context,
-              builder: (context) => const MyAlertBox(
-                message: "Complete Service Registration",
-              ),
-            );
-          }
+          Navigator.push(context, MaterialPageRoute(
+            builder: (context) {
+              return ServiceDetailsView(
+                adhaarNum: aadharNoController.text,
+                email: emailController.text,
+                fullName: fullNameController.text,
+                password: confirmPasswordController.text,
+                phoneNumber: numberController.text,
+                adhaarImg: adharImage,
+              );
+            },
+          ));
         } else {
           // Passwords didn't match
           showDialog(
@@ -104,6 +113,18 @@ class _RegisterPageState extends State<RegisterPage>
           message: "Fill all fields",
         ),
       );
+    }
+  }
+
+  void pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.camera);
+    if(image!=null)
+    {
+        setState(() {
+          pickedImage=image ;
+        adharImage=image.path;
+        });
     }
   }
 
@@ -153,24 +174,13 @@ class _RegisterPageState extends State<RegisterPage>
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.showLoginPage,
         ),
-        title: Row(
-          children: [
-            const SizedBox(width: 15),
-            const Icon(
-              Icons.add,
-              size: 25,
-              color: Colors.white,
-            ),
-            const SizedBox(width: 15),
-            Text(
-              'Sign Up',
-              style: TextStyle(
-                fontFamily: GoogleFonts.ubuntu().fontFamily,
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-              ),
-            ),
-          ],
+        title: Text(
+          'Sign Up',
+          style: TextStyle(
+            fontFamily: GoogleFonts.ubuntu().fontFamily,
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+          ),
         ),
       ),
       body: SafeArea(
@@ -217,12 +227,42 @@ class _RegisterPageState extends State<RegisterPage>
                   iconData: Icons.numbers_rounded,
                 ),
                 const SizedBox(height: 15),
-                RegTextField(
-                  controller: aadharImgController,
-                  hintText: 'Aadhar doc',
-                  obscureText: false,
-                  iconData: Icons.add_a_photo_rounded,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25),
+                  child: InkWell(
+                    onTap: pickImage,
+                    child: SizedBox(
+                      height: 60,
+                      width: MediaQuery.of(context).size.width,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.black,
+                            border: Border.all(color: Colors.white)),
+                        child:  Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add_a_photo),
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child:pickedImage==null? Text("Add Aadhar Image"):Text("Update Image"),
+                            ),
+                            if(pickedImage!=null)
+                            Container(
+                            child: Image.file(File(pickedImage!.path)),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
+                // RegTextField(
+                //   controller: aadharImgController,
+                //   hintText: 'Aadhar doc',
+                //   obscureText: false,
+                //   iconData: Icons.add_a_photo_rounded,
+                // ),
                 const SizedBox(height: 15),
                 RegTextField(
                   controller: emailController,
@@ -242,6 +282,15 @@ class _RegisterPageState extends State<RegisterPage>
                   obscureText: true,
                   iconData: Icons.lock,
                 ),
+                const SizedBox(
+                  height: 20,
+                ),
+                MyButton(
+                  onTap: validation,
+                  text: "Next",
+                  buttonColor: AppColors.appPrimary,
+                  textColor: Colors.black,
+                )
               ],
             ),
           ),
