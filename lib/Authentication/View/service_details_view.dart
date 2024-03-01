@@ -97,7 +97,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
         'Experience': expController.text,
         'License No': licenseController.text,
         'Insurance No': insuranceController.text,
-        'Service Type': "",
+        'Service Type': serviceTypeController.text,
         'MecSerCharge': 'MecPriceController',
         'Approved': false
       });
