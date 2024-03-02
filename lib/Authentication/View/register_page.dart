@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/Authentication/View/service_details_view.dart';
 import 'package:provider/Colors/appcolor.dart';
+import 'package:provider/Components/aadhar_field.dart';
 import 'package:provider/Components/myalert_box.dart';
 import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Components/pwcontrol.dart';
@@ -34,7 +33,7 @@ class _RegisterPageState extends State<RegisterPage>
   final confirmPasswordController = TextEditingController();
   final numericRegex = RegExp(r'[0-9]');
   bool profileCreation = true;
-  String adharImage="";
+  String adharImage = "";
   XFile? pickedImage;
   TextEditingController aadharNoController = TextEditingController();
   TextEditingController aadharImgController = TextEditingController();
@@ -119,12 +118,11 @@ class _RegisterPageState extends State<RegisterPage>
   void pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.camera);
-    if(image!=null)
-    {
-        setState(() {
-          pickedImage=image ;
-        adharImage=image.path;
-        });
+    if (image != null) {
+      setState(() {
+        pickedImage = image;
+        adharImage = image.path;
+      });
     }
   }
 
@@ -219,14 +217,12 @@ class _RegisterPageState extends State<RegisterPage>
                     controller: numberController,
                   ),
                 ),
-                const SizedBox(height: 15),
-                RegTextField(
+                AadharTextField(
                   controller: aadharNoController,
                   hintText: 'Aadhar Number',
                   obscureText: false,
                   iconData: Icons.numbers_rounded,
                 ),
-                const SizedBox(height: 15),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: InkWell(
@@ -236,27 +232,47 @@ class _RegisterPageState extends State<RegisterPage>
                       width: MediaQuery.of(context).size.width,
                       child: Container(
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.black,
-                            border: Border.all(color: Colors.white)),
-                        child:  Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.black,
+                          border: Border.all(color: Colors.white),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            const Icon(Icons.add_a_photo),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child:pickedImage==null? const Text("Add Aadhar Image"):const Text("Update Image"),
+                              child: pickedImage == null
+                                  ? const Text(
+                                      "Add Aadhar Image",
+                                      style: TextStyle(
+                                          fontSize: 16, color: Colors.white),
+                                    )
+                                  : const Text(
+                                      "Update Image",
+                                      style: TextStyle(
+                                          fontSize: 16, color: Colors.white),
+                                    ),
                             ),
-                            if(pickedImage!=null)
-                            Container(
-                            child: Image.file(File(pickedImage!.path)),
-                            )
+                            if (pickedImage != null)
+                              Container(
+                                child: Image.file(File(pickedImage!.path)),
+                              ),
+                            const Spacer(), // Add Spacer to push suffix icon to the right
+                            IconButton(
+                              icon: const Icon(Icons.add_a_photo,
+                                  color: Colors
+                                      .white), // Change the icon as per your requirement
+                              onPressed: () {
+                                // Add function to handle adding image here
+                              },
+                            ),
                           ],
                         ),
                       ),
                     ),
                   ),
                 ),
+
                 // RegTextField(
                 //   controller: aadharImgController,
                 //   hintText: 'Aadhar doc',

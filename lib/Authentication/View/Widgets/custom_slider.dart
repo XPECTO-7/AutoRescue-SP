@@ -6,13 +6,13 @@ import 'package:syncfusion_flutter_sliders/sliders.dart';
 class CustomRangeSlider extends StatefulWidget {
   final String serviceType;
   final TextEditingController controller;
-  final String whichtype;
+  final Map<String, SfRangeValues> priceRanges;
 
   const CustomRangeSlider({
     Key? key,
     required this.serviceType,
     required this.controller,
-    required this.whichtype
+    required this.priceRanges,
   }) : super(key: key);
 
   @override
@@ -20,49 +20,50 @@ class CustomRangeSlider extends StatefulWidget {
 }
 
 class _CustomRangeSliderState extends State<CustomRangeSlider> {
-  // Define your range values
-  double _min = 100;
-  double _max = 1000;
+  late SfRangeValues _values;
+
+  @override
+  void initState() {
+    super.initState();
+    // Convert int values to double
+    double start = widget.priceRanges[widget.serviceType]!.start.toDouble();
+    double end = widget.priceRanges[widget.serviceType]!.end.toDouble();
+    _values = SfRangeValues(start, end);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Replace your existing TextField with SfRangeSlider
-        if (widget.serviceType == 'whichtype')
-          Padding(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: SfRangeSlider(
-              min: 100.0,
-              max: 10000.0,
-              values: SfRangeValues(_min, _max),
-              onChanged: (SfRangeValues values) {
-                setState(() {
-                  _min = values.start;
-                  _max = values.end;
-                  // Update the controller values
-                  widget.controller.text =
-                      '₹${_min.toInt()} - ₹${_max.toInt()}';
-                });
-              },
-              showTicks: true,
-              showLabels: true,
-              enableTooltip: true,
-              numberFormat: NumberFormat.decimalPattern(), // Modified line
-              tooltipTextFormatterCallback: (dynamic value, String position) {
-                return '₹${value.toInt()}';
-              },
-              activeColor: AppColors.appPrimary, // Change the slider color here
-            ),
+        Padding(
+          padding: const EdgeInsets.only(top: 10.0),
+          child: SfRangeSlider(
+            min: widget.priceRanges[widget.serviceType]!.start.toDouble(), // Convert int to double
+            max: widget.priceRanges[widget.serviceType]!.end.toDouble(), // Convert int to double
+            values: _values,
+            onChanged: (SfRangeValues values) {
+              setState(() {
+                _values = values;
+                widget.controller.text = '₹${_values.start.toInt()} - ₹${_values.end.toInt()}';
+              });
+            },
+            showTicks: true,
+            showLabels: true,
+            enableTooltip: true,
+            numberFormat: NumberFormat.decimalPattern(),
+            tooltipTextFormatterCallback: (dynamic value, String position) {
+              return '₹${value.toInt()}';
+            },
+            activeColor: AppColors.appPrimary,
           ),
-        // Display the TextField with the updated range
+        ),
         TextField(
           controller: widget.controller,
-          keyboardType: TextInputType.number, // Input type set to number only
-          readOnly: false, // Now editable
-          decoration: const InputDecoration(
-            labelText: '*Additional Service Charges Seperately',
-            labelStyle: TextStyle(fontSize: 12)
+          keyboardType: TextInputType.number,
+          readOnly: true,
+          decoration: InputDecoration(
+            labelText: '*Expected Price',
+            labelStyle: TextStyle(fontSize: 12),
           ),
         ),
       ],

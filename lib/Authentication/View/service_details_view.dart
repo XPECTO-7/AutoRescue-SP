@@ -13,6 +13,7 @@ import 'package:provider/Authentication/View/Widgets/pick_location_pop_up.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Components/myalert_box.dart';
 import 'package:provider/Components/mybutton.dart';
+import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 class ServiceDetailsView extends StatefulWidget {
   final String fullName, phoneNumber, adhaarImg, adhaarNum, email, password;
@@ -39,6 +40,10 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
   TextEditingController insuranceController = TextEditingController();
   TextEditingController locationController = TextEditingController();
   TextEditingController mecPriceController = TextEditingController();
+  TextEditingController fuelPriceController = TextEditingController();
+  TextEditingController towingPriceController = TextEditingController();
+  TextEditingController evPriceController = TextEditingController();
+
   String imgUrl = "";
   String longitude = "";
   String lattitude = "";
@@ -49,12 +54,20 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
     'Emergency Towing Service',
     'EV Charging service',
   ];
+
+  late Map<String, TextEditingController> priceControllers = {
+    "Mechanical Service": mecPriceController,
+    "Fuel Delivery Service": fuelPriceController,
+    "Emergency Towing Service": towingPriceController,
+    "EV Charging service": evPriceController,
+  };
+
   @override
   void initState() {
-    // TODO: implement initState
-    getCurrentLocation();
     super.initState();
+    getCurrentLocation();
   }
+
 
   void getCurrentLocation() async {
     position = await Geolocator.getCurrentPosition(
@@ -145,6 +158,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -204,7 +218,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                                     ? "Set Company / Workshop Location"
                                     : "Location set",
                                 style: const TextStyle(
-                                    color: Colors.white, fontSize: 14),
+                                    color: Colors.white, fontSize: 15),
                               ),
                             ),
                             if (longitude.isNotEmpty)
@@ -305,7 +319,19 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                     ),
                     const SizedBox(height: 15),
                     const Text('Service Charge Details :'),
-                    CustomRangeSlider(serviceType: serviceTypeController.text, controller: mecPriceController, whichtype: "Mechanical Service"),
+                    if (serviceTypeController.text.isNotEmpty)
+                      // Inside the build method or any method called after text controllers are initialized
+                      CustomRangeSlider(
+                        serviceType: serviceTypeController.text,
+                        controller:
+                            priceControllers[serviceTypeController.text]!,
+                        priceRanges: const {
+                          "Mechanical Service": SfRangeValues(100, 5000),
+                          "Fuel Delivery Service": SfRangeValues(50, 200),
+                          "Emergency Towing Service": SfRangeValues(100, 5000),
+                          "EV Charging service": SfRangeValues(100, 2000),
+                        },
+                      ),
                     const SizedBox(
                       height: 40,
                     ),
