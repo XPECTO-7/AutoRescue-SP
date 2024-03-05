@@ -204,8 +204,8 @@ class _LoginPageState extends State<LoginPage> {
                         child: const Text(
                           'Create an account!',
                           style: TextStyle(
-                              fontSize: 17,
-                              color: AppColors.appPrimary,
+                              fontSize: 18,
+                              color: AppColors.appTertiary,
                               fontWeight: FontWeight.bold),
                         ),
                       )

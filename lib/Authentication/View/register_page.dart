@@ -1,9 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/Colors/appcolor.dart';
+import 'package:provider/Components/aadhar_field.dart';
+import 'package:provider/Components/licensenum_tf.dart';
 import 'package:provider/Components/myalert_box.dart';
 import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Components/pwcontrol.dart';
@@ -22,6 +26,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final passwordController = TextEditingController();
   final fullNameController = TextEditingController();
   final numberController = TextEditingController();
+  final drLicenseController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final numericRegex = RegExp(r'[0-9]');
 
@@ -29,6 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
     if (emailController.text.isNotEmpty &&
         passwordController.text.isNotEmpty &&
         fullNameController.text.isNotEmpty &&
+        drLicenseController.text.isNotEmpty &&
         confirmPasswordController.text.isNotEmpty) {
       if (passwordController.text.length >= 8 &&
           numericRegex.hasMatch(passwordController.text)) {
@@ -75,6 +81,7 @@ class _RegisterPageState extends State<RegisterPage> {
         'Fullname': fullNameController.text.trim(),
         'Phone Number': numberController.text.trim(),
         'Email': emailController.text.trim(),
+        'Driving License Number': drLicenseController,
         'Approved': false
       });
     } on FirebaseAuthException catch (e) {
@@ -100,30 +107,38 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.person_pin,
-                    size: 50,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.person_outlined,
+                        size: 40,
+                      ),
+                      const SizedBox(width: 7),
+                      Text(
+                        'Create Your Account',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    'Create Your Account',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontFamily: GoogleFonts.poppins().fontFamily,
-                        fontWeight: FontWeight.bold),
-                  ),
+
                   const SizedBox(
-                    height: 10,
+                    height: 3,
                   ),
-                  const Padding(
+                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 25.0),
                     child: Divider(
-                      thickness: 0.5,
-                      color: Colors.white,
+                      thickness: 0.7,
+                      color: AppColors.appTertiary,
                     ),
                   ),
                   const SizedBox(
-                    height: 25,
+                    height: 20,
                   ),
 
                   //F U L L N A M E
@@ -159,7 +174,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
 
                   const SizedBox(
-                    height: 10,
+                    height: 5,
                   ),
 
                   //E M A I L
@@ -171,6 +186,15 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(
                     height: 10,
+                  ),
+
+                  LicenseTextField(
+                      controller: drLicenseController,
+                      hintText: 'Driving License Number',
+                      obscureText: false,
+                      iconData: FontAwesomeIcons.idCard),
+                  const SizedBox(
+                    height: 5,
                   ),
 
                   //P A S S W O R D
@@ -195,10 +219,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     text: 'Sign Up',
                     onTap: validation,
                     textColor: Colors.black,
-                    buttonColor: AppColors.appPrimary,
+                    buttonColor: AppColors.appTertiary,
                   ),
                   const SizedBox(
-                    height: 30,
+                    height: 20,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -215,7 +239,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: const Text(
                           ' Login',
                           style: TextStyle(
-                              fontSize: 17,
+                              fontSize: 18,
                               color: AppColors.appPrimary,
                               fontWeight: FontWeight.bold),
                         ),
