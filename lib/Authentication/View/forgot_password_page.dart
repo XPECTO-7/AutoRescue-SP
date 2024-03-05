@@ -125,7 +125,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       appBar: AppBar(
         title: const Text('Forgot Password'),
       ),
-      
       body: Center(
         child: Padding(
           padding: const EdgeInsets.only(top: 150),
@@ -147,8 +146,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   iconData: Icons.mail),
               const SizedBox(height: 15),
               // Reset Password Button
-              MyButton(onTap: passwordReset,
-               text: 'Send Link', buttonColor: Colors.black,textColor: Colors.white,),
+              MyButton(
+                onTap: passwordReset,
+                text: 'Send Link',
+                buttonColor: Colors.black,
+                textColor: Colors.white,
+              ),
             ],
           ),
         ),

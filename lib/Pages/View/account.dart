@@ -189,7 +189,7 @@ class _AccountPageState extends State<AccountPage> {
                     onTap: updateUserData,
                     text: 'Update Details',
                     textColor: Colors.black,
-                    buttonColor: AppColors.appPrimary,
+                    buttonColor: AppColors.appPrimary, 
                   ),
                   const SizedBox(
                     height: 100,

@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Pages/View/account.dart';
-import 'package:provider/Pages/View/add_service_page.dart';
 import 'package:provider/Pages/View/manage.dart';
 import 'package:latlong2/latlong.dart' as latlong;
 class HomePage extends StatefulWidget {
