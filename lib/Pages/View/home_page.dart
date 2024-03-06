@@ -1,15 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/Colors/appcolor.dart';
-import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Pages/View/account.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:provider/Pages/View/manage.dart';
-import 'package:latlong2/latlong.dart' as latlong;
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -39,7 +37,7 @@ class _HomePageState extends State<HomePage> {
           TabItem(icon: Icons.person, title: 'Account'),
         ],
         style: TabStyle.textIn,
-        color:Colors.black54,
+        color: Colors.black54,
         activeColor: Colors.black,
         backgroundColor: Colors.white,
         height: 50,
@@ -50,12 +48,6 @@ class _HomePageState extends State<HomePage> {
         }),
       ),
     );
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
   }
 }
 
@@ -70,6 +62,7 @@ class _HomePageContentState extends State<HomePageContent> {
   late Map<String, dynamic> userDetails;
   String currentDate = DateFormat.yMMMMd('en_US').format(DateTime.now());
   String currentTime = DateFormat.jms().format(DateTime.now());
+  String location = '';
 
   Future<void> _refreshData() async {
     // Fetch updated user data
@@ -85,8 +78,33 @@ class _HomePageContentState extends State<HomePageContent> {
         .then((value) {
       setState(() {
         userDetails = value.data() as Map<String, dynamic>;
+        updateLocation();
       });
     });
+  }
+
+  Future<void> updateLocation() async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        userDetails['location']['latitude'],
+        userDetails['location']['longitude'],
+      );
+
+      if (placemarks.isNotEmpty) {
+        Placemark placemark = placemarks.first;
+        setState(() {
+          location = placemark.locality ?? '';
+        });
+      }
+    } catch (e) {
+      print('Error updating location: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserData();
   }
 
   @override
@@ -120,12 +138,25 @@ class _HomePageContentState extends State<HomePageContent> {
                                 fontSize: 24,
                               ),
                             ),
-                            Text(
-                              '$currentDate'+' ,  '+'$currentTime',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontSize: 18,
-                              ),
+                            FutureBuilder<void>(
+                              future: updateLocation(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Text('Loading location...');
+                                } else if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                } else {
+                                  return Text(
+                                    location,
+                                    style: const TextStyle(
+                                      color: AppColors.appPrimary,
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 18,
+                                    ),
+                                  );
+                                }
+                              },
                             ),
                           ],
                         ),
@@ -156,7 +187,7 @@ class _HomePageContentState extends State<HomePageContent> {
                       ],
                     ),
                   ),
-                 
+                  // ... other code
                 ],
               ),
             ),

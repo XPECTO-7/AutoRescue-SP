@@ -227,7 +227,7 @@ class _AccountPageState extends State<AccountPage> {
                               setState(() {
                                 pickedDLimage = image;
                               });
-                            },
+                            }, dlImageURL: '',
                           ),
                           SizedBox(
                             height: 10,

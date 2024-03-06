@@ -7,12 +7,14 @@ class licenseImage extends StatefulWidget {
   final String label;
   final TextEditingController controller;
   final Function(File) onImageSelected;
+  final String? dlImageURL;
 
   const licenseImage({
     Key? key,
     required this.label,
     required this.controller,
     required this.onImageSelected,
+    required this.dlImageURL,
   }) : super(key: key);
 
   @override
@@ -54,19 +56,32 @@ class _licenseImageState extends State<licenseImage> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: pickedDLimage == null
-                      ?  Text(
-                        "Add DL Image",
-                          style: TextStyle(fontSize: 14, color: Colors.white,fontWeight: FontWeight.bold,fontFamily: GoogleFonts.strait().fontFamily),
+                      ? Text(
+                          "Add DL Image",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: GoogleFonts.strait().fontFamily,
+                          ),
                         )
-                      :  Text(
-                          "Update DL Image",
-                          style: TextStyle(fontSize: 14, color: Colors.green,fontFamily: GoogleFonts.strait().fontFamily,fontWeight: FontWeight.bold),
+                      : Text(
+                          widget.dlImageURL != null
+                              ? "Update DL Image"
+                              : "Add DL Image",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: widget.dlImageURL != null
+                                ? Colors.green
+                                : Colors.white,
+                            fontFamily: GoogleFonts.strait().fontFamily,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                 ),
-               
                 const Spacer(),
                 IconButton(
-                  icon: const Icon(Icons.add_a_photo, color: Colors.white,size: 30),
+                  icon: const Icon(Icons.add_a_photo, color: Colors.white, size: 30),
                   onPressed: pickImage,
                 ),
               ],
@@ -77,3 +92,4 @@ class _licenseImageState extends State<licenseImage> {
     );
   }
 }
+
