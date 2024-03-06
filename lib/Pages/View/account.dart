@@ -10,7 +10,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/Authentication/Controller/main_page.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Components/mybutton.dart';
-import 'package:provider/Pages/Components/imageupload.dart';
+import 'package:provider/Pages/Components/license_image_up.dart';
+import 'package:provider/Pages/Components/rcbook_image_up.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
@@ -24,7 +25,9 @@ class _AccountPageState extends State<AccountPage> {
   late TextEditingController _emailController;
   late TextEditingController _phoneNumberController;
   late TextEditingController drLicenseImgController;
-  File? pickedImage;
+  late TextEditingController rcImgController;
+  File? pickedDLimage;
+  File? pickedRCimage;
 
   @override
   void initState() {
@@ -33,6 +36,7 @@ class _AccountPageState extends State<AccountPage> {
     _emailController = TextEditingController();
     _phoneNumberController = TextEditingController();
     drLicenseImgController = TextEditingController();
+    rcImgController = TextEditingController();
     getUserData();
   }
 
@@ -55,7 +59,8 @@ class _AccountPageState extends State<AccountPage> {
   Future<void> updateUserData() async {
     final currentUser = FirebaseAuth.instance.currentUser!;
 
-    String imageUrl = await uploadLicenseImage();
+    String DLimageUrl = await uploadLicenseImage();
+    String RCimageUrl = await uploadRCBookImage();
 
     await FirebaseFirestore.instance
         .collection('USERS')
@@ -63,8 +68,9 @@ class _AccountPageState extends State<AccountPage> {
         .update({
       'Fullname': _nameController.text,
       'Phone Number': _phoneNumberController.text,
-      'Chasis Number': drLicenseImgController.text,
-      'ImageURL': imageUrl,
+      'Driving License Number': drLicenseImgController.text,
+      'DL ImageURL': DLimageUrl,
+      'RC ImageURL': RCimageUrl,
     });
 
     showDialog(
@@ -88,7 +94,16 @@ class _AccountPageState extends State<AccountPage> {
   Future<String> uploadLicenseImage() async {
     final Reference storageReference =
         FirebaseStorage.instance.ref().child('user_LicenseImage');
-    final UploadTask uploadTask = storageReference.putFile(pickedImage!);
+    final UploadTask uploadTask = storageReference.putFile(pickedDLimage!);
+
+    await uploadTask.whenComplete(() {});
+    return storageReference.getDownloadURL();
+  }
+
+  Future<String> uploadRCBookImage() async {
+    final Reference storageReference =
+        FirebaseStorage.instance.ref().child('user_RCimage');
+    final UploadTask uploadTask = storageReference.putFile(pickedRCimage!);
 
     await uploadTask.whenComplete(() {});
     return storageReference.getDownloadURL();
@@ -190,41 +205,88 @@ class _AccountPageState extends State<AccountPage> {
                   const SizedBox(
                     height: 17,
                   ),
-                  ImageUploader(
-                      controller: drLicenseImgController,
-                      label: 'Driving License Image',
-                      onImageSelected: (File image) {
-                        setState(() {
-                          pickedImage = image;
-                        });
-                      }),
-               
-                  // Display the image preview below the ImageUploader field
-                  pickedImage != null
-                      ? Container(
-                          height: 100,
-                          width: 100,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.black,
-                            border: Border.all(),
+                  Row(
+                    children: [
+                      Column(
+                        children: [
+                          licenseImage(
+                              controller: drLicenseImgController,
+                              label: 'Driving License Image',
+                              onImageSelected: (File image) {
+                                setState(() {
+                                  pickedDLimage = image;
+                                });
+                              }),
+                          SizedBox(
+                            height: 10,
                           ),
-                          child: Image.file(pickedImage!, fit: BoxFit.cover),
-                        )
-                      : Container(), // Show an empty container if no image is picked
-                  const SizedBox(
-                    height: 10,
+                          // Display the image preview below the ImageUploader field
+                          Padding(
+                            padding: const EdgeInsets.only(left: 25,right: 10),
+                            child: pickedDLimage != null
+                                ? Container(
+                                    height: 150,
+                                    width: 150,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Image.file(pickedDLimage!,
+                                        fit: BoxFit.cover),
+                                  )
+                                : Container(),
+                          ), // Show an empty container if no image is picked
+                          const SizedBox(
+                            height: 10,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Column(
+                        children: [
+                          rcImage(
+                              controller: rcImgController,
+                              label: 'RC Book Image',
+                              onImageSelected: (File image) {
+                                setState(() {
+                                  pickedRCimage = image;
+                                });
+                              }),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          // Display the image preview below the ImageUploader field
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10,right: 25),
+                            child: pickedRCimage != null
+                                ? Container(
+                                    height: 150,
+                                    width: 150,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Image.file(pickedRCimage!,
+                                        fit: BoxFit.cover),
+                                  )
+                                : Container(),
+                          ), // Show an empty container if no image is picked
+                          const SizedBox(
+                            height: 10,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                   MyButton(
                     onTap: updateUserData,
                     text: 'Update Details',
                     textColor: Colors.black,
-                    buttonColor: AppColors.appPrimary,
+                    buttonColor: AppColors.appTertiary,
                   ),
                   const SizedBox(
                     height: 20,
                   ),
-                  
                 ],
               ),
             ),
@@ -258,4 +320,3 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 }
-
