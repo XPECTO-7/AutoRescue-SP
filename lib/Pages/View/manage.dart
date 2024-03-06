@@ -21,7 +21,7 @@ class _ManagePageState extends State<ManagePage> {
           children: [
             const Icon(
               Icons.verified_rounded,
-              color: AppColors.appPrimary,
+              color: AppColors.appTertiary,
             ),
             const SizedBox(
               width: 10,

@@ -28,6 +28,8 @@ class _AccountPageState extends State<AccountPage> {
   late TextEditingController rcImgController;
   File? pickedDLimage;
   File? pickedRCimage;
+  String? dlImageURL;
+  String? rcImageURL;
 
   @override
   void initState() {
@@ -46,12 +48,21 @@ class _AccountPageState extends State<AccountPage> {
         .collection('USERS')
         .doc(currentUser.email)
         .get();
+
     if (userSnapshot.exists) {
       final userDetails = userSnapshot.data() as Map<String, dynamic>;
       setState(() {
         _nameController.text = userDetails['Fullname'];
         _emailController.text = userDetails['Email'];
         _phoneNumberController.text = userDetails['Phone Number'];
+
+        if (userDetails.containsKey('DL ImageURL')) {
+          dlImageURL = userDetails['DL ImageURL'];
+        }
+
+        if (userDetails.containsKey('RC ImageURL')) {
+          rcImageURL = userDetails['RC ImageURL'];
+        }
       });
     }
   }
@@ -155,7 +166,7 @@ class _AccountPageState extends State<AccountPage> {
               height: 30,
               width: 30,
               alignment: Alignment.centerLeft,
-              color: AppColors.appPrimary,
+              color: AppColors.appTertiary,
             ),
             const SizedBox(width: 10),
             Text(
@@ -172,7 +183,7 @@ class _AccountPageState extends State<AccountPage> {
           IconButton(
             icon: const Icon(
               Icons.logout,
-              color: AppColors.appPrimary,
+              color: AppColors.appTertiary,
             ),
             onPressed: () => logout(),
           ),
@@ -210,27 +221,28 @@ class _AccountPageState extends State<AccountPage> {
                       Column(
                         children: [
                           licenseImage(
-                              controller: drLicenseImgController,
-                              label: 'Driving License Image',
-                              onImageSelected: (File image) {
-                                setState(() {
-                                  pickedDLimage = image;
-                                });
-                              }),
+                            controller: drLicenseImgController,
+                            label: 'Driving License Image',
+                            onImageSelected: (File image) {
+                              setState(() {
+                                pickedDLimage = image;
+                              });
+                            },
+                          ),
                           SizedBox(
                             height: 10,
                           ),
                           // Display the image preview below the ImageUploader field
                           Padding(
-                            padding: const EdgeInsets.only(left: 25,right: 10),
-                            child: pickedDLimage != null
+                            padding: const EdgeInsets.only(left: 25, right: 10),
+                            child: dlImageURL != null
                                 ? Container(
                                     height: 150,
                                     width: 150,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
-                                    child: Image.file(pickedDLimage!,
+                                    child: Image.network(dlImageURL!,
                                         fit: BoxFit.cover),
                                   )
                                 : Container(),
@@ -246,27 +258,28 @@ class _AccountPageState extends State<AccountPage> {
                       Column(
                         children: [
                           rcImage(
-                              controller: rcImgController,
-                              label: 'RC Book Image',
-                              onImageSelected: (File image) {
-                                setState(() {
-                                  pickedRCimage = image;
-                                });
-                              }),
+                            controller: rcImgController,
+                            label: 'RC Book Image',
+                            onImageSelected: (File image) {
+                              setState(() {
+                                pickedRCimage = image;
+                              });
+                            },
+                          ),
                           SizedBox(
                             height: 10,
                           ),
                           // Display the image preview below the ImageUploader field
                           Padding(
-                            padding: const EdgeInsets.only(left: 10,right: 25),
-                            child: pickedRCimage != null
+                            padding: const EdgeInsets.only(left: 10, right: 25),
+                            child: rcImageURL != null
                                 ? Container(
                                     height: 150,
                                     width: 150,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
-                                    child: Image.file(pickedRCimage!,
+                                    child: Image.network(rcImageURL!,
                                         fit: BoxFit.cover),
                                   )
                                 : Container(),
@@ -320,3 +333,4 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 }
+
