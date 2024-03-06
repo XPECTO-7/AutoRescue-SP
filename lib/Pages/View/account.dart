@@ -1,12 +1,16 @@
-// ignore_for_file: use_build_context_synchronously
+// Import necessary packages and libraries
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/Authentication/Controller/main_page.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Components/mybutton.dart';
+import 'package:provider/Pages/Components/imageupload.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
@@ -19,7 +23,8 @@ class _AccountPageState extends State<AccountPage> {
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _phoneNumberController;
-  late TextEditingController _aadharNumberController;
+  late TextEditingController drLicenseImgController;
+  File? pickedImage;
 
   @override
   void initState() {
@@ -27,17 +32,8 @@ class _AccountPageState extends State<AccountPage> {
     _nameController = TextEditingController();
     _emailController = TextEditingController();
     _phoneNumberController = TextEditingController();
-    _aadharNumberController = TextEditingController();
+    drLicenseImgController = TextEditingController();
     getUserData();
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _phoneNumberController.dispose();
-    _aadharNumberController.dispose();
-    super.dispose();
   }
 
   Future<void> getUserData() async {
@@ -52,21 +48,25 @@ class _AccountPageState extends State<AccountPage> {
         _nameController.text = userDetails['Fullname'];
         _emailController.text = userDetails['Email'];
         _phoneNumberController.text = userDetails['Phone Number'];
-        _aadharNumberController.text = userDetails['Aadhar Number'];
       });
     }
   }
 
-  void updateUserData() async {
+  Future<void> updateUserData() async {
     final currentUser = FirebaseAuth.instance.currentUser!;
+
+    String imageUrl = await uploadLicenseImage();
+
     await FirebaseFirestore.instance
         .collection('USERS')
         .doc(currentUser.email)
         .update({
       'Fullname': _nameController.text,
       'Phone Number': _phoneNumberController.text,
-      'Aadhar Number': _aadharNumberController.text,
+      'Chasis Number': drLicenseImgController.text,
+      'ImageURL': imageUrl,
     });
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -83,6 +83,15 @@ class _AccountPageState extends State<AccountPage> {
         );
       },
     );
+  }
+
+  Future<String> uploadLicenseImage() async {
+    final Reference storageReference =
+        FirebaseStorage.instance.ref().child('user_LicenseImage');
+    final UploadTask uploadTask = storageReference.putFile(pickedImage!);
+
+    await uploadTask.whenComplete(() {});
+    return storageReference.getDownloadURL();
   }
 
   void logout() async {
@@ -181,19 +190,41 @@ class _AccountPageState extends State<AccountPage> {
                   const SizedBox(
                     height: 17,
                   ),
-                  buildEditableField("Aadhar Number", _aadharNumberController),
+                  ImageUploader(
+                      controller: drLicenseImgController,
+                      label: 'Driving License Image',
+                      onImageSelected: (File image) {
+                        setState(() {
+                          pickedImage = image;
+                        });
+                      }),
+               
+                  // Display the image preview below the ImageUploader field
+                  pickedImage != null
+                      ? Container(
+                          height: 100,
+                          width: 100,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.black,
+                            border: Border.all(),
+                          ),
+                          child: Image.file(pickedImage!, fit: BoxFit.cover),
+                        )
+                      : Container(), // Show an empty container if no image is picked
                   const SizedBox(
-                    height: 34,
+                    height: 10,
                   ),
                   MyButton(
                     onTap: updateUserData,
                     text: 'Update Details',
                     textColor: Colors.black,
-                    buttonColor: AppColors.appPrimary, 
+                    buttonColor: AppColors.appPrimary,
                   ),
                   const SizedBox(
-                    height: 100,
+                    height: 20,
                   ),
+                  
                 ],
               ),
             ),
@@ -206,8 +237,6 @@ class _AccountPageState extends State<AccountPage> {
   Widget buildEditableField(String label, TextEditingController controller) {
     return GestureDetector(
       onTap: () {
-        // You can implement any editing mechanism here
-        // For simplicity, we will just focus on the field when tapped
         FocusScope.of(context).requestFocus(FocusNode());
       },
       child: Container(
@@ -229,3 +258,4 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 }
+

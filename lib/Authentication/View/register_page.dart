@@ -26,7 +26,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final passwordController = TextEditingController();
   final fullNameController = TextEditingController();
   final numberController = TextEditingController();
-  final drLicenseController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final numericRegex = RegExp(r'[0-9]');
 
@@ -34,7 +33,6 @@ class _RegisterPageState extends State<RegisterPage> {
     if (emailController.text.isNotEmpty &&
         passwordController.text.isNotEmpty &&
         fullNameController.text.isNotEmpty &&
-        drLicenseController.text.isNotEmpty &&
         confirmPasswordController.text.isNotEmpty) {
       if (passwordController.text.length >= 8 &&
           numericRegex.hasMatch(passwordController.text)) {
@@ -81,8 +79,8 @@ class _RegisterPageState extends State<RegisterPage> {
         'Fullname': fullNameController.text.trim(),
         'Phone Number': numberController.text.trim(),
         'Email': emailController.text.trim(),
-        'Driving License Number': drLicenseController,
-        'Approved': false
+        'Driving License Image':'',
+        'RC Book Image':'',
       });
     } on FirebaseAuthException catch (e) {
       showDialog(
@@ -186,15 +184,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(
                     height: 10,
-                  ),
-
-                  LicenseTextField(
-                      controller: drLicenseController,
-                      hintText: 'Driving License Number',
-                      obscureText: false,
-                      iconData: FontAwesomeIcons.idCard),
-                  const SizedBox(
-                    height: 5,
                   ),
 
                   //P A S S W O R D
