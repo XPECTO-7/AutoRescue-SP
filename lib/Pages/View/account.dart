@@ -1,12 +1,10 @@
-// Import necessary packages and libraries
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/Authentication/Controller/main_page.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Components/mybutton.dart';
@@ -26,6 +24,7 @@ class _AccountPageState extends State<AccountPage> {
   late TextEditingController _phoneNumberController;
   late TextEditingController drLicenseImgController;
   late TextEditingController rcImgController;
+  late TextEditingController vehicleController;
   File? pickedDLimage;
   File? pickedRCimage;
   String? dlImageURL;
@@ -39,6 +38,7 @@ class _AccountPageState extends State<AccountPage> {
     _phoneNumberController = TextEditingController();
     drLicenseImgController = TextEditingController();
     rcImgController = TextEditingController();
+    vehicleController = TextEditingController();
     getUserData();
   }
 
@@ -52,9 +52,10 @@ class _AccountPageState extends State<AccountPage> {
     if (userSnapshot.exists) {
       final userDetails = userSnapshot.data() as Map<String, dynamic>;
       setState(() {
-        _nameController.text = userDetails['Fullname'];
-        _emailController.text = userDetails['Email'];
-        _phoneNumberController.text = userDetails['Phone Number'];
+        _nameController.text = userDetails['Fullname'] ?? '';
+        _emailController.text = userDetails['Email'] ?? '';
+        _phoneNumberController.text = userDetails['Phone Number'] ?? '';
+        vehicleController.text = userDetails['Vehicle'] ?? '';
 
         if (userDetails.containsKey('DL ImageURL')) {
           dlImageURL = userDetails['DL ImageURL'];
@@ -79,7 +80,8 @@ class _AccountPageState extends State<AccountPage> {
         .update({
       'Fullname': _nameController.text,
       'Phone Number': _phoneNumberController.text,
-      'Driving License Number': drLicenseImgController.text,
+      'Email': _emailController.text,
+      'Vehicle': vehicleController.text, // Concatenating name and year
       'DL ImageURL': DLimageUrl,
       'RC ImageURL': RCimageUrl,
     });
@@ -88,7 +90,10 @@ class _AccountPageState extends State<AccountPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Update Successful",style: TextStyle(color: AppColors.appPrimary,fontSize: 14),),
+          title: const Text(
+            "Updated Successfully",
+            style: TextStyle(color: AppColors.appPrimary, fontSize: 14),
+          ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -135,7 +140,10 @@ class _AccountPageState extends State<AccountPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Logout Successful",style: TextStyle(color: AppColors.appPrimary,fontSize: 14),),
+          title: const Text(
+            "Logout Successful",
+            style: TextStyle(color: AppColors.appPrimary, fontSize: 14),
+          ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -149,7 +157,6 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -158,11 +165,9 @@ class _AccountPageState extends State<AccountPage> {
         elevation: 0,
         title: Row(
           children: [
-            Image.asset(
-              'lib/images/user.png',
-              height: 30,
-              width: 30,
-              alignment: Alignment.centerLeft,
+            const Icon(
+              Icons.person_pin_rounded,
+              size: 30,
               color: AppColors.appTertiary,
             ),
             const SizedBox(width: 10),
@@ -190,15 +195,30 @@ class _AccountPageState extends State<AccountPage> {
         child: SafeArea(
           child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                MyButton(
-                    onTap: () {},
-                    text: 'Hello there!',
-                    textColor: AppColors.appSecondary,
-                    buttonColor: AppColors.appPrimary),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(width: 12),
+                    IconButton(
+                      icon: const FaIcon(FontAwesomeIcons.faceSmile),
+                      iconSize: 20,
+                      color: AppColors.appPrimary,
+                      onPressed: () {},
+                    ),
+                    Text(
+                      "Hello there!",
+                      style: TextStyle(
+                          color: AppColors.appTertiary,
+                          fontFamily: GoogleFonts.ubuntu().fontFamily,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24),
+                    ),
+                  ],
+                ),
                 const SizedBox(
-                  height: 20,
+                  height: 10,
                 ),
                 buildEditableField("Fullname", _nameController),
                 const SizedBox(
@@ -209,6 +229,10 @@ class _AccountPageState extends State<AccountPage> {
                   height: 17,
                 ),
                 buildEditableField("Phone Number", _phoneNumberController),
+                const SizedBox(
+                  height: 17,
+                ),
+                buildEditableField("Vehicle Model & Year", vehicleController),
                 const SizedBox(
                   height: 17,
                 ),
@@ -234,8 +258,8 @@ class _AccountPageState extends State<AccountPage> {
                           padding: const EdgeInsets.only(left: 25, right: 5),
                           child: pickedDLimage != null
                               ? Container(
-                                  height: 150,
-                                  width: 150,
+                                  height: 170,
+                                  width: 170,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
@@ -246,8 +270,8 @@ class _AccountPageState extends State<AccountPage> {
                                 )
                               : dlImageURL != null
                                   ? Container(
-                                      height: 150,
-                                      width: 150,
+                                      height: 170,
+                                      width: 170,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(8),
                                       ),
@@ -286,8 +310,8 @@ class _AccountPageState extends State<AccountPage> {
                           padding: const EdgeInsets.only(left: 5, right: 25),
                           child: pickedRCimage != null
                               ? Container(
-                                  height: 150,
-                                  width: 150,
+                                  height: 170,
+                                  width: 170,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
@@ -298,8 +322,8 @@ class _AccountPageState extends State<AccountPage> {
                                 )
                               : rcImageURL != null
                                   ? Container(
-                                      height: 150,
-                                      width: 150,
+                                      height: 170,
+                                      width: 170,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(8),
                                       ),
@@ -317,17 +341,11 @@ class _AccountPageState extends State<AccountPage> {
                     ),
                   ],
                 ),
-                const SizedBox(
-                  height: 12,
-                ),
                 MyButton(
                   onTap: updateUserData,
                   text: 'Update Details',
                   textColor: Colors.black,
-                  buttonColor: AppColors.appTertiary,
-                ),
-                const SizedBox(
-                  height: 30,
+                  buttonColor: AppColors.appPrimary,
                 ),
               ],
             ),

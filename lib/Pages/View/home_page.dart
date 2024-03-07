@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Pages/View/account.dart';
 import 'package:provider/Pages/View/manage.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -80,7 +81,7 @@ class _HomePageContentState extends State<HomePageContent> {
       });
     });
   }
-  
+
   @override
   void initState() {
     super.initState();
@@ -101,30 +102,67 @@ class _HomePageContentState extends State<HomePageContent> {
 
           return Scaffold(
             appBar: AppBar(
-        toolbarHeight: 70,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            'lib/images/cserv.png', 
-            color: Colors.white,
-            width:50,
-            height: 50,
-          ),
-          const SizedBox(
-            width: 2,
-          ),
-          Text(
-            'AutoRescue',
-            style: TextStyle(
-              fontFamily: GoogleFonts.ubuntu().fontFamily,
-              fontWeight: FontWeight.bold,
-              fontSize: 24,
+              toolbarHeight: 80,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'lib/images/cserv.png',
+                    color: AppColors.appPrimary,
+                    width: 50,
+                    height: 50,
+                  ),
+                  const SizedBox(
+                    width: 2,
+                  ),
+                  Text(
+                    'AutoRescue',
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.ubuntu().fontFamily,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-        ),
-      ),
+            body: SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.center, 
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal:1.0),
+                      child: Container(
+                        padding: const EdgeInsets.all(4.0),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(7.0),
+                          color: AppColors.appTertiary,
+                        ),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              icon: const FaIcon(FontAwesomeIcons.searchengin),
+                              color: AppColors.appSecondary,
+                              iconSize: 30,
+                              onPressed: () {},
+                            ),
+                            const Text('Search',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: AppColors.appSecondary,
+                                )),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           );
         } else {
           return const Scaffold();

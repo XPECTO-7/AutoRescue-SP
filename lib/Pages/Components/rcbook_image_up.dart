@@ -48,7 +48,7 @@ class _RCImageState extends State<RCImage> {
           width: 180,
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(4),
               border: Border.all(color: Colors.grey),
             ),
             child: Row(
