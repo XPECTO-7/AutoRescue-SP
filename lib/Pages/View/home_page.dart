@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Pages/View/account.dart';
@@ -99,6 +100,31 @@ class _HomePageContentState extends State<HomePageContent> {
           final userDetails = snapshot.data!.data() as Map<String, dynamic>;
 
           return Scaffold(
+            appBar: AppBar(
+        toolbarHeight: 70,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            'lib/images/cserv.png', 
+            color: Colors.white,
+            width:50,
+            height: 50,
+          ),
+          const SizedBox(
+            width: 2,
+          ),
+          Text(
+            'AutoRescue',
+            style: TextStyle(
+              fontFamily: GoogleFonts.ubuntu().fontFamily,
+              fontWeight: FontWeight.bold,
+              fontSize: 24,
+            ),
+          ),
+        ],
+        ),
+      ),
           );
         } else {
           return const Scaffold();

@@ -7,7 +7,7 @@ class MyButton extends StatelessWidget {
   final buttonColor;
   final textColor;
 
-  const MyButton({super.key, required this.onTap, required this.text,required this.textColor, this.buttonColor,});
+  const MyButton({super.key, required this.onTap, required this.text,required this.textColor,required this.buttonColor,});
 
   @override
   Widget build(BuildContext context) {

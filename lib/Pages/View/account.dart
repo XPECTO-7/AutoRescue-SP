@@ -88,7 +88,7 @@ class _AccountPageState extends State<AccountPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Update Successful"),
+          title: const Text("Update Successful",style: TextStyle(color: AppColors.appPrimary,fontSize: 14),),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -135,7 +135,7 @@ class _AccountPageState extends State<AccountPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Account Logged Out"),
+          title: const Text("Logout Successful",style: TextStyle(color: AppColors.appPrimary,fontSize: 14),),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -149,9 +149,6 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  Future<void> _refresh() async {
-    await getUserData();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -189,154 +186,150 @@ class _AccountPageState extends State<AccountPage> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _refresh,
-        child: Center(
-          child: SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Icon(
-                    Icons.person_pin_rounded,
-                    size: 70,
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  buildEditableField("Fullname", _nameController),
-                  const SizedBox(
-                    height: 17,
-                  ),
-                  buildEditableField("Email", _emailController),
-                  const SizedBox(
-                    height: 17,
-                  ),
-                  buildEditableField("Phone Number", _phoneNumberController),
-                  const SizedBox(
-                    height: 17,
-                  ),
-                  Row(
-                    children: [
-                      Column(
-                        children: [
-                          LicenseImage(
-                            controller: drLicenseImgController,
-                            label: 'Driving License Image',
-                            onImageSelected: (File image) {
-                              setState(() {
-                                pickedDLimage = image;
-                              });
-                            },
-                            dlImageURL: '',
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          // Display the image preview below the ImageUploader field
-                         Padding(
-                            padding: const EdgeInsets.only(left: 25, right: 5),
-                            child: pickedDLimage != null
-                                ? Container(
-                                    height: 150,
-                                    width: 150,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Image.file(
-                                      pickedDLimage!,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  )
-                                : dlImageURL != null
-                                    ? Container(
-                                        height: 150,
-                                        width: 150,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: Image.network(
-                                          dlImageURL!,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      )
-                                    : Container(),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Column(
-                        children: [
-                          RCImage(
-                            controller: rcImgController,
-                            label: 'RC Book Image',
-                            onImageSelected: (File image) {
-                              setState(() {
-                                pickedRCimage = image;
-                              });
-                            },
-                            rcImageURL: '',
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          // Display the image preview below the ImageUploader field
-                          Padding(
-                            padding: const EdgeInsets.only(left: 5, right: 25),
-                            child: pickedRCimage != null
-                                ? Container(
-                                    height: 150,
-                                    width: 150,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Image.file(
-                                      pickedRCimage!,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  )
-                                : rcImageURL != null
-                                    ? Container(
-                                        height: 150,
-                                        width: 150,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: Image.network(
-                                          rcImageURL!,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      )
-                                    : Container(),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  MyButton(
-                    onTap: updateUserData,
-                    text: 'Update Details',
-                    textColor: Colors.black,
-                    buttonColor: AppColors.appTertiary,
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                ],
-              ),
+      body: Center(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                MyButton(
+                    onTap: () {},
+                    text: 'Hello there!',
+                    textColor: AppColors.appSecondary,
+                    buttonColor: AppColors.appPrimary),
+                const SizedBox(
+                  height: 20,
+                ),
+                buildEditableField("Fullname", _nameController),
+                const SizedBox(
+                  height: 17,
+                ),
+                buildEditableField("Email", _emailController),
+                const SizedBox(
+                  height: 17,
+                ),
+                buildEditableField("Phone Number", _phoneNumberController),
+                const SizedBox(
+                  height: 17,
+                ),
+                Row(
+                  children: [
+                    Column(
+                      children: [
+                        LicenseImage(
+                          controller: drLicenseImgController,
+                          label: 'Driving License Image',
+                          onImageSelected: (File image) {
+                            setState(() {
+                              pickedDLimage = image;
+                            });
+                          },
+                          dlImageURL: '',
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        // Display the image preview below the ImageUploader field
+                        Padding(
+                          padding: const EdgeInsets.only(left: 25, right: 5),
+                          child: pickedDLimage != null
+                              ? Container(
+                                  height: 150,
+                                  width: 150,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Image.file(
+                                    pickedDLimage!,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : dlImageURL != null
+                                  ? Container(
+                                      height: 150,
+                                      width: 150,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Image.network(
+                                        dlImageURL!,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    )
+                                  : Container(),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Column(
+                      children: [
+                        RCImage(
+                          controller: rcImgController,
+                          label: 'RC Book Image',
+                          onImageSelected: (File image) {
+                            setState(() {
+                              pickedRCimage = image;
+                            });
+                          },
+                          rcImageURL: '',
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        // Display the image preview below the ImageUploader field
+                        Padding(
+                          padding: const EdgeInsets.only(left: 5, right: 25),
+                          child: pickedRCimage != null
+                              ? Container(
+                                  height: 150,
+                                  width: 150,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Image.file(
+                                    pickedRCimage!,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : rcImageURL != null
+                                  ? Container(
+                                      height: 150,
+                                      width: 150,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Image.network(
+                                        rcImageURL!,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    )
+                                  : Container(),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 12,
+                ),
+                MyButton(
+                  onTap: updateUserData,
+                  text: 'Update Details',
+                  textColor: Colors.black,
+                  buttonColor: AppColors.appTertiary,
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+              ],
             ),
           ),
         ),
