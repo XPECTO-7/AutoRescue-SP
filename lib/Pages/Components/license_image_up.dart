@@ -2,14 +2,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/Colors/appcolor.dart';
 
-class licenseImage extends StatefulWidget {
+class LicenseImage extends StatefulWidget {
   final String label;
   final TextEditingController controller;
   final Function(File) onImageSelected;
   final String? dlImageURL;
 
-  const licenseImage({
+  const LicenseImage({
     Key? key,
     required this.label,
     required this.controller,
@@ -18,11 +19,11 @@ class licenseImage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<licenseImage> createState() => _licenseImageState();
+  State<LicenseImage> createState() => _LicenseImageState();
 }
 
-class _licenseImageState extends State<licenseImage> {
-  XFile? pickedDLimage;
+class _LicenseImageState extends State<LicenseImage> {
+  XFile? pickedDLImage;
 
   Future<void> pickImage() async {
     final ImagePicker _picker = ImagePicker();
@@ -30,7 +31,7 @@ class _licenseImageState extends State<licenseImage> {
 
     if (image != null) {
       setState(() {
-        pickedDLimage = image;
+        pickedDLImage = image;
       });
       widget.onImageSelected(File(image.path));
     }
@@ -55,9 +56,9 @@ class _licenseImageState extends State<licenseImage> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: pickedDLimage == null
+                  child: pickedDLImage == null && widget.dlImageURL == null
                       ? Text(
-                          "Add DL Image",
+                          "Add Image",
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.white,
@@ -66,13 +67,11 @@ class _licenseImageState extends State<licenseImage> {
                           ),
                         )
                       : Text(
-                          widget.dlImageURL != null
-                              ? "Update DL Image"
-                              : "Add DL Image",
+                          "Update Image",
                           style: TextStyle(
                             fontSize: 14,
-                            color: widget.dlImageURL != null
-                                ? Colors.green
+                            color: widget.dlImageURL != null || pickedDLImage != null
+                                ? AppColors.appTertiary
                                 : Colors.white,
                             fontFamily: GoogleFonts.strait().fontFamily,
                             fontWeight: FontWeight.bold,
@@ -92,4 +91,3 @@ class _licenseImageState extends State<licenseImage> {
     );
   }
 }
-

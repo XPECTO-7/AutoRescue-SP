@@ -158,7 +158,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             borderRadius: BorderRadius.all(Radius.circular(8)),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.deepOrange),
+                            borderSide: BorderSide(color: AppColors.appPrimary),
                             borderRadius: BorderRadius.all(Radius.circular(8)),
                           ),
                           fillColor: Colors.black,
@@ -207,8 +207,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   MyButton(
                     text: 'Sign Up',
                     onTap: validation,
-                    textColor: Colors.black,
-                    buttonColor: AppColors.appTertiary,
+                    textColor: AppColors.appTertiary,
+                    buttonColor: Colors.black,
                   ),
                   const SizedBox(
                     height: 20,

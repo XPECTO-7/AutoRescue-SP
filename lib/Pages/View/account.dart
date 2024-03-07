@@ -199,7 +199,7 @@ class _AccountPageState extends State<AccountPage> {
                 children: [
                   const Icon(
                     Icons.person_pin_rounded,
-                    size: 100,
+                    size: 70,
                   ),
                   const SizedBox(
                     height: 30,
@@ -220,44 +220,60 @@ class _AccountPageState extends State<AccountPage> {
                     children: [
                       Column(
                         children: [
-                          licenseImage(
+                          LicenseImage(
                             controller: drLicenseImgController,
                             label: 'Driving License Image',
                             onImageSelected: (File image) {
                               setState(() {
                                 pickedDLimage = image;
                               });
-                            }, dlImageURL: '',
+                            },
+                            dlImageURL: '',
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           // Display the image preview below the ImageUploader field
-                          Padding(
-                            padding: const EdgeInsets.only(left: 25, right: 10),
-                            child: dlImageURL != null
+                         Padding(
+                            padding: const EdgeInsets.only(left: 25, right: 5),
+                            child: pickedDLimage != null
                                 ? Container(
                                     height: 150,
                                     width: 150,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
-                                    child: Image.network(dlImageURL!,
-                                        fit: BoxFit.cover),
+                                    child: Image.file(
+                                      pickedDLimage!,
+                                      fit: BoxFit.cover,
+                                    ),
                                   )
-                                : Container(),
-                          ), // Show an empty container if no image is picked
+                                : dlImageURL != null
+                                    ? Container(
+                                        height: 150,
+                                        width: 150,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Image.network(
+                                          dlImageURL!,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : Container(),
+                          ),
                           const SizedBox(
                             height: 10,
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       Column(
                         children: [
-                          rcImage(
+                          RCImage(
                             controller: rcImgController,
                             label: 'RC Book Image',
                             onImageSelected: (File image) {
@@ -265,31 +281,50 @@ class _AccountPageState extends State<AccountPage> {
                                 pickedRCimage = image;
                               });
                             },
+                            rcImageURL: '',
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           // Display the image preview below the ImageUploader field
                           Padding(
-                            padding: const EdgeInsets.only(left: 10, right: 25),
-                            child: rcImageURL != null
+                            padding: const EdgeInsets.only(left: 5, right: 25),
+                            child: pickedRCimage != null
                                 ? Container(
                                     height: 150,
                                     width: 150,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
-                                    child: Image.network(rcImageURL!,
-                                        fit: BoxFit.cover),
+                                    child: Image.file(
+                                      pickedRCimage!,
+                                      fit: BoxFit.cover,
+                                    ),
                                   )
-                                : Container(),
-                          ), // Show an empty container if no image is picked
+                                : rcImageURL != null
+                                    ? Container(
+                                        height: 150,
+                                        width: 150,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Image.network(
+                                          rcImageURL!,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : Container(),
+                          ),
                           const SizedBox(
                             height: 10,
                           ),
                         ],
                       ),
                     ],
+                  ),
+                  const SizedBox(
+                    height: 12,
                   ),
                   MyButton(
                     onTap: updateUserData,
@@ -298,7 +333,7 @@ class _AccountPageState extends State<AccountPage> {
                     buttonColor: AppColors.appTertiary,
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 30,
                   ),
                 ],
               ),
@@ -333,4 +368,3 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 }
-

@@ -64,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: 'SERVICE ',
+                              text: 'User ',
                               style: TextStyle(
                                 fontSize: 25,
                                 fontFamily: GoogleFonts.ubuntu().fontFamily,
@@ -205,7 +205,7 @@ class _LoginPageState extends State<LoginPage> {
                           'Create an account!',
                           style: TextStyle(
                               fontSize: 18,
-                              color: AppColors.appTertiary,
+                              color: AppColors.appPrimary,
                               fontWeight: FontWeight.bold),
                         ),
                       )
