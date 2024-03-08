@@ -4,7 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/Colors/appcolor.dart';
+import 'package:provider/Pages/Components/vehicle_form_page.dart';
 import 'package:provider/Pages/View/account.dart';
 import 'package:provider/Pages/View/manage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -63,6 +65,7 @@ class _HomePageContentState extends State<HomePageContent> {
   late Map<String, dynamic> userDetails;
   String currentDate = DateFormat.yMMMMd('en_US').format(DateTime.now());
   String currentTime = DateFormat.jms().format(DateTime.now());
+  bool isFormVisible = false; // Track whether the form is visible or not
 
   Future<void> _refreshData() async {
     // Fetch updated user data
@@ -129,34 +132,54 @@ class _HomePageContentState extends State<HomePageContent> {
             body: SafeArea(
               child: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.center, 
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal:1.0),
-                      child: Container(
-                        padding: const EdgeInsets.all(4.0),
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(7.0),
-                          color: AppColors.appTertiary,
-                        ),
-                        child: Row(
-                          children: [
-                            IconButton(
-                              icon: const FaIcon(FontAwesomeIcons.searchengin),
-                              color: AppColors.appSecondary,
-                              iconSize: 30,
-                              onPressed: () {},
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Column(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const VehicleFormPage()),
+                              );
+                            },
+                            child: Container(
+                              height: 70,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(7.0),
+                                color: AppColors.appFoury,
+                              ),
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 15.0),
+                                    child: Image.asset(
+                                      'lib/images/addcar.png',
+                                      width: 40,
+                                      height: 40,
+                                      color: AppColors.appTertiary,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Text(
+                                    'Add Your Vehicle',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                        fontFamily:
+                                            GoogleFonts.strait().fontFamily,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
                             ),
-                            const Text('Search',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: AppColors.appSecondary,
-                                )),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

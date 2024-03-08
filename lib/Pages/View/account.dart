@@ -24,11 +24,11 @@ class _AccountPageState extends State<AccountPage> {
   late TextEditingController _phoneNumberController;
   late TextEditingController drLicenseImgController;
   late TextEditingController rcImgController;
-  late TextEditingController vehicleController;
   File? pickedDLimage;
   File? pickedRCimage;
   String? dlImageURL;
   String? rcImageURL;
+  bool isExpanded = false; // Track the visibility of the below row
 
   @override
   void initState() {
@@ -38,7 +38,6 @@ class _AccountPageState extends State<AccountPage> {
     _phoneNumberController = TextEditingController();
     drLicenseImgController = TextEditingController();
     rcImgController = TextEditingController();
-    vehicleController = TextEditingController();
     getUserData();
   }
 
@@ -55,7 +54,6 @@ class _AccountPageState extends State<AccountPage> {
         _nameController.text = userDetails['Fullname'] ?? '';
         _emailController.text = userDetails['Email'] ?? '';
         _phoneNumberController.text = userDetails['Phone Number'] ?? '';
-        vehicleController.text = userDetails['Vehicle'] ?? '';
 
         if (userDetails.containsKey('DL ImageURL')) {
           dlImageURL = userDetails['DL ImageURL'];
@@ -81,7 +79,6 @@ class _AccountPageState extends State<AccountPage> {
       'Fullname': _nameController.text,
       'Phone Number': _phoneNumberController.text,
       'Email': _emailController.text,
-      'Vehicle': vehicleController.text, // Concatenating name and year
       'DL ImageURL': DLimageUrl,
       'RC ImageURL': RCimageUrl,
     });
@@ -232,10 +229,48 @@ class _AccountPageState extends State<AccountPage> {
                 const SizedBox(
                   height: 17,
                 ),
-                buildEditableField("Vehicle Model & Year", vehicleController),
-                const SizedBox(
-                  height: 17,
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isExpanded = !isExpanded;
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 17),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color: Colors.grey[700],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('UPLOAD FILES',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontFamily: GoogleFonts.strait().fontFamily,
+                                  fontWeight: FontWeight.bold)),
+                          Transform.rotate(
+                            angle: isExpanded ? 3.14 : 0, // Rotate arrow
+                            child: IconButton(
+                              icon: const FaIcon(FontAwesomeIcons.squareArrowUpRight),
+                              color: Colors.black,
+                              iconSize: 30,
+                              onPressed: () {},
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
+                const SizedBox(
+                    height: 17,
+                  ),
+                if (isExpanded) // Show this row if isExpanded is true
+                  
                 Row(
                   children: [
                     Column(
