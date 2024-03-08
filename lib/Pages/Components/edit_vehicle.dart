@@ -447,7 +447,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
                   primary: Colors.white,
                   onPrimary: Colors.black,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(22),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                   minimumSize: const Size(double.infinity, 50),
                 ),
