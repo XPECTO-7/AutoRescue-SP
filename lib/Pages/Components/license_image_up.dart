@@ -58,7 +58,7 @@ class _LicenseImageState extends State<LicenseImage> {
                   padding: const EdgeInsets.all(8.0),
                   child: pickedDLImage == null && widget.dlImageURL == null
                       ? Text(
-                          "Add Image",
+                          "DRIVING LICENSE",
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.white,
@@ -67,7 +67,7 @@ class _LicenseImageState extends State<LicenseImage> {
                           ),
                         )
                       : Text(
-                          "Update Image",
+                          "UPDATE DL IMAGE",
                           style: TextStyle(
                             fontSize: 14,
                             color: widget.dlImageURL != null || pickedDLImage != null

@@ -7,9 +7,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'package:provider/Authentication/Controller/main_page.dart';
 import 'package:provider/Colors/appcolor.dart';
-import 'package:provider/Components/mybutton.dart';
+import 'package:provider/Pages/Components/edit_vehicle.dart';
 import 'package:provider/Pages/Components/license_image_up.dart';
 import 'package:provider/Pages/Components/rcbook_image_up.dart';
+import 'package:provider/Pages/Components/vehicle_form_page.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
@@ -28,7 +29,10 @@ class _AccountPageState extends State<AccountPage> {
   File? pickedRCimage;
   String? dlImageURL;
   String? rcImageURL;
-  bool isExpanded = false; // Track the visibility of the below row
+  bool isExpanded = false;
+  bool isTrue = false;
+
+  List<Map<String, dynamic>> addedVehicles = [];
 
   @override
   void initState() {
@@ -39,6 +43,7 @@ class _AccountPageState extends State<AccountPage> {
     drLicenseImgController = TextEditingController();
     rcImgController = TextEditingController();
     getUserData();
+    getAddedVehicles();
   }
 
   Future<void> getUserData() async {
@@ -120,6 +125,34 @@ class _AccountPageState extends State<AccountPage> {
 
     await uploadTask.whenComplete(() {});
     return storageReference.getDownloadURL();
+  }
+
+  Future<void> getAddedVehicles() async {
+    final currentUser = FirebaseAuth.instance.currentUser!;
+    final vehicleRef = FirebaseFirestore.instance
+        .collection('USERS')
+        .doc(currentUser.email)
+        .collection('VEHICLES');
+
+    final querySnapshot = await vehicleRef.get();
+
+    final List<Map<String, dynamic>> vehicles = [];
+    querySnapshot.docs.forEach((doc) {
+      final data = doc.data();
+      vehicles.add({
+        'vehicleName': data['VehicleName'],
+        'manufacturer': data['Manufacturer'],
+        'registrationNumber': data['RegistrationNumber'],
+        'year':data['Year'],
+        'kilometers':data['Kilometers'],
+        'fueltype':data['FuelType'],
+        'vehicleImageURL': data['vehicleImageURL'],
+      });
+    });
+
+    setState(() {
+      addedVehicles = vehicles;
+    });
   }
 
   void logout() async {
@@ -232,6 +265,169 @@ class _AccountPageState extends State<AccountPage> {
                 GestureDetector(
                   onTap: () {
                     setState(() {
+                      isTrue = !isTrue;
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 17),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color: Colors.grey[700],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('ADD VEHICLE',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontFamily: GoogleFonts.strait().fontFamily,
+                                  fontWeight: FontWeight.bold)),
+                          Transform.rotate(
+                            angle: isTrue ? 3.14 : 0, // Rotate arrow
+                            child: IconButton(
+                              icon: const FaIcon(
+                                  FontAwesomeIcons.squareArrowUpRight),
+                              splashRadius: 1,
+                              iconSize: 30,
+                              onPressed: () {
+                                setState(() {
+                                  isTrue = !isTrue;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                if (isTrue)
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 20.0, top: 10, right: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Display added vehicles
+                        // Display added vehicles
+                        ...addedVehicles.map((vehicleDetails) {
+                          return GestureDetector(
+                            onTap: () {
+                              // Navigate to the edit vehicle details page
+                              // You can pass the vehicle details as arguments if needed
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditVehiclePage(
+                                      vehicleDetails: vehicleDetails),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 10),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                color: Colors.grey[300],
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Icon(
+                                    Icons.directions_car,
+                                    color: AppColors.appFoury,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              vehicleDetails['manufacturer'],
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 16,
+                                                  fontFamily:
+                                                      GoogleFonts.strait()
+                                                          .fontFamily,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            const SizedBox(
+                                              width: 5,
+                                            ),
+                                            Text(
+                                              vehicleDetails['vehicleName'],
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 16,
+                                                  fontFamily:
+                                                      GoogleFonts.strait()
+                                                          .fontFamily,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          vehicleDetails['registrationNumber'],
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 16,
+                                              fontFamily: GoogleFonts.strait()
+                                                  .fontFamily,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                // Navigate to the vehicle adding page
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const VehicleFormPage(),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  color: Colors.grey,
+                                ),
+                                child: const Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                const SizedBox(
+                  height: 17,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
                       isExpanded = !isExpanded;
                     });
                   },
@@ -255,10 +451,15 @@ class _AccountPageState extends State<AccountPage> {
                           Transform.rotate(
                             angle: isExpanded ? 3.14 : 0, // Rotate arrow
                             child: IconButton(
-                              icon: const FaIcon(FontAwesomeIcons.squareArrowUpRight),
-                              color: Colors.black,
+                              icon: const FaIcon(
+                                  FontAwesomeIcons.squareArrowUpRight),
+                              splashRadius: 1,
                               iconSize: 30,
-                              onPressed: () {},
+                              onPressed: () {
+                                setState(() {
+                                  isExpanded = !isExpanded;
+                                });
+                              },
                             ),
                           ),
                         ],
@@ -267,120 +468,137 @@ class _AccountPageState extends State<AccountPage> {
                   ),
                 ),
                 const SizedBox(
-                    height: 17,
-                  ),
-                if (isExpanded) // Show this row if isExpanded is true
-                  
-                Row(
-                  children: [
-                    Column(
-                      children: [
-                        LicenseImage(
-                          controller: drLicenseImgController,
-                          label: 'Driving License Image',
-                          onImageSelected: (File image) {
-                            setState(() {
-                              pickedDLimage = image;
-                            });
-                          },
-                          dlImageURL: '',
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        // Display the image preview below the ImageUploader field
-                        Padding(
-                          padding: const EdgeInsets.only(left: 25, right: 5),
-                          child: pickedDLimage != null
-                              ? Container(
-                                  height: 170,
-                                  width: 170,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Image.file(
-                                    pickedDLimage!,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              : dlImageURL != null
-                                  ? Container(
-                                      height: 170,
-                                      width: 170,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Image.network(
-                                        dlImageURL!,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    )
-                                  : Container(),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Column(
-                      children: [
-                        RCImage(
-                          controller: rcImgController,
-                          label: 'RC Book Image',
-                          onImageSelected: (File image) {
-                            setState(() {
-                              pickedRCimage = image;
-                            });
-                          },
-                          rcImageURL: '',
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        // Display the image preview below the ImageUploader field
-                        Padding(
-                          padding: const EdgeInsets.only(left: 5, right: 25),
-                          child: pickedRCimage != null
-                              ? Container(
-                                  height: 170,
-                                  width: 170,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Image.file(
-                                    pickedRCimage!,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              : rcImageURL != null
-                                  ? Container(
-                                      height: 170,
-                                      width: 170,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Image.network(
-                                        rcImageURL!,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    )
-                                  : Container(),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                      ],
-                    ),
-                  ],
+                  height: 17,
                 ),
-                MyButton(
-                  onTap: updateUserData,
-                  text: 'Update Details',
-                  textColor: Colors.black,
-                  buttonColor: AppColors.appPrimary,
+                if (isExpanded) // Show this row if isExpanded is true
+
+                  Row(
+                    children: [
+                      Column(
+                        children: [
+                          LicenseImage(
+                            controller: drLicenseImgController,
+                            label: 'Driving License Image',
+                            onImageSelected: (File image) {
+                              setState(() {
+                                pickedDLimage = image;
+                              });
+                            },
+                            dlImageURL: '',
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          // Display the image preview below the ImageUploader field
+                          Padding(
+                            padding: const EdgeInsets.only(left: 25, right: 5),
+                            child: pickedDLimage != null
+                                ? Container(
+                                    height: 170,
+                                    width: 170,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Image.file(
+                                      pickedDLimage!,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : dlImageURL != null
+                                    ? Container(
+                                        height: 170,
+                                        width: 170,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Image.network(
+                                          dlImageURL!,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : Container(),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Column(
+                        children: [
+                          RCImage(
+                            controller: rcImgController,
+                            label: 'RC Book Image',
+                            onImageSelected: (File image) {
+                              setState(() {
+                                pickedRCimage = image;
+                              });
+                            },
+                            rcImageURL: '',
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          // Display the image preview below the ImageUploader field
+                          Padding(
+                            padding: const EdgeInsets.only(left: 5, right: 25),
+                            child: pickedRCimage != null
+                                ? Container(
+                                    height: 170,
+                                    width: 170,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Image.file(
+                                      pickedRCimage!,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : rcImageURL != null
+                                    ? Container(
+                                        height: 170,
+                                        width: 170,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Image.network(
+                                          rcImageURL!,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : Container(),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: ElevatedButton(
+                    onPressed: updateUserData,
+                    style: ElevatedButton.styleFrom(
+                      primary: AppColors.appPrimary,
+                      onPrimary: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                    child: Text(
+                      'UPDATE PROFILE',
+                      style: TextStyle(
+                          fontSize: 19,
+                          fontFamily: GoogleFonts.strait().fontFamily,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
               ],
             ),

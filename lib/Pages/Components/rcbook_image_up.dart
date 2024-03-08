@@ -58,7 +58,7 @@ class _RCImageState extends State<RCImage> {
                   padding: const EdgeInsets.all(8.0),
                   child: pickedRCimage == null && widget.rcImageURL == null
                       ? Text(
-                          "Add Image",
+                          "RC BOOK",
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.white,
@@ -67,7 +67,7 @@ class _RCImageState extends State<RCImage> {
                           ),
                         )
                       : Text(
-                          "Update Image",
+                          "UPDATE RC BOOK",
                           style: TextStyle(
                             fontSize: 14,
                             color: widget.rcImageURL != null || pickedRCimage != null

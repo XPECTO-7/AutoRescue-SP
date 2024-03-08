@@ -1,31 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Pages/View/account.dart';
 
-class VehicleFormPage extends StatefulWidget {
-  const VehicleFormPage({Key? key}) : super(key: key);
+class EditVehiclePage extends StatefulWidget {
+  final Map<String, dynamic> vehicleDetails;
+
+  const EditVehiclePage({Key? key, required this.vehicleDetails})
+      : super(key: key);
 
   @override
-  _VehicleFormPageState createState() => _VehicleFormPageState();
+  _EditVehiclePageState createState() => _EditVehiclePageState();
 }
 
-class _VehicleFormPageState extends State<VehicleFormPage> {
-  final TextEditingController _manufacturerController = TextEditingController();
-  final TextEditingController _yearController = TextEditingController();
-  final TextEditingController _vehicleNameController = TextEditingController();
-  final TextEditingController _registrationNumberController =
-      TextEditingController();
-  final TextEditingController _kilometersController = TextEditingController();
-  String? _selectedFuelType;
+class _EditVehiclePageState extends State<EditVehiclePage> {
+  late TextEditingController _manufacturerController;
+  late TextEditingController _vehicleNameController;
+  late TextEditingController _yearController;
+  late TextEditingController _registrationNumberController;
+  late TextEditingController _kilometersController;
+  late String? _selectedFuelType;
   File? _pickedVehicleImage;
-
-  List<String> addedVehicles = [];
+  late String? _vehicleImageURL;
 
   final _hintTextStyle = const TextStyle(
     fontSize: 16,
@@ -37,6 +38,24 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
     fontWeight: FontWeight.bold,
     color: Colors.white,
   );
+
+  @override
+  void initState() {
+    super.initState();
+    _manufacturerController = TextEditingController(
+        text: widget.vehicleDetails['manufacturer'] ?? '');
+    _vehicleNameController =
+        TextEditingController(text: widget.vehicleDetails['vehicleName'] ?? '');
+    _yearController =
+        TextEditingController(text: widget.vehicleDetails['year'] ?? '');
+    _registrationNumberController = TextEditingController(
+        text: widget.vehicleDetails['registrationNumber'] ?? '');
+    _kilometersController =
+        TextEditingController(text: widget.vehicleDetails['kilometers'] ?? '');
+    _selectedFuelType = widget.vehicleDetails['fueltype'];
+
+    _vehicleImageURL = widget.vehicleDetails['vehicleImageURL'];
+  }
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedImageFile = await ImagePicker().pickImage(
@@ -51,13 +70,13 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
     });
   }
 
-  Future<String> _uploadImageToFirebase(File imageFile) async {
-    final currentUser = FirebaseAuth.instance.currentUser;
+  Future<String?> _uploadImageToFirebase(File imageFile) async {
+    final currentUser = FirebaseAuth.instance.currentUser!;
     final storageRef = FirebaseStorage.instance
         .ref()
         .child('vehicle_images')
         .child(
-            '${currentUser!.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg');
+            '${currentUser.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg');
 
     await storageRef.putFile(imageFile);
 
@@ -82,16 +101,17 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
         title: Row(
           children: [
             Image.asset(
-              'lib/images/addcar.png',
+              'lib/images/editvehicle.png',
               color: AppColors.appTertiary,
               width: 35,
               height: 35,
             ),
             const SizedBox(
-                width: 10), // Add spacing between the icon and the title
-            const Text(
-              'ADD',
-              style: TextStyle(
+              width: 10,
+            ),
+            Text(
+              'Edit ${_manufacturerController.text}',
+              style: const TextStyle(
                 color: AppColors.appTertiary,
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -99,6 +119,59 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete,size: 37,color: Colors.red,),
+            onPressed: () {
+              // Show a confirmation dialog before deleting the vehicle
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text(
+                      "Confirm Delete",
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    content: Text(
+                        "Are you sure you want to delete ${_manufacturerController.text}?"),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          // Dismiss the dialog when cancel button is pressed
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("Cancel"),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          // Delete the vehicle from Firestore collection
+                          final currentUser =
+                              FirebaseAuth.instance.currentUser!;
+                          final vehicleRef = FirebaseFirestore.instance
+                              .collection('USERS')
+                              .doc(currentUser.email)
+                              .collection('VEHICLES');
+                          await vehicleRef
+                              .doc(_registrationNumberController.text)
+                              .delete();
+
+                          // Close the dialog and navigate back
+                          Navigator.of(context).pop();
+                          Navigator.of(context)
+                              .pop(); // Pop twice to go back to the previous page
+                        },
+                        child: const Text("Delete"),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -111,15 +184,20 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                 color: Colors.grey[200],
                 child: Center(
                   child: _pickedVehicleImage == null
-                      ? IconButton(
-                          icon: const Icon(
-                            Icons.photo_camera,
-                            size: 150,
-                          ),
-                          onPressed: () {
-                            _pickImage(ImageSource.gallery);
-                          },
-                        )
+                      ? _vehicleImageURL != null
+                          ? Image.network(
+                              _vehicleImageURL!,
+                              fit: BoxFit.cover,
+                            )
+                          : IconButton(
+                              icon: const Icon(
+                                Icons.photo_camera,
+                                size: 150,
+                              ),
+                              onPressed: () {
+                                _pickImage(ImageSource.gallery);
+                              },
+                            )
                       : Image.file(
                           _pickedVehicleImage!,
                           fit: BoxFit.cover,
@@ -172,7 +250,7 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                       const Icon(Icons.calendar_today, color: Colors.white),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 5),
               Text(
                 'Registration Number',
                 style: _labelTextStyle,
@@ -203,7 +281,7 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                   suffixIcon: const Icon(Icons.speed, color: Colors.white),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 5),
               Text(
                 'Fuel Type',
                 style: _labelTextStyle,
@@ -288,11 +366,16 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                     return; // Stop execution if any field is empty
                   }
 
-                  // Upload image to Firebase Storage
-                  final vehicleImageURL =
-                      await _uploadImageToFirebase(_pickedVehicleImage!);
+                  // Initialize vehicleImageURL as null
+                  String? vehicleImageURL;
 
-                  // Add the vehicle details to the database
+                  // Upload image to Firebase Storage if a new image is picked
+                  if (_pickedVehicleImage != null) {
+                    vehicleImageURL =
+                        await _uploadImageToFirebase(_pickedVehicleImage!);
+                  }
+
+                  // Update the vehicle details in the database
                   final currentUser = FirebaseAuth.instance.currentUser!;
                   final vehicleRef = FirebaseFirestore.instance
                       .collection('USERS')
@@ -302,19 +385,23 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                   // Use the registration number as the document ID
                   final vehicleDocRef = vehicleRef.doc(registrationNumber);
 
-                  await vehicleDocRef.set({
+                  // Create a map to store updated vehicle details
+                  final Map<String, dynamic> updatedVehicleDetails = {
                     'Manufacturer': manufacturer,
                     'Year': year,
                     'VehicleName': vehicleName,
                     'RegistrationNumber': registrationNumber,
                     'Kilometers': kilometers,
                     'FuelType': fuelType,
-                    'vehicleImageURL': vehicleImageURL,
-                  });
+                  };
 
-                  setState(() {
-                    addedVehicles.add(vehicleName);
-                  });
+                  // Add vehicle image URL to the map if it's not null
+                  if (vehicleImageURL != null) {
+                    updatedVehicleDetails['vehicleImageURL'] = vehicleImageURL;
+                  }
+
+                  // Update the vehicle document in Firestore
+                  await vehicleDocRef.update(updatedVehicleDetails);
 
                   // Clear the text fields after submission
                   _manufacturerController.clear();
@@ -333,7 +420,7 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                     builder: (BuildContext context) {
                       return AlertDialog(
                         title: Text(
-                          "Vehicle Added Successfully",
+                          "Vehicle Updated Successfully",
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -365,7 +452,7 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 child: Text(
-                  'ADD VEHICLE',
+                  'UPDATE VEHICLE',
                   style: TextStyle(
                       fontSize: 19,
                       fontFamily: GoogleFonts.strait().fontFamily,
