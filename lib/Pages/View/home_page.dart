@@ -138,42 +138,37 @@ class _HomePageContentState extends State<HomePageContent> {
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Column(
                         children: [
-                          InkWell(
+                          GestureDetector(
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        const VehicleFormPage()),
+                                  builder: (context) => const VehicleFormPage(),
+                                ),
                               );
                             },
                             child: Container(
-                              height: 70,
+                              height: 600,
                               width: double.infinity,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(7.0),
-                                color: AppColors.appFoury,
+                                color: AppColors.appTertiary,
                               ),
-                              child: Row(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 15.0),
-                                    child: Image.asset(
-                                      'lib/images/addcar.png',
-                                      width: 40,
-                                      height: 40,
-                                      color: AppColors.appTertiary,
-                                    ),
+                                  Lottie.asset(
+                                    'assets/lottie/tow.json',
+                                    width: double.infinity,
                                   ),
-                                  const SizedBox(width: 20),
-                                  Text(
-                                    'Add Your Vehicle',
+                                  const SizedBox(height: 20),
+                                  const Text(
+                                    'Request Vehicle Service',
                                     style: TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.white,
-                                        fontFamily:
-                                            GoogleFonts.strait().fontFamily,
-                                        fontWeight: FontWeight.bold),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 24,
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ],
                               ),
