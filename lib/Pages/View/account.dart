@@ -339,7 +339,7 @@ class _AccountPageState extends State<AccountPage> {
                                 children: [
                                   const Icon(
                                     Icons.directions_car,
-                                    color: AppColors.appFoury,
+                                    color: AppColors.appSecondary,
                                   ),
                                   const SizedBox(width: 5),
                                   Expanded(

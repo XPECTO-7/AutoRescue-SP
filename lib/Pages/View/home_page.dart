@@ -1,15 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart';
 import 'package:provider/Colors/appcolor.dart';
-import 'package:provider/Pages/Components/vehicle_form_page.dart';
+import 'package:provider/Pages/Components/custom_button.dart';
+import 'package:provider/Pages/Utils/sqauretile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/Pages/View/account.dart';
 import 'package:provider/Pages/View/manage.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -43,7 +42,7 @@ class _HomePageState extends State<HomePage> {
         color: Colors.black54,
         activeColor: Colors.black,
         backgroundColor: Colors.white,
-        height: 50,
+        height: 60,
         initialActiveIndex: 1,
         elevation: 5,
         onTap: (int index) => setState(() {
@@ -67,11 +66,6 @@ class _HomePageContentState extends State<HomePageContent> {
   String currentTime = DateFormat.jms().format(DateTime.now());
   bool isFormVisible = false; // Track whether the form is visible or not
 
-  Future<void> _refreshData() async {
-    // Fetch updated user data
-    getUserData();
-  }
-
   void getUserData() async {
     final currentUser = FirebaseAuth.instance.currentUser!;
     final user = await FirebaseFirestore.instance
@@ -84,7 +78,7 @@ class _HomePageContentState extends State<HomePageContent> {
       });
     });
   }
-
+  String selectedService = '';
   @override
   void initState() {
     super.initState();
@@ -94,6 +88,14 @@ class _HomePageContentState extends State<HomePageContent> {
   @override
   Widget build(BuildContext context) {
     final currentUser = FirebaseAuth.instance.currentUser!;
+    final _styleT = TextStyle(
+      fontSize: 18,
+      color: Colors.white,
+      fontWeight: FontWeight.bold,
+      fontFamily: GoogleFonts.ubuntu().fontFamily,
+    );
+
+
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection('USERS')
@@ -112,8 +114,8 @@ class _HomePageContentState extends State<HomePageContent> {
                   Image.asset(
                     'lib/images/cserv.png',
                     color: AppColors.appPrimary,
-                    width: 50,
-                    height: 50,
+                    width: 60,
+                    height: 60,
                   ),
                   const SizedBox(
                     width: 2,
@@ -138,40 +140,116 @@ class _HomePageContentState extends State<HomePageContent> {
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Column(
                         children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const VehicleFormPage(),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              height: 600,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(7.0),
-                                color: AppColors.appTertiary,
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Lottie.asset(
-                                    'assets/lottie/tow.json',
-                                    width: double.infinity,
-                                  ),
-                                  const SizedBox(height: 20),
-                                  const Text(
-                                    'Request Vehicle Service',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 24,
-                                      color: Colors.black,
+                          Container(
+                            padding: const EdgeInsets.all(7),
+                            height: 600,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.0),
+                              border: Border.all(color: AppColors.appTertiary),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Squaretile(
+                                      text: 'Tyre Works',
+                                      imagePath: 'lib/images/tyre.png',
+                                      onTap: (text) {
+                                        setState(() {
+                                          selectedService = 'Tyre Works';
+                                        });
+                                      },
                                     ),
-                                  ),
-                                ],
-                              ),
+                                    const SizedBox(width: 7),
+                                    Squaretile(
+                                      text: 'Mechanical Service',
+                                      imagePath: 'lib/images/automotive.png',
+                                      onTap: (text) {
+                                        setState(() {
+                                          selectedService = 'Mechanical Service';
+                                        });
+                                      },
+                                    ),
+                                    const SizedBox(width: 7),
+                                    Squaretile(
+                                      text: 'EV Charging',
+                                      imagePath:
+                                          'lib/images/charging-station.png',
+                                      onTap: (text) {
+                                        setState(() {
+                                          selectedService = 'EV Charging';
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Squaretile(
+                                      text: 'Fuel Delivery',
+                                      imagePath: 'lib/images/fuel.png',
+                                      onTap: (text) {
+                                        setState(() {
+                                          selectedService = 'Fuel';
+                                        });
+                                      },
+                                    ),
+                                    const SizedBox(width: 7),
+                                    Squaretile(
+                                      text: 'Towing',
+                                      imagePath: 'lib/images/tow-truck.png',
+                                      onTap: (text) {
+                                        setState(() {
+                                          selectedService = 'Towing';
+                                        });
+                                      },
+                                    ),
+                                    const SizedBox(width: 7),
+                                    Squaretile(
+                                      text: 'Key Lockout',
+                                      imagePath: 'lib/images/key.png',
+                                      onTap: (text) {
+                                        setState(() {
+                                          selectedService = 'Key LockOut';
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                 StreamBuilder<String>(
+                                  stream: Stream.value(selectedService),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                        child: Text(
+                                          'Service: ${snapshot.data}',
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      return const SizedBox();
+                                    }
+                                  },
+                                ),
+                                const SizedBox(height: 10),
+                                CustomButton(
+                                  text: 'REQUEST',
+                                  onPressed: () {},
+                                  buttonColor: AppColors.appTertiary,
+                                  textColor: AppColors.appSecondary,
+                                ),
+                              ],
                             ),
                           ),
                         ],
