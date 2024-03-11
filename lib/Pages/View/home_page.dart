@@ -229,7 +229,7 @@ class _HomePageContentState extends State<HomePageContent> {
                                       return Padding(
                                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
                                         child: Text(
-                                          'Service: $text',
+                                          'Service: ${snapshot.data}',
                                           style: const TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,

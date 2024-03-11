@@ -143,9 +143,9 @@ class _AccountPageState extends State<AccountPage> {
         'vehicleName': data['VehicleName'],
         'manufacturer': data['Manufacturer'],
         'registrationNumber': data['RegistrationNumber'],
-        'year':data['Year'],
-        'kilometers':data['Kilometers'],
-        'fueltype':data['FuelType'],
+        'year': data['Year'],
+        'kilometers': data['Kilometers'],
+        'fueltype': data['FuelType'],
         'vehicleImageURL': data['vehicleImageURL'],
       });
     });
@@ -584,8 +584,8 @@ class _AccountPageState extends State<AccountPage> {
                   child: ElevatedButton(
                     onPressed: updateUserData,
                     style: ElevatedButton.styleFrom(
-                      primary: AppColors.appPrimary,
-                      onPrimary: Colors.black,
+                      foregroundColor: Colors.black,
+                      backgroundColor: AppColors.appPrimary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                       ),
