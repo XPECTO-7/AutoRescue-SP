@@ -214,18 +214,17 @@ class _HomePageContentState extends State<HomePageContent> {
                       const SizedBox(height: 20),
                       Row(
                         children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 20.0),
-                              child: Text(
-                                'SELECTED SERVICE :  ',
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.white,
-                                    fontFamily: GoogleFonts.strait().fontFamily,
-                                    fontWeight: FontWeight.bold),
-                              ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20.0),
+                            child: Text(
+                              'SELECTED SERVICE :  ',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontFamily: GoogleFonts.strait().fontFamily,
+                                  fontWeight: FontWeight.bold),
                             ),
+                          ),
                           if (selectedService.isNotEmpty)
                             Text(
                               '$selectedService',
@@ -247,8 +246,7 @@ class _HomePageContentState extends State<HomePageContent> {
                               });
                             },
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 20.0),
+                              padding: const EdgeInsets.only(left: 20.0),
                               child: Text(
                                 'SELECTED VEHICLE :  ',
                                 style: TextStyle(
@@ -259,103 +257,146 @@ class _HomePageContentState extends State<HomePageContent> {
                               ),
                             ),
                           ),
-                          if (selectedVehicleName!=null)
-                          Text(
-                            '$selectedVehicleName',
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                                fontFamily: GoogleFonts.strait().fontFamily,
-                                fontWeight: FontWeight.bold),
-                          ),
+                          if (selectedVehicleName != null)
+                            Text(
+                              '$selectedVehicleName',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontFamily: GoogleFonts.strait().fontFamily,
+                                  fontWeight: FontWeight.bold),
+                            ),
                         ],
                       ),
-                     Padding(
-  padding: const EdgeInsets.only(left: 20.0, top: 10, right: 20),
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      ...addedVehicles.map((vehicleDetails) {
-        final isSelected = selectedVehicleName ==
-            '${vehicleDetails['manufacturer']} ${vehicleDetails['vehicleName']}';
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              selectedVehicleName =
-                  '${vehicleDetails['manufacturer']} ${vehicleDetails['vehicleName']}';
-            });
-          },
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              color: Colors.grey[300],
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.directions_car,
-                  color: isSelected ? Colors.green : AppColors.appSecondary,
-                ),
-                const SizedBox(width: 5),
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            vehicleDetails['manufacturer'],
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontFamily: GoogleFonts.strait().fontFamily,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            vehicleDetails['vehicleName'],
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontFamily: GoogleFonts.strait().fontFamily,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (isSelected)
-                        const Icon(
-                          Icons.check,
-                          color: Colors.green,
-                        )
-                      else
-                        const SizedBox(width: 24), // Placeholder for check icon
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      }).toList(),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 20.0, top: 10, right: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ...addedVehicles.map((vehicleDetails) {
+                              final isSelected = selectedVehicleName ==
+                                  '${vehicleDetails['manufacturer']} ${vehicleDetails['vehicleName']}';
+                              return GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedVehicleName =
+                                        '${vehicleDetails['manufacturer']} ${vehicleDetails['vehicleName']}';
+                                  });
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.only(bottom: 10),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 5),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: Colors.grey[300],
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Icon(
+                                        Icons.directions_car,
+                                        color: isSelected
+                                            ? Colors.green
+                                            : AppColors.appSecondary,
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Expanded(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  vehicleDetails[
+                                                      'manufacturer'],
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 16,
+                                                    fontFamily:
+                                                        GoogleFonts.strait()
+                                                            .fontFamily,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 5),
+                                                Text(
+                                                  vehicleDetails['vehicleName'],
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 16,
+                                                    fontFamily:
+                                                        GoogleFonts.strait()
+                                                            .fontFamily,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            if (isSelected)
+                                              const Icon(
+                                                Icons.check,
+                                                color: Colors.green,
+                                              )
+                                            else
+                                              const SizedBox(
+                                                  width:
+                                                      24), // Placeholder for check icon
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      CustomButton(
-                        text: 'REQUEST',
-                        onPressed: () {
-                          // Handle request button click
-                        },
-                        buttonColor: AppColors.appTertiary,
-                        textColor: AppColors.appSecondary,
-                      ),
+                      const SizedBox(height: 10),
+                        Padding(
+                            padding: const EdgeInsets.only(left: 20.0),
+                            child: Text(
+                              'FILTER   ',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontFamily: GoogleFonts.strait().fontFamily,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                           Padding(
+                            padding: const EdgeInsets.only(left: 20.0),
+                            child: Text(
+                              'SERVICE PROVIDER EXPERIENCE',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontFamily: GoogleFonts.strait().fontFamily,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          
                     ],
                   ),
+                ),
+                const SizedBox(height: 10),
+                
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    CustomButton(
+                      text: 'REQUEST',
+                      onPressed: () {
+                        // Handle request button click
+                      },
+                      buttonColor: AppColors.appTertiary,
+                      textColor: AppColors.appSecondary,
+                    ),
+                  ],
                 ),
               ],
             ),
