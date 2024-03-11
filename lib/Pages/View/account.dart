@@ -64,6 +64,7 @@ class _AccountPageState extends State<AccountPage> {
         .doc(currentUser.email)
         .update({
       'Fullname': _nameController.text,
+      'Email': _emailController.text,
       'Phone Number': _phoneNumberController.text,
       'Aadhar Number': _aadharNumberController.text,
     });
