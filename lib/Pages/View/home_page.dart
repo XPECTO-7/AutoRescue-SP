@@ -1,15 +1,11 @@
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Pages/Components/custom_button.dart';
-import 'package:provider/Pages/Components/edit_vehicle.dart';
-import 'package:provider/Pages/Components/vehicle_form_page.dart';
 import 'package:provider/Pages/Utils/sqauretile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/Pages/View/account.dart';
 import 'package:provider/Pages/View/manage.dart';
 
@@ -67,12 +63,14 @@ class _HomePageContentState extends State<HomePageContent> {
   late String selectedService;
   bool isTrue = false;
   String? selectedVehicleName;
+  late TextEditingController expchController;
 
   @override
   void initState() {
     super.initState();
     selectedService = '';
     getAddedVehicles();
+    expchController = TextEditingController();
   }
 
   Future<void> getAddedVehicles() async {
@@ -150,7 +148,6 @@ class _HomePageContentState extends State<HomePageContent> {
               children: [
                 Container(
                   padding: const EdgeInsets.all(7),
-                  height: 600,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(7.0),
@@ -217,7 +214,9 @@ class _HomePageContentState extends State<HomePageContent> {
                           Padding(
                             padding: const EdgeInsets.only(left: 20.0),
                             child: Text(
-                              'SELECTED SERVICE :  ',
+                              selectedService != null && selectedService.isNotEmpty
+                                  ? 'SELECTED SERVICE : '
+                                  : 'SELECT SERVICE : ',
                               style: TextStyle(
                                   fontSize: 20,
                                   color: Colors.white,
@@ -225,7 +224,7 @@ class _HomePageContentState extends State<HomePageContent> {
                                   fontWeight: FontWeight.bold),
                             ),
                           ),
-                          if (selectedService.isNotEmpty)
+                         if (selectedService != null && selectedService.isNotEmpty)
                             Text(
                               '$selectedService',
                               style: TextStyle(
@@ -248,7 +247,9 @@ class _HomePageContentState extends State<HomePageContent> {
                             child: Padding(
                               padding: const EdgeInsets.only(left: 20.0),
                               child: Text(
-                                'SELECTED VEHICLE :  ',
+                                selectedVehicleName != null
+                                    ? 'SELECTED VEHICLE : '
+                                    : 'SELECT VEHICLE : ',
                                 style: TextStyle(
                                     fontSize: 20,
                                     color: Colors.white,
@@ -357,46 +358,26 @@ class _HomePageContentState extends State<HomePageContent> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                        Padding(
-                            padding: const EdgeInsets.only(left: 20.0),
-                            child: Text(
-                              'FILTER   ',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                  fontFamily: GoogleFonts.strait().fontFamily,
-                                  fontWeight: FontWeight.bold),
-                            ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          CustomButton(
+                            text: 'CONTINUE',
+                            onPressed: () {
+                               Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ManagePage(),
+                                ),
+                              );
+                            },
+                            buttonColor: AppColors.appTertiary,
+                            textColor: AppColors.appSecondary,
                           ),
-                           Padding(
-                            padding: const EdgeInsets.only(left: 20.0),
-                            child: Text(
-                              'SERVICE PROVIDER EXPERIENCE',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                  fontFamily: GoogleFonts.strait().fontFamily,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          
+                        ],
+                      ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 10),
-                
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    CustomButton(
-                      text: 'REQUEST',
-                      onPressed: () {
-                        // Handle request button click
-                      },
-                      buttonColor: AppColors.appTertiary,
-                      textColor: AppColors.appSecondary,
-                    ),
-                  ],
                 ),
               ],
             ),
