@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       body: Center(
+      body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: ConvexAppBar(
@@ -55,6 +55,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
 class HomePageContent extends StatefulWidget {
   const HomePageContent({Key? key}) : super(key: key);
 
@@ -64,14 +65,17 @@ class HomePageContent extends StatefulWidget {
 
 class _HomePageContentState extends State<HomePageContent> {
   late String selectedService;
-   bool isTrue = false;
+  bool isTrue = false;
+  String? selectedVehicleName;
+
   @override
   void initState() {
     super.initState();
     selectedService = '';
     getAddedVehicles();
   }
- Future<void> getAddedVehicles() async {
+
+  Future<void> getAddedVehicles() async {
     final currentUser = FirebaseAuth.instance.currentUser!;
     final vehicleRef = FirebaseFirestore.instance
         .collection('USERS')
@@ -99,7 +103,6 @@ class _HomePageContentState extends State<HomePageContent> {
     });
   }
 
-
   void updateSelectedService(String service) {
     setState(() {
       if (selectedService == service) {
@@ -111,6 +114,7 @@ class _HomePageContentState extends State<HomePageContent> {
       }
     });
   }
+
   List<Map<String, dynamic>> addedVehicles = [];
   @override
   Widget build(BuildContext context) {
@@ -170,7 +174,7 @@ class _HomePageContentState extends State<HomePageContent> {
                             imagePath: 'lib/images/automotive.png',
                             isSelected: selectedService == 'Mechanical Works',
                             onTap: () =>
-                                updateSelectedService('Mechanical Service'),
+                                updateSelectedService('Mechanical Works'),
                           ),
                           const SizedBox(width: 7),
                           Squaretile(
@@ -208,180 +212,129 @@ class _HomePageContentState extends State<HomePageContent> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      if (selectedService.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Text(
-                            'Selected Service: $selectedService',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        
-                        GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isTrue = !isTrue;
-                    });
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 17),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        color: Colors.grey[700],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      Row(
                         children: [
-                          Text('SELECT VEHICLE',
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: Text(
+                              'SELECTED SERVICE : ',
                               style: TextStyle(
                                   fontSize: 20,
                                   color: Colors.white,
                                   fontFamily: GoogleFonts.strait().fontFamily,
-                                  fontWeight: FontWeight.bold)),
-                          Transform.rotate(
-                            angle: isTrue ? 3.14 : 0, // Rotate arrow
-                            child: IconButton(
-                              icon: const FaIcon(
-                                  FontAwesomeIcons.squareArrowUpRight),
-                              splashRadius: 1,
-                              iconSize: 30,
-                              onPressed: () {
-                                setState(() {
-                                  isTrue = !isTrue;
-                                });
-                              },
+                                  fontWeight: FontWeight.bold),
                             ),
+                          ),
+                          if (selectedService.isNotEmpty)
+                            Text(
+                              '$selectedService',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontFamily: GoogleFonts.strait().fontFamily,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                isTrue = !isTrue;
+                              });
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Text(
+                                'SELECTED VEHICLE :',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.white,
+                                    fontFamily: GoogleFonts.strait().fontFamily,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                          Text(
+                                  '$selectedVehicleName',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.white,
+                                      fontFamily: GoogleFonts.strait().fontFamily,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                        ],
+                      ),
+                        Padding(
+  padding: const EdgeInsets.only(left: 20.0, top: 10, right: 20),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      ...addedVehicles.map((vehicleDetails) {
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              selectedVehicleName = '${vehicleDetails['manufacturer']} ${vehicleDetails['vehicleName']}';
+            });
+          },
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              color: Colors.grey[300],
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(
+                  Icons.directions_car,
+                  color: AppColors.appSecondary,
+                ),
+                const SizedBox(width: 5),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            vehicleDetails['manufacturer'],
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontFamily: GoogleFonts.strait().fontFamily,
+                              fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            vehicleDetails['vehicleName'],
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontFamily: GoogleFonts.strait().fontFamily,
+                              fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
-                    ),
+                      Icon(
+                        Icons.check,
+                        color: Colors.green,
+                      )
+                    ],
                   ),
                 ),
-                if (isTrue)
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20.0, top: 10, right: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Display added vehicles
-                        // Display added vehicles
-                        ...addedVehicles.map((vehicleDetails) {
-                          return GestureDetector(
-                            onTap: () {
-                              // Navigate to the edit vehicle details page
-                              // You can pass the vehicle details as arguments if needed
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditVehiclePage(
-                                      vehicleDetails: vehicleDetails),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(bottom: 10),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 5),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4),
-                                color: Colors.grey[300],
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Icon(
-                                    Icons.directions_car,
-                                    color: AppColors.appSecondary,
-                                  ),
-                                  const SizedBox(width: 5),
-                                  Expanded(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              vehicleDetails['manufacturer'],
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 16,
-                                                  fontFamily:
-                                                      GoogleFonts.strait()
-                                                          .fontFamily,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            const SizedBox(
-                                              width: 5,
-                                            ),
-                                            Text(
-                                              vehicleDetails['vehicleName'],
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 16,
-                                                  fontFamily:
-                                                      GoogleFonts.strait()
-                                                          .fontFamily,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ],
-                                        ),
-                                        Text(
-                                          vehicleDetails['registrationNumber'],
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 16,
-                                              fontFamily: GoogleFonts.strait()
-                                                  .fontFamily,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList(),
-
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                // Navigate to the vehicle adding page
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const VehicleFormPage(),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4),
-                                  color: Colors.grey,
-                                ),
-                                child: const Icon(
-                                  Icons.add,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                          
                       const SizedBox(height: 20),
                       CustomButton(
                         text: 'REQUEST',
@@ -394,7 +347,6 @@ class _HomePageContentState extends State<HomePageContent> {
                     ],
                   ),
                 ),
-                
               ],
             ),
           ),
