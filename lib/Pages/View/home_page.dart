@@ -163,25 +163,25 @@ class _HomePageContentState extends State<HomePageContent> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Squaretile(
-                            text: 'Tyre Works',
+                            text: 'TYRE WORKS',
                             imagePath: 'lib/images/tyre.png',
-                            isSelected: selectedService == 'Tyre Works',
-                            onTap: () => updateSelectedService('Tyre Works'),
+                            isSelected: selectedService == 'TYRE WORKS',
+                            onTap: () => updateSelectedService('TYRE WORKS'),
                           ),
                           const SizedBox(width: 7),
                           Squaretile(
-                            text: 'Mechanical Works',
+                            text: 'MECHANICAL WORKS',
                             imagePath: 'lib/images/automotive.png',
-                            isSelected: selectedService == 'Mechanical Works',
+                            isSelected: selectedService == 'MECHANICAL WORKS',
                             onTap: () =>
-                                updateSelectedService('Mechanical Works'),
+                                updateSelectedService('MECHANICAL WORKS'),
                           ),
                           const SizedBox(width: 7),
                           Squaretile(
-                            text: 'EV Charging',
+                            text: 'EV CHARGING',
                             imagePath: 'lib/images/charging-station.png',
-                            isSelected: selectedService == 'EV Charging',
-                            onTap: () => updateSelectedService('EV Charging'),
+                            isSelected: selectedService == 'EV CHARGING',
+                            onTap: () => updateSelectedService('EV CHARGING'),
                           ),
                         ],
                       ),
@@ -190,42 +190,42 @@ class _HomePageContentState extends State<HomePageContent> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Squaretile(
-                            text: 'Fuel Delivery',
+                            text: 'FUEL DELIVERY',
                             imagePath: 'lib/images/fuel.png',
-                            isSelected: selectedService == 'Fuel Delivery',
-                            onTap: () => updateSelectedService('Fuel Delivery'),
+                            isSelected: selectedService == 'FUEL DELIVERY',
+                            onTap: () => updateSelectedService('FUEL DELIVERY'),
                           ),
                           const SizedBox(width: 7),
                           Squaretile(
-                            text: 'Towing',
+                            text: 'TOWING',
                             imagePath: 'lib/images/tow-truck.png',
-                            isSelected: selectedService == 'Towing',
-                            onTap: () => updateSelectedService('Towing'),
+                            isSelected: selectedService == 'TOWING',
+                            onTap: () => updateSelectedService('TOWING'),
                           ),
                           const SizedBox(width: 7),
                           Squaretile(
-                            text: 'Key Lockout',
+                            text: 'KEY LOCKOUT',
                             imagePath: 'lib/images/key.png',
-                            isSelected: selectedService == 'Key Lockout',
-                            onTap: () => updateSelectedService('Key Lockout'),
+                            isSelected: selectedService == 'KEY LOCKOUT',
+                            onTap: () => updateSelectedService('KEY LOCKOUT'),
                           ),
                         ],
                       ),
                       const SizedBox(height: 20),
                       Row(
                         children: [
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: Text(
-                              'SELECTED SERVICE : ',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                  fontFamily: GoogleFonts.strait().fontFamily,
-                                  fontWeight: FontWeight.bold),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 20.0),
+                              child: Text(
+                                'SELECTED SERVICE :  ',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.white,
+                                    fontFamily: GoogleFonts.strait().fontFamily,
+                                    fontWeight: FontWeight.bold),
+                              ),
                             ),
-                          ),
                           if (selectedService.isNotEmpty)
                             Text(
                               '$selectedService',
@@ -247,9 +247,10 @@ class _HomePageContentState extends State<HomePageContent> {
                               });
                             },
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                              padding:
+                                  const EdgeInsets.only(left: 20.0),
                               child: Text(
-                                'SELECTED VEHICLE :',
+                                'SELECTED VEHICLE :  ',
                                 style: TextStyle(
                                     fontSize: 20,
                                     color: Colors.white,
@@ -258,26 +259,30 @@ class _HomePageContentState extends State<HomePageContent> {
                               ),
                             ),
                           ),
+                          if (selectedVehicleName!=null)
                           Text(
-                                  '$selectedVehicleName',
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.white,
-                                      fontFamily: GoogleFonts.strait().fontFamily,
-                                      fontWeight: FontWeight.bold),
-                                ),
+                            '$selectedVehicleName',
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                                fontFamily: GoogleFonts.strait().fontFamily,
+                                fontWeight: FontWeight.bold),
+                          ),
                         ],
                       ),
-                        Padding(
+                     Padding(
   padding: const EdgeInsets.only(left: 20.0, top: 10, right: 20),
   child: Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       ...addedVehicles.map((vehicleDetails) {
+        final isSelected = selectedVehicleName ==
+            '${vehicleDetails['manufacturer']} ${vehicleDetails['vehicleName']}';
         return GestureDetector(
           onTap: () {
             setState(() {
-              selectedVehicleName = '${vehicleDetails['manufacturer']} ${vehicleDetails['vehicleName']}';
+              selectedVehicleName =
+                  '${vehicleDetails['manufacturer']} ${vehicleDetails['vehicleName']}';
             });
           },
           child: Container(
@@ -290,9 +295,9 @@ class _HomePageContentState extends State<HomePageContent> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(
+                Icon(
                   Icons.directions_car,
-                  color: AppColors.appSecondary,
+                  color: isSelected ? Colors.green : AppColors.appSecondary,
                 ),
                 const SizedBox(width: 5),
                 Expanded(
@@ -307,7 +312,8 @@ class _HomePageContentState extends State<HomePageContent> {
                               color: Colors.black,
                               fontSize: 16,
                               fontFamily: GoogleFonts.strait().fontFamily,
-                              fontWeight: FontWeight.bold),
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(width: 5),
                           Text(
@@ -316,14 +322,18 @@ class _HomePageContentState extends State<HomePageContent> {
                               color: Colors.black,
                               fontSize: 16,
                               fontFamily: GoogleFonts.strait().fontFamily,
-                              fontWeight: FontWeight.bold),
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
-                      Icon(
-                        Icons.check,
-                        color: Colors.green,
-                      )
+                      if (isSelected)
+                        const Icon(
+                          Icons.check,
+                          color: Colors.green,
+                        )
+                      else
+                        const SizedBox(width: 24), // Placeholder for check icon
                     ],
                   ),
                 ),
@@ -332,9 +342,9 @@ class _HomePageContentState extends State<HomePageContent> {
           ),
         );
       }).toList(),
-                            ],
-                          ),
+                          ],
                         ),
+                      ),
                       const SizedBox(height: 20),
                       CustomButton(
                         text: 'REQUEST',

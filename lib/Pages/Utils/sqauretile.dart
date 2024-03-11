@@ -26,7 +26,7 @@ class _SquaretileState extends State<Squaretile> {
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(7),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.white),
           borderRadius: BorderRadius.circular(4),
@@ -36,7 +36,7 @@ class _SquaretileState extends State<Squaretile> {
           children: [
             Image.asset(
               widget.imagePath,
-              height: 77,
+              height: 70,
             ),
             const SizedBox(height: 5),
             Text(
