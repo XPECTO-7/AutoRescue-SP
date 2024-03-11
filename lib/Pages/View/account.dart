@@ -52,7 +52,7 @@ class _AccountPageState extends State<AccountPage> {
         .collection('USERS')
         .doc(currentUser.email)
         .get();
-
+                        
     if (userSnapshot.exists) {
       final userDetails = userSnapshot.data() as Map<String, dynamic>;
       setState(() {

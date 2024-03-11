@@ -5,13 +5,15 @@ import 'package:provider/Colors/appcolor.dart';
 class Squaretile extends StatefulWidget {
   final String imagePath;
   final String text;
-  final Function(String) onTap;
+  final VoidCallback onTap;
+  final bool isSelected;
 
   const Squaretile({
     Key? key,
     required this.imagePath,
     required this.text,
     required this.onTap,
+    required this.isSelected,
   }) : super(key: key);
 
   @override
@@ -19,23 +21,16 @@ class Squaretile extends StatefulWidget {
 }
 
 class _SquaretileState extends State<Squaretile> {
-  bool isSelected = false;
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          isSelected = !isSelected;
-        });
-       
-      },
+      onTap: widget.onTap,
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.white),
           borderRadius: BorderRadius.circular(4),
-          color: isSelected ? AppColors.appPrimary : AppColors.appTertiary,
+          color: widget.isSelected ? AppColors.appPrimary : AppColors.appTertiary,
         ),
         child: Column(
           children: [
