@@ -232,11 +232,12 @@ class _AccountPageState extends State<AccountPage> {
                   children: [
                     const SizedBox(width: 12),
                     IconButton(
-                      icon: const FaIcon(FontAwesomeIcons.faceSmile),
+                      icon: const FaIcon(FontAwesomeIcons.bicycle),
                       iconSize: 20,
                       color: AppColors.appPrimary,
                       onPressed: () {},
                     ),
+                  
                     Text(
                       "Hello there!",
                       style: TextStyle(
