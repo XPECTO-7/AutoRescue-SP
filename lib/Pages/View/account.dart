@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/Authentication/Controller/main_page.dart';
 import 'package:provider/Colors/appcolor.dart';
@@ -20,6 +21,11 @@ class _AccountPageState extends State<AccountPage> {
   late TextEditingController _emailController;
   late TextEditingController _phoneNumberController;
   late TextEditingController _aadharNumberController;
+  late TextEditingController comNameController;
+  late TextEditingController licenseController;
+  late TextEditingController insuranceController;
+  late TextEditingController serTypeController;
+  late TextEditingController expController;
 
   @override
   void initState() {
@@ -28,6 +34,11 @@ class _AccountPageState extends State<AccountPage> {
     _emailController = TextEditingController();
     _phoneNumberController = TextEditingController();
     _aadharNumberController = TextEditingController();
+    comNameController = TextEditingController();
+    licenseController = TextEditingController();
+    insuranceController = TextEditingController();
+    serTypeController = TextEditingController();
+    expController = TextEditingController();
     getUserData();
   }
 
@@ -37,6 +48,11 @@ class _AccountPageState extends State<AccountPage> {
     _emailController.dispose();
     _phoneNumberController.dispose();
     _aadharNumberController.dispose();
+    comNameController.dispose();
+    licenseController.dispose();
+    insuranceController.dispose();
+    serTypeController.dispose();
+    expController.dispose();
     super.dispose();
   }
 
@@ -53,6 +69,11 @@ class _AccountPageState extends State<AccountPage> {
         _emailController.text = userDetails['Email'];
         _phoneNumberController.text = userDetails['Phone Number'];
         _aadharNumberController.text = userDetails['Aadhar Number'];
+        comNameController.text = userDetails['Company Name'];
+        licenseController.text = userDetails['License No'];
+        insuranceController.text = userDetails['Insurance No'];
+        serTypeController.text = userDetails['Service Type'];
+        expController.text = userDetails['Experience'];
       });
     }
   }
@@ -67,6 +88,11 @@ class _AccountPageState extends State<AccountPage> {
       'Email': _emailController.text,
       'Phone Number': _phoneNumberController.text,
       'Aadhar Number': _aadharNumberController.text,
+      'Company Name': comNameController.text,
+      'License No': licenseController.text,
+      'Insurance No': insuranceController.text,
+      'Service Type': serTypeController.text,
+      'Experience': expController.text,
     });
     showDialog(
       context: context,
@@ -101,7 +127,7 @@ class _AccountPageState extends State<AccountPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Logout Successfull"),
+          title: const Text("Logout Successful"),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -119,6 +145,7 @@ class _AccountPageState extends State<AccountPage> {
     await getUserData();
   }
 
+  bool isExpanded = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -184,8 +211,78 @@ class _AccountPageState extends State<AccountPage> {
                   ),
                   buildEditableField("Aadhar Number", _aadharNumberController),
                   const SizedBox(
-                    height: 34,
+                    height: 17,
                   ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isExpanded = !isExpanded;
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Container(
+                        padding: const EdgeInsets.only(left: 17),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          color: Colors.grey[700],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'COMPANY / WORKSHOP DETAILS',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontFamily: GoogleFonts.strait().fontFamily,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Transform.rotate(
+                              angle: isExpanded ? 3.14 : 0, // Rotate arrow
+                              child: IconButton(
+                                icon: const FaIcon(
+                                    FontAwesomeIcons.squareArrowUpRight),
+                                splashRadius: 1,
+                                iconSize: 30,
+                                onPressed: () {
+                                  setState(() {
+                                    isExpanded = !isExpanded;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 17,
+                  ),
+                  if (isExpanded) // Show this row if isExpanded is true
+                    Column(
+                      children: [
+                        buildEditableField("Company Name", comNameController),
+                        const SizedBox(
+                          height: 17,
+                        ),
+                        buildEditableField("License Number", licenseController),
+                        const SizedBox(
+                          height: 17,
+                        ),
+                        buildEditableField(
+                            "Insurance Number", insuranceController),
+                        const SizedBox(
+                          height: 17,
+                        ),
+                        buildEditableField("Experience", expController),
+                        const SizedBox(
+                          height: 17,
+                        ),
+                        
+                      ],
+                    ),
                   MyButton(
                     onTap: updateUserData,
                     text: 'Update Details',

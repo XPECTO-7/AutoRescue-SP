@@ -132,7 +132,7 @@ class _HomePageContentState extends State<HomePageContent> {
                         ),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey[900],
+                            color: Colors.black,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Padding(
@@ -157,6 +157,28 @@ class _HomePageContentState extends State<HomePageContent> {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 7),
+                   Padding(
+                     padding: const EdgeInsets.symmetric(horizontal: 7.0),
+                     child: Container(
+                      height: 50,
+                      width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  border: Border.all(color: AppColors.app1Four),
+                                  borderRadius: BorderRadius.circular(4)
+                                ),
+                                 child: Center(
+                                   child: Text(
+                                    userDetails['Service Type'].toUpperCase(),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
+                                                               ),
+                                 ),
+                               ),
+                   ),
                  
                 ],
               ),
