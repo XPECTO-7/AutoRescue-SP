@@ -62,47 +62,71 @@ class _evSliderState extends State<evSlider> {
             stepSize: 20,
           ),
         ),
+        const SizedBox(
+          height: 10,
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 17.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '₹${_values.start.toInt()}  - ',
-                style: TextStyle(
-                  color: Colors.green,
-                  fontFamily: GoogleFonts.strait().fontFamily,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
+          child: Container(
+            height: 40,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+                border: Border.all(color: AppColors.appTertiary),
+                borderRadius: BorderRadius.circular(3)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      '₹${_values.start.toInt()}  - ',
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontFamily: GoogleFonts.strait().fontFamily,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                    Text(
+                      '₹${_values.end.toInt()}',
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontFamily: GoogleFonts.strait().fontFamily,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              Text(
-                '₹${_values.end.toInt()}',
-                style: TextStyle(
-                  color: Colors.green,
-                  fontFamily: GoogleFonts.strait().fontFamily,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
+                ElevatedButton.icon(
+                  onPressed: () {
+                    if (_values != null) {
+                      _setPriceRange();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Price range set successfully'),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please set a price range'),
+                        ),
+                      );
+                    }
+                  },
+                  label: const Text('SET'),
+                  icon: const Icon(Icons.check_circle_outline_outlined),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white, 
+                  
+                  ),
                 ),
-              ),
-              const SizedBox(width: 17,),
-              MyButton(
-                onTap: () {
-                  if (_values != null) {
-                    _setPriceRange();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Price range set successfully')),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content:  Text('Please set a price range')),
-                    );
-                  }
-                },
-                text: 'Set',
-                textColor: Colors.white,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],

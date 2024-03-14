@@ -95,7 +95,7 @@ class _HomePageContentState extends State<HomePageContent> {
     final currentUser = FirebaseAuth.instance.currentUser!;
     return StreamBuilder(
       stream: FirebaseFirestore.instance
-          .collection('USERS')
+          .collection('PROVIDERS')
           .doc(currentUser.email)
           .snapshots(),
       builder: (context, snapshot) {

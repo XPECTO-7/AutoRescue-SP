@@ -132,7 +132,7 @@ class _RegisterPageState extends State<RegisterPage>
           email: emailController.text.trim(),
           password: passwordController.text.trim());
       await FirebaseFirestore.instance
-          .collection("USERS")
+          .collection("PROVIDERS")
           .doc(emailController.text)
           .set({
         'Fullname': fullNameController.text.trim(),
@@ -253,18 +253,13 @@ class _RegisterPageState extends State<RegisterPage>
                                           fontSize: 16, color: Colors.white),
                                     ),
                             ),
-                            if (pickedImage != null)
-                              Container(
-                                child: Image.file(File(pickedImage!.path)),
-                              ),
+                           
                             const Spacer(), // Add Spacer to push suffix icon to the right
                             IconButton(
                               icon: const Icon(Icons.add_a_photo,
                                   color: Colors
                                       .white), // Change the icon as per your requirement
-                              onPressed: () {
-                                // Add function to handle adding image here
-                              },
+                              onPressed: pickImage,
                             ),
                           ],
                         ),
@@ -272,13 +267,26 @@ class _RegisterPageState extends State<RegisterPage>
                     ),
                   ),
                 ),
-
-                // RegTextField(
-                //   controller: aadharImgController,
-                //   hintText: 'Aadhar doc',
-                //   obscureText: false,
-                //   iconData: Icons.add_a_photo_rounded,
-                // ),
+                const SizedBox(height: 10,),
+                if (pickedImage != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(8)
+                      ),
+                      height: 100,
+                      width:  MediaQuery.of(context).size.width,
+                      color: Colors.grey[950],
+                      child: Center(
+                        child: Image.file(
+                          File(pickedImage!.path),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
                 const SizedBox(height: 15),
                 RegTextField(
                   controller: emailController,

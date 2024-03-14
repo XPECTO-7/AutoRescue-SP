@@ -43,7 +43,7 @@ class _AccountPageState extends State<AccountPage> {
   Future<void> getUserData() async {
     final currentUser = FirebaseAuth.instance.currentUser!;
     final userSnapshot = await FirebaseFirestore.instance
-        .collection('USERS')
+        .collection('PROVIDERS')
         .doc(currentUser.email)
         .get();
     if (userSnapshot.exists) {
@@ -60,7 +60,7 @@ class _AccountPageState extends State<AccountPage> {
   void updateUserData() async {
     final currentUser = FirebaseAuth.instance.currentUser!;
     await FirebaseFirestore.instance
-        .collection('USERS')
+        .collection('PROVIDERS')
         .doc(currentUser.email)
         .update({
       'Fullname': _nameController.text,
@@ -101,7 +101,7 @@ class _AccountPageState extends State<AccountPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Account Logged Out"),
+          title: const Text("Logout Successfull"),
           actions: <Widget>[
             TextButton(
               onPressed: () {

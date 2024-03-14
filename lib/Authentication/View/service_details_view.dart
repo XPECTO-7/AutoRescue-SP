@@ -148,7 +148,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
     }
     if (imgUrl.isNotEmpty) {
       await FirebaseFirestore.instance
-          .collection("USERS")
+          .collection("PROVIDERS")
           .doc(widget.email)
           .set({
         'Fullname': widget.fullName,
@@ -237,184 +237,204 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
           ),
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TextField(
-                      controller: companyNameController,
-                      decoration: const InputDecoration(
-                        suffixIcon: Icon(Icons.business),
-                        hintText: "Company / Workshop Name",
-                        hintStyle: TextStyle(color: Colors.white),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.appPrimary),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.appPrimary),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    InkWell(
-                      onTap: pickLocation,
-                      child: Container(
-                        height: 60,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.map),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                longitude.isEmpty
-                                    ? "Set Company / Workshop Location"
-                                    : "Location set",
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 15),
-                              ),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        TextField(
+                          controller: companyNameController,
+                          decoration: const InputDecoration(
+                            suffixIcon: Icon(Icons.business),
+                            hintText: "Company / Workshop Name",
+                            hintStyle: TextStyle(color: Colors.white),
+                            border: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: AppColors.appPrimary),
                             ),
-                            if (longitude.isNotEmpty)
-                              const Icon(
-                                Icons.check,
-                                color: Colors.green,
-                              ),
-                          ],
+                            focusedBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: AppColors.appPrimary),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    TextField(
-                      controller: expController,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: false),
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
-                      ],
-                      maxLength: 2, // Maximum length of 3 digits
-                      maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                      decoration: const InputDecoration(
-                        hintText: "Experience In Years",
-                        hintStyle: TextStyle(color: Colors.white),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.appPrimary),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.appPrimary),
-                        ),
-                        suffixIcon: Icon(Icons.handyman_sharp),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    TextField(
-                      controller: licenseController,
-                      decoration: const InputDecoration(
-                        suffixIcon: Icon(Icons.edit_document),
-                        hintText: 'License Number',
-                        hintStyle: TextStyle(color: Colors.white),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.appPrimary),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.appPrimary),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    TextField(
-                      controller: insuranceController,
-                      decoration: const InputDecoration(
-                        suffixIcon: Icon(Icons.edit_document),
-                        hintText: 'Insurance Number',
-                        hintStyle: TextStyle(color: Colors.white),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.appPrimary),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.appPrimary),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    DropdownButtonFormField<String>(
-                      isExpanded: true,
-                      decoration: const InputDecoration(
-                        hintText: "Select Service",
-                        hintStyle: TextStyle(color: Colors.white),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.appPrimary),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.appPrimary),
-                        ),
-                      ),
-                      items: serviceTypes
-                          .map((item) => DropdownMenuItem<String>(
-                                value: item,
-                                child: Text(
-                                  item,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.white,
+                        const SizedBox(height: 15),
+                        InkWell(
+                          onTap: pickLocation,
+                          child: Container(
+                            height: 60,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.map),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    longitude.isEmpty
+                                        ? "Set Company / Workshop Location"
+                                        : "Location set",
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 15),
                                   ),
                                 ),
-                              ))
-                          .toList(),
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Please Select Service Type.';
-                        }
-                        return null;
-                      },
-                      onChanged: (value) {
-                        setState(() {
-                          serviceTypeController.text = value!;
-                        });
-                      },
+                                if (longitude.isNotEmpty)
+                                  const Icon(
+                                    Icons.check,
+                                    color: Colors.green,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        TextField(
+                          controller: expController,
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: false),
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          maxLength: 2, // Maximum length of 3 digits
+                          maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                          decoration: const InputDecoration(
+                            hintText: "Experience In Years",
+                            hintStyle: TextStyle(color: Colors.white),
+                            border: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: AppColors.appPrimary),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: AppColors.appPrimary),
+                            ),
+                            suffixIcon: Icon(Icons.handyman_sharp),
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        TextField(
+                          controller: licenseController,
+                          decoration: const InputDecoration(
+                            suffixIcon: Icon(Icons.edit_document),
+                            hintText: 'License Number',
+                            hintStyle: TextStyle(color: Colors.white),
+                            border: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: AppColors.appPrimary),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: AppColors.appPrimary),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        TextField(
+                          controller: insuranceController,
+                          decoration: const InputDecoration(
+                            suffixIcon: Icon(Icons.edit_document),
+                            hintText: 'Insurance Number',
+                            hintStyle: TextStyle(color: Colors.white),
+                            border: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: AppColors.appPrimary),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: AppColors.appPrimary),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        DropdownButtonFormField<String>(
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            hintText: "Select Service",
+                            hintStyle: TextStyle(color: Colors.white),
+                            border: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: AppColors.appPrimary),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: AppColors.appPrimary),
+                            ),
+                          ),
+                          items: serviceTypes
+                              .map((item) => DropdownMenuItem<String>(
+                                    value: item,
+                                    child: Text(
+                                      item,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ))
+                              .toList(),
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Please Select Service Type.';
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            setState(() {
+                              serviceTypeController.text = value!;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 15),
+                        const Text('Service Charge Price Range :'),
+                        if (serviceTypeController.text == 'Mechanical Service')
+                          MecSlider(mecPriceController: mecPriceController),
+                        if (serviceTypeController.text ==
+                            'EV Charging service')
+                          evSlider(evPriceController: evPriceController),
+                        if (serviceTypeController.text ==
+                            'Emergency Towing Service')
+                          towSlider(
+                              towingPriceController: towingPriceController),
+                        if (serviceTypeController.text ==
+                            'Fuel Delivery Service')
+                          fuelSlider(fuelPriceController: fuelPriceController),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        MyButton(
+                          onTap: isSigningUp ? null : validate,
+                          text: 'Register',
+                          textColor: Colors.black,
+                          buttonColor: AppColors.appPrimary,
+                        ),
+                        const SizedBox(height: 10),
+                      ],
                     ),
-                    const SizedBox(height: 15),
-                    const Text('Service Charge Price Range :'),
-                    if (serviceTypeController.text == 'Mechanical Service')
-                      MecSlider(mecPriceController: mecPriceController),
-                    if (serviceTypeController.text == 'EV Charging service')
-                      evSlider(evPriceController: evPriceController),
-                    if (serviceTypeController.text ==
-                        'Emergency Towing Service')
-                      towSlider(towingPriceController: towingPriceController),
-                    if (serviceTypeController.text == 'Fuel Delivery Service')
-                      fuelSlider(fuelPriceController: fuelPriceController),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    MyButton(
-                      onTap: isSigningUp ? null : validate,
-                      text: 'Register',
-                      textColor: Colors.black,
-                      buttonColor: AppColors.appPrimary,
-                    ),
-                    const SizedBox(height: 10),
-                    isSigningUp
-                        ? Lottie.asset(
-                            'assets/loading_animation.json', // Replace this with the path to your Lottie animation file
-                            width: 50,
-                            height: 50,
-                          )
-                        : const SizedBox(),
-                  ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (isSigningUp)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.appPrimary,
                 ),
               ),
-            ],
-          ),
-        ),
+            ),
+        ],
       ),
     );
   }
