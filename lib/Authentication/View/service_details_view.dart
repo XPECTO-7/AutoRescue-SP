@@ -207,7 +207,8 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
       context: context,
       builder: (context) {
         return PinLocationMap(
-          currentLocationX: position!.latitude,
+          currentLocationX: position
+          !.latitude,
           currentLocationY: position!.longitude,
           onTap: (p0, p1) {
             setState(() {
