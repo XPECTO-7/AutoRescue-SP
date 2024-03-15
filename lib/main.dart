@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       home: const MainPage(),
       routes: {
         '/HomePage': (context) => HomePage(),
-        '/ManagePage': (context) => const ManagePage(),
+        // '/ManagePage': (context) => const ManagePage(),
         '/AccountPage': (context) => const AccountPage(),
       },
     );

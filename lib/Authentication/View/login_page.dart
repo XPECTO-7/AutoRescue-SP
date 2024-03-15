@@ -22,9 +22,13 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
 
   void signIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim());
+    try {
+  await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: emailController.text.trim(),
+      password: passwordController.text.trim());
+} on FirebaseAuthException catch (e) {
+  MyAlertBox(message: e.code,);
+}
   }
 
   @override

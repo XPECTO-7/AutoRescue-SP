@@ -26,8 +26,8 @@ Widget build(BuildContext context) {
   return GestureDetector(
     onTap: widget.onTap,
     child: SizedBox(
-      height: 140, // Adjust the height according to your preference
-      width: 105, // Adjust the width according to your preference
+      height: MediaQuery.of(context).size.height/6, // Adjust the height according to your preference
+      width: MediaQuery.of(context).size.width/3.5, // Adjust the width according to your preference
       child: Container(
         padding: const EdgeInsets.all(7),
         decoration: BoxDecoration(
@@ -38,10 +38,14 @@ Widget build(BuildContext context) {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              widget.imagePath,
-              height: 70,
+            SizedBox(
+               height: 70,
               width: 125,
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(image: AssetImage(widget.imagePath),fit: BoxFit.contain)
+                ),
+              ),
             ),
             const SizedBox(height: 5),
             Text(
