@@ -21,46 +21,53 @@ class Squaretile extends StatefulWidget {
 }
 
 class _SquaretileState extends State<Squaretile> {
-@override
-Widget build(BuildContext context) {
-  return GestureDetector(
-    onTap: widget.onTap,
-    child: SizedBox(
-      height: MediaQuery.of(context).size.height/6, // Adjust the height according to your preference
-      width: MediaQuery.of(context).size.width/3.5, // Adjust the width according to your preference
-      child: Container(
-        padding: const EdgeInsets.all(7),
-        decoration: BoxDecoration(
-          border: Border.all(color: AppColors.appTertiary),
-          borderRadius: BorderRadius.circular(2),
-          color: widget.isSelected ? Colors.black : Colors.grey[950],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-               height: 70,
-              width: 125,
-              child: Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(image: AssetImage(widget.imagePath),fit: BoxFit.contain)
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height /
+            6,
+        width: MediaQuery.of(context).size.width /
+            3.56,
+        child: Container(
+          padding: const EdgeInsets.all(7),
+          decoration: BoxDecoration(
+            border: Border.all(color: AppColors.appTertiary),
+            borderRadius: BorderRadius.circular(2),
+            color: widget.isSelected ? Colors.black : Colors.grey[950],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 70,
+                width: 125,
+                child: Container(
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage(widget.imagePath),
+                          fit: BoxFit.contain)),
                 ),
               ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              widget.text,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                fontFamily: GoogleFonts.strait().fontFamily,
-                color: Colors.white,
-              ),
-            ),
-          ],
+              const SizedBox(height: 5),
+              Center(
+                child: Text(
+                  widget.text,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: GoogleFonts.strait().fontFamily,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign
+                      .center, // Optional if you want to explicitly set text alignment
+                ),
+              )
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

@@ -24,7 +24,11 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 1;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    ManagePage(servicetype: "", vehicleID: "", userEmail: "",),
+    ManagePage(
+      servicetype: "",
+      vehicleID: "",
+      userEmail: "",
+    ),
     HomePageContent(),
     AccountPage(),
   ];
@@ -71,7 +75,7 @@ class _HomePageContentState extends State<HomePageContent> {
   String selectedVehicleName = "", selectedService = "", lat = "", long = "";
   Position? position;
   String userEmail = "";
-  String vehicleID="";
+  String vehicleID = "";
   late TextEditingController expchController;
   late TextEditingController cuLockController;
 
@@ -174,7 +178,18 @@ class _HomePageContentState extends State<HomePageContent> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(
-                    height: 20,
+                    height: 10,
+                  ),
+                  CustomButton(
+                    text: 'SELECT SERVICE',
+                    fsize: 14,
+                    iconsize: 24,
+                    onPressed: () {},
+                    buttonColor: Colors.yellow.shade900,
+                    suffixIcon: FontAwesomeIcons.wrench,
+                  ),
+                  const SizedBox(
+                    height: 7,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -232,6 +247,15 @@ class _HomePageContentState extends State<HomePageContent> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 10),
+                  CustomButton(
+                    text: 'SELECT VEHICLE',
+                    fsize: 14,
+                    iconsize: 24,
+                    onPressed: () {},
+                    buttonColor: Colors.yellow.shade800,
+                    suffixIcon: FontAwesomeIcons.car,
+                  ),
                   Padding(
                     padding:
                         const EdgeInsets.only(left: 20.0, top: 10, right: 20),
@@ -244,7 +268,8 @@ class _HomePageContentState extends State<HomePageContent> {
                           return GestureDetector(
                             onTap: () {
                               setState(() {
-                                vehicleID=vehicleDetails["registrationNumber"];
+                                vehicleID =
+                                    vehicleDetails["registrationNumber"];
                                 selectedVehicleName =
                                     '${vehicleDetails['manufacturer']} ${vehicleDetails['vehicleName']}';
                               });
@@ -272,7 +297,9 @@ class _HomePageContentState extends State<HomePageContent> {
                                         Row(
                                           children: [
                                             Text(
-                                                vehicleDetails['manufacturer']+" "+vehicleDetails['vehicleName'],
+                                              vehicleDetails['manufacturer'] +
+                                                  " " +
+                                                  vehicleDetails['vehicleName'],
                                               style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 16,
@@ -321,27 +348,19 @@ class _HomePageContentState extends State<HomePageContent> {
                             borderRadius: BorderRadius.circular(4)),
                         child: Row(
                           children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 7.0),
-                              child: Text(
-                                'SELECTED SERVICE : ',
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                    fontFamily: GoogleFonts.strait().fontFamily,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            if (selectedService != null &&
-                                selectedService.isNotEmpty)
-                              Text(
-                                '$selectedService',
-                                style: TextStyle(
-                                    fontSize: 17,
-                                    color: Colors.white,
-                                    fontFamily: GoogleFonts.strait().fontFamily,
-                                    fontWeight: FontWeight.bold),
+                            if (selectedService.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 17.0),
+                                child: Text(
+                                  '$selectedService',
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      color: Colors.white,
+                                      fontFamily:
+                                          GoogleFonts.strait().fontFamily,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
                           ],
                         ),
@@ -358,54 +377,25 @@ class _HomePageContentState extends State<HomePageContent> {
                             borderRadius: BorderRadius.circular(4)),
                         child: Row(
                           children: [
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  isTrue = !isTrue;
-                                });
-                              },
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 7.0),
+                            if (selectedVehicleName != null)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 17.0),
                                 child: Text(
-                                  selectedVehicleName != null
-                                      ? 'SELECTED VEHICLE : '
-                                      : 'SELECT VEHICLE : ',
+                                  '$selectedVehicleName',
                                   style: TextStyle(
-                                      fontSize: 18,
+                                      fontSize: 17,
                                       color: Colors.white,
                                       fontFamily:
                                           GoogleFonts.strait().fontFamily,
                                       fontWeight: FontWeight.bold),
                                 ),
                               ),
-                            ),
-                            if (selectedVehicleName != null)
-                              Text(
-                                '$selectedVehicleName',
-                                style: TextStyle(
-                                    fontSize: 17,
-                                    color: Colors.white,
-                                    fontFamily: GoogleFonts.strait().fontFamily,
-                                    fontWeight: FontWeight.bold),
-                              ),
                           ],
                         ),
                       ),
                     ),
                   const SizedBox(height: 10),
-                  CustomButton(
-                    text: lat.isEmpty ? 'SET CURRENT LOCATION' : "Location Set",
-                    onPressed: setLocation,
-                    buttonColor:
-                        lat.isEmpty ? AppColors.appFoury : Colors.green,
-                    suffixIcon: lat.isEmpty
-                        ? FontAwesomeIcons.locationCrosshairs
-                        : FontAwesomeIcons.check,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
                   CustomButton(
                     text: 'CONTINUE',
                     onPressed: () {
@@ -415,7 +405,6 @@ class _HomePageContentState extends State<HomePageContent> {
                           builder: (context) => ManagePage(
                             servicetype: selectedService,
                             vehicleID: vehicleID,
-                           
                             userEmail: userEmail,
                           ),
                         ),
