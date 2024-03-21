@@ -29,7 +29,7 @@ class _SquaretileState extends State<Squaretile> {
         height: MediaQuery.of(context).size.height /
             6,
         width: MediaQuery.of(context).size.width /
-            3.56,
+            3.48,
         child: Container(
           padding: const EdgeInsets.all(7),
           decoration: BoxDecoration(

@@ -39,38 +39,33 @@ class _CustomButtonState extends State<CustomButton> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: MouseRegion(
-        onEnter: (event) => setState(() => _isHovered = true),
-        onExit: (event) => setState(() => _isHovered = false),
-        child: ElevatedButton(
-          onPressed: widget.onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor:
-                _isHovered ? widget.hoverColor : widget.buttonColor,
-            foregroundColor: widget.textColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(widget.borderRadius),
-            ),
-            minimumSize: Size(widget.w, widget.h),
+      child: ElevatedButton(
+        onPressed: widget.onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: _isHovered ? widget.hoverColor : widget.buttonColor,
+          foregroundColor: widget.textColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(widget.borderRadius),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                widget.text,
-                style: TextStyle(
-                  fontSize: widget.fsize,
-                  fontFamily: 'Strait',
-                  fontWeight: FontWeight.bold,
-                ),
+          minimumSize: Size(widget.w, widget.h),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              widget.text,
+              style: TextStyle(
+                fontSize: widget.fsize,
+                fontFamily: 'Strait',
+                fontWeight: FontWeight.bold,
               ),
-              if (widget.suffixIcon != null)
-                SizedBox(
-                  width: 24,
-                  child: Icon(widget.suffixIcon, size: widget.iconsize),
-                ),
-            ],
-          ),
+            ),
+            if (widget.suffixIcon != null)
+              SizedBox(
+                width: 24,
+                child: Icon(widget.suffixIcon, size: widget.iconsize),
+              ),
+          ],
         ),
       ),
     );

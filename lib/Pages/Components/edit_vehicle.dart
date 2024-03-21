@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Pages/View/account.dart';
+import 'package:provider/Pages/View/home_page.dart';
 
 class EditVehiclePage extends StatefulWidget {
   final Map<String, dynamic> vehicleDetails;
@@ -84,6 +85,125 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
     return vehicleImageURL;
   }
 
+  Future<void> _updateVehicle() async {
+    final manufacturer = _manufacturerController.text;
+    final year = _yearController.text;
+    final vehicleName = _vehicleNameController.text;
+    final registrationNumber = _registrationNumberController.text;
+    final kilometers = _kilometersController.text;
+    final fuelType = _selectedFuelType;
+
+    if (manufacturer.isEmpty ||
+        year.isEmpty ||
+        vehicleName.isEmpty ||
+        registrationNumber.isEmpty ||
+        kilometers.isEmpty ||
+        fuelType == null) {
+      // Show error message if any field is empty
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              "Error",
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                fontFamily: GoogleFonts.strait().fontFamily,
+              ),
+            ),
+            content: const Text("Please Fill in all fields."),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+      return; // Stop execution if any field is empty
+    }
+
+    // Initialize vehicleImageURL as null
+    String? vehicleImageURL;
+
+    // Upload image to Firebase Storage if a new image is picked
+    if (_pickedVehicleImage != null) {
+      vehicleImageURL = await _uploadImageToFirebase(_pickedVehicleImage!);
+    }
+
+    // Update the vehicle details in the database
+    final currentUser = FirebaseAuth.instance.currentUser!;
+    final vehicleRef = FirebaseFirestore.instance
+        .collection('USERS')
+        .doc(currentUser.email)
+        .collection('VEHICLES');
+
+    // Use the registration number as the document ID
+    final vehicleDocRef = vehicleRef.doc(registrationNumber);
+
+    // Create a map to store updated vehicle details
+    final Map<String, dynamic> updatedVehicleDetails = {
+      'Manufacturer': manufacturer,
+      'Year': year,
+      'VehicleName': vehicleName,
+    
+      'Kilometers': kilometers,
+      'FuelType': fuelType,
+    };
+
+    // Add vehicle image URL to the map if it's not null
+    if (vehicleImageURL != null) {
+      updatedVehicleDetails['vehicleImageURL'] = vehicleImageURL;
+    }
+
+    // Update the vehicle document in Firestore
+    await vehicleDocRef.update(updatedVehicleDetails);
+
+    // Clear the text fields after submission
+    _manufacturerController.clear();
+    _yearController.clear();
+    _vehicleNameController.clear();
+    _kilometersController.clear();
+    setState(() {
+      _selectedFuelType = null;
+      _pickedVehicleImage = null;
+    });
+
+    // Show a dialog to indicate successful submission
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            "Vehicle Updated Successfully",
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontFamily: GoogleFonts.strait().fontFamily,
+                fontWeight: FontWeight.bold),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) =>  HomePage(),
+                  ),
+                );
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,7 +241,11 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.delete,size: 37,color: Colors.red,),
+            icon: const Icon(
+              Icons.delete,
+              size: 37,
+              color: Colors.red,
+            ),
             onPressed: () {
               // Show a confirmation dialog before deleting the vehicle
               showDialog(
@@ -257,6 +381,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
               ),
               const SizedBox(height: 8),
               TextFormField(
+                enabled: false,
                 controller: _registrationNumberController,
                 decoration: InputDecoration(
                   hintText: 'Eg: KL 7 CG 369',
@@ -323,129 +448,10 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () async {
-                  final manufacturer = _manufacturerController.text;
-                  final year = _yearController.text;
-                  final vehicleName = _vehicleNameController.text;
-                  final registrationNumber = _registrationNumberController.text;
-                  final kilometers = _kilometersController.text;
-                  final fuelType = _selectedFuelType;
-
-                  if (manufacturer.isEmpty ||
-                      year.isEmpty ||
-                      vehicleName.isEmpty ||
-                      registrationNumber.isEmpty ||
-                      kilometers.isEmpty ||
-                      fuelType == null) {
-                    // Show error message if any field is empty
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text(
-                            "Error",
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: GoogleFonts.strait().fontFamily,
-                            ),
-                          ),
-                          content: const Text("Please Fill in all fields."),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text("OK"),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                    return; // Stop execution if any field is empty
-                  }
-
-                  // Initialize vehicleImageURL as null
-                  String? vehicleImageURL;
-
-                  // Upload image to Firebase Storage if a new image is picked
-                  if (_pickedVehicleImage != null) {
-                    vehicleImageURL =
-                        await _uploadImageToFirebase(_pickedVehicleImage!);
-                  }
-
-                  // Update the vehicle details in the database
-                  final currentUser = FirebaseAuth.instance.currentUser!;
-                  final vehicleRef = FirebaseFirestore.instance
-                      .collection('USERS')
-                      .doc(currentUser.email)
-                      .collection('VEHICLES');
-
-                  // Use the registration number as the document ID
-                  final vehicleDocRef = vehicleRef.doc(registrationNumber);
-
-                  // Create a map to store updated vehicle details
-                  final Map<String, dynamic> updatedVehicleDetails = {
-                    'Manufacturer': manufacturer,
-                    'Year': year,
-                    'VehicleName': vehicleName,
-                    'RegistrationNumber': registrationNumber,
-                    'Kilometers': kilometers,
-                    'FuelType': fuelType,
-                  };
-
-                  // Add vehicle image URL to the map if it's not null
-                  if (vehicleImageURL != null) {
-                    updatedVehicleDetails['vehicleImageURL'] = vehicleImageURL;
-                  }
-
-                  // Update the vehicle document in Firestore
-                  await vehicleDocRef.update(updatedVehicleDetails);
-
-                  // Clear the text fields after submission
-                  _manufacturerController.clear();
-                  _yearController.clear();
-                  _vehicleNameController.clear();
-                  _registrationNumberController.clear();
-                  _kilometersController.clear();
-                  setState(() {
-                    _selectedFuelType = null;
-                    _pickedVehicleImage = null;
-                  });
-
-                  // Show a dialog to indicate successful submission
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text(
-                          "Vehicle Updated Successfully",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontFamily: GoogleFonts.strait().fontFamily,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                  builder: (context) => const AccountPage(),
-                                ),
-                              );
-                            },
-                            child: const Text("OK"),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
+                onPressed: _updateVehicle,
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.black,
+                  backgroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4),
                   ),

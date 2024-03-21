@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/Authentication/View/Widgets/pick_location_pop_up.dart';
 import 'package:provider/Colors/appcolor.dart';
+import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Pages/Components/custom_button.dart';
 import 'package:provider/Pages/Components/label_textfield.dart';
 import 'package:provider/Pages/Utils/sqauretile.dart';
@@ -147,6 +148,7 @@ class _HomePageContentState extends State<HomePageContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         toolbarHeight: 80,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -171,253 +173,293 @@ class _HomePageContentState extends State<HomePageContent> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Expanded(
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  CustomButton(
-                    text: 'SELECT SERVICE',
-                    fsize: 14,
-                    iconsize: 24,
-                    onPressed: () {},
-                    buttonColor: Colors.yellow.shade900,
-                    suffixIcon: FontAwesomeIcons.wrench,
-                  ),
-                  const SizedBox(
-                    height: 7,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Squaretile(
-                        text: 'TYRE WORKS',
-                        imagePath: 'lib/images/tyre.png',
-                        isSelected: selectedService == 'TYRE WORKS',
-                        onTap: () => updateSelectedService('TYRE WORKS'),
-                      ),
-                      const SizedBox(width: 7),
-                      Squaretile(
-                        text: 'MECHANICAL WORKS',
-                        imagePath: 'lib/images/automotive.png',
-                        isSelected: selectedService == 'Mechanical Service',
-                        onTap: () =>
-                            updateSelectedService('Mechanical Service'),
-                      ),
-                      const SizedBox(width: 7),
-                      Squaretile(
-                        text: 'EV CHARGING',
-                        imagePath: 'lib/images/charging-station.png',
-                        isSelected: selectedService == 'EV Charging service',
-                        onTap: () =>
-                            updateSelectedService('EV Charging service'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Squaretile(
-                        text: 'FUEL DELIVERY',
-                        imagePath: 'lib/images/fuel.png',
-                        isSelected: selectedService == 'Fuel Delivery Service',
-                        onTap: () =>
-                            updateSelectedService('Fuel Delivery Service'),
-                      ),
-                      const SizedBox(width: 7),
-                      Squaretile(
-                        text: 'TOWING',
-                        imagePath: 'lib/images/tow-truck.png',
-                        isSelected:
-                            selectedService == 'Emergency Towing Service',
-                        onTap: () =>
-                            updateSelectedService('Emergency Towing Service'),
-                      ),
-                      const SizedBox(width: 7),
-                      Squaretile(
-                        text: 'KEY LOCKOUT',
-                        imagePath: 'lib/images/key.png',
-                        isSelected: selectedService == 'KEY LOCKOUT',
-                        onTap: () => updateSelectedService('KEY LOCKOUT'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  CustomButton(
-                    text: 'SELECT VEHICLE',
-                    fsize: 14,
-                    iconsize: 24,
-                    onPressed: () {},
-                    buttonColor: Colors.yellow.shade800,
-                    suffixIcon: FontAwesomeIcons.car,
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20.0, top: 10, right: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+          child: Center(
+            child: Expanded(
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomButton(
+                      borderRadius: 2,
+                      text: 'Select Service',
+                      fsize: 14,
+                      iconsize: 14,
+                      onPressed: () {},
+                      textColor: Colors.black,
+                      buttonColor: AppColors.appPrimary,
+                      suffixIcon: FontAwesomeIcons.wrench,
+                      h: 24,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ...addedVehicles.map((vehicleDetails) {
-                          final isSelected = selectedVehicleName ==
-                              '${vehicleDetails['manufacturer']} ${vehicleDetails['vehicleName']}';
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                vehicleID =
-                                    vehicleDetails["registrationNumber"];
-                                selectedVehicleName =
-                                    '${vehicleDetails['manufacturer']} ${vehicleDetails['vehicleName']}';
-                              });
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(bottom: 10),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 7),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: AppColors.appPrimary),
-                                borderRadius: BorderRadius.circular(4),
-                                color: Colors.black26,
+                        Squaretile(
+                          text: 'TYRE WORKS',
+                          imagePath: 'lib/images/tyre.png',
+                          isSelected: selectedService == 'TYRE WORKS',
+                          onTap: () => updateSelectedService('TYRE WORKS'),
+                        ),
+                        const SizedBox(width: 7),
+                        Squaretile(
+                          text: 'MECHANICAL WORKS',
+                          imagePath: 'lib/images/automotive.png',
+                          isSelected: selectedService == 'Mechanical Service',
+                          onTap: () =>
+                              updateSelectedService('Mechanical Service'),
+                        ),
+                        const SizedBox(width: 7),
+                        Squaretile(
+                          text: 'EV CHARGING',
+                          imagePath: 'lib/images/charging-station.png',
+                          isSelected: selectedService == 'EV Charging service',
+                          onTap: () =>
+                              updateSelectedService('EV Charging service'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Squaretile(
+                          text: 'FUEL DELIVERY',
+                          imagePath: 'lib/images/fuel.png',
+                          isSelected:
+                              selectedService == 'Fuel Delivery Service',
+                          onTap: () =>
+                              updateSelectedService('Fuel Delivery Service'),
+                        ),
+                        const SizedBox(width: 7),
+                        Squaretile(
+                          text: 'TOWING',
+                          imagePath: 'lib/images/tow-truck.png',
+                          isSelected:
+                              selectedService == 'Emergency Towing Service',
+                          onTap: () =>
+                              updateSelectedService('Emergency Towing Service'),
+                        ),
+                        const SizedBox(width: 7),
+                        Squaretile(
+                          text: 'KEY LOCKOUT',
+                          imagePath: 'lib/images/key.png',
+                          isSelected: selectedService == 'KEY LOCKOUT',
+                          onTap: () => updateSelectedService('KEY LOCKOUT'),
+                        ),
+                      ],
+                    ),
+                    CustomButton(
+                      borderRadius: 2,
+                      text: 'Select Vehicle',
+                      fsize: 14,
+                      iconsize: 14,
+                      onPressed: () {},
+                      textColor: Colors.black,
+                      buttonColor: AppColors.appPrimary,
+                      suffixIcon: FontAwesomeIcons.car,
+                      h: 24,
+                    ),
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 20.0, top: 0, right: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ...addedVehicles.map((vehicleDetails) {
+                            final isSelected = selectedVehicleName ==
+                                '${vehicleDetails['manufacturer']} ${vehicleDetails['vehicleName']} ${vehicleDetails['registrationNumber']}';
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  vehicleID =
+                                      vehicleDetails["registrationNumber"];
+                                  selectedVehicleName =
+                                      '${vehicleDetails['manufacturer']} ${vehicleDetails['vehicleName']} ${vehicleDetails['registrationNumber']}';
+                                });
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.only(bottom: 10),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 7),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.white),
+                                  borderRadius: BorderRadius.circular(2),
+                                  color: isSelected
+                                      ? Colors.black
+                                      : Colors.transparent,
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Icon(FontAwesomeIcons.car,
+                                        size: 20, color: Colors.white),
+                                    const SizedBox(width: 17),
+                                    Expanded(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                vehicleDetails['manufacturer'] +
+                                                    " " +
+                                                    vehicleDetails[
+                                                        'vehicleName'] +
+                                                    " " +
+                                                    vehicleDetails[
+                                                        'registrationNumber'],
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16,
+                                                  fontFamily:
+                                                      GoogleFonts.strait()
+                                                          .fontFamily,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          if (isSelected)
+                                            const Icon(
+                                              Icons.check,
+                                              size: 17,
+                                              color: AppColors.appPrimary,
+                                            )
+                                          // Placeholder for check icon
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Icon(FontAwesomeIcons.car,
-                                      size: 20, color: Colors.white),
-                                  const SizedBox(width: 17),
-                                  Expanded(
+                            );
+                          }).toList(),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 25),
+                    if (selectedService.isNotEmpty &&
+                        selectedVehicleName.isNotEmpty)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment
+                            .start, // Align children to the top
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 20.0),
+                                  child: Container(
+                                    height: 50,
+                                    width: 1000,
+                                    padding: const EdgeInsets.all(7),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: AppColors.appPrimary),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              vehicleDetails['manufacturer'] +
-                                                  " " +
-                                                  vehicleDetails['vehicleName'],
+                                        if (selectedService.isNotEmpty)
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 17.0),
+                                            child: Text(
+                                              '$selectedService',
                                               style: TextStyle(
+                                                fontSize: 17,
                                                 color: Colors.white,
-                                                fontSize: 16,
                                                 fontFamily: GoogleFonts.strait()
                                                     .fontFamily,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                            const SizedBox(width: 5),
-                                            Text(
-                                              vehicleID,
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16,
-                                                fontFamily: GoogleFonts.strait()
-                                                    .fontFamily,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        if (isSelected)
-                                          const Icon(
-                                            Icons.check,
-                                            color: AppColors.appPrimary,
-                                          )
-                                        // Placeholder for check icon
+                                          ),
                                       ],
                                     ),
                                   ),
-                                ],
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 20.0, top: 7),
+                                  child: Container(
+                                    height: 50,
+                                    width: 1000,
+                                    padding: const EdgeInsets.all(7),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: AppColors.appPrimary),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        if (selectedVehicleName != null)
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 17.0),
+                                            child: Text(
+                                              '$selectedVehicleName',
+                                              style: TextStyle(
+                                                fontSize: 17,
+                                                color: Colors.white,
+                                                fontFamily: GoogleFonts.strait()
+                                                    .fontFamily,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                              width: 10), // Add space between the two widgets
+                          Padding(
+                            padding: const EdgeInsets.only(right: 20.0),
+                            child: SizedBox(
+                              width: 70, // Increase width for testing
+                              height: 107,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ManagePage(
+                                        servicetype: selectedService,
+                                        vehicleID: vehicleID,
+                                        userEmail: userEmail,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.appPrimary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    FontAwesomeIcons.chevronRight,
+                                    size: 24,
+                                    color: Colors.black,
+                                  ),
+                                ),
                               ),
                             ),
-                          );
-                        }).toList(),
-                      ],
-                    ),
-                  ),
-                  if (selectedService.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Container(
-                        padding: const EdgeInsets.all(7),
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.white),
-                            borderRadius: BorderRadius.circular(4)),
-                        child: Row(
-                          children: [
-                            if (selectedService.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 17.0),
-                                child: Text(
-                                  '$selectedService',
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      color: Colors.white,
-                                      fontFamily:
-                                          GoogleFonts.strait().fontFamily,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  const SizedBox(height: 10),
-                  if (selectedVehicleName.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Container(
-                        padding: const EdgeInsets.all(7),
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.white),
-                            borderRadius: BorderRadius.circular(4)),
-                        child: Row(
-                          children: [
-                            if (selectedVehicleName != null)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 17.0),
-                                child: Text(
-                                  '$selectedVehicleName',
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      color: Colors.white,
-                                      fontFamily:
-                                          GoogleFonts.strait().fontFamily,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  const SizedBox(height: 10),
-                  CustomButton(
-                    text: 'CONTINUE',
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ManagePage(
-                            servicetype: selectedService,
-                            vehicleID: vehicleID,
-                            userEmail: userEmail,
                           ),
-                        ),
-                      );
-                    },
-                    buttonColor: AppColors.appTertiary,
-                    textColor: AppColors.appSecondary,
-                    suffixIcon: FontAwesomeIcons.arrowRight,
-                  ),
-                  const SizedBox(
-                    height: 25,
-                  )
-                ],
+                        ],
+                      ),
+                    const SizedBox(
+                      height: 25,
+                    )
+                  ],
+                ),
               ),
             ),
           ),

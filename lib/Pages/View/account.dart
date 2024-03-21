@@ -192,6 +192,7 @@ class _AccountPageState extends State<AccountPage> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 70,
+        automaticallyImplyLeading: false,
         elevation: 0,
         title: Row(
           children: [

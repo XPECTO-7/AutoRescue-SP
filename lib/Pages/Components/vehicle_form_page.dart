@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Pages/View/account.dart';
+import 'package:provider/Pages/View/home_page.dart';
 
 class VehicleFormPage extends StatefulWidget {
   const VehicleFormPage({Key? key}) : super(key: key);
@@ -345,7 +346,7 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                             onPressed: () {
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                  builder: (context) => const AccountPage(),
+                                  builder: (context) =>  HomePage(),
                                 ),
                               );
                             },
