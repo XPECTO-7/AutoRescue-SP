@@ -51,6 +51,7 @@ dependencies:
   intl_phone_number_input: ^0.7.4
   lottie: ^3.1.0
   molten_navigationbar_flutter: ^1.0.1
+  rflutter_alert: ^2.0.7
   syncfusion_flutter_sliders: ^24.2.8
   timeline_tile: ^2.0.0
 

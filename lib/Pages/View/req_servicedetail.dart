@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/Colors/appcolor.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+import 'package:timeline_tile/timeline_tile.dart'; // Import Firestore
 
 class ReqServiceDetail extends StatefulWidget {
   final String providerID;
@@ -32,7 +33,8 @@ class _ReqServiceDetailState extends State<ReqServiceDetail> {
         .doc(widget.providerID) // Assuming providerID is the document ID in PROVIDERS collection
         .snapshots();
   }
-    TextStyle sstyle = TextStyle(
+
+  TextStyle sstyle = TextStyle(
     fontFamily: GoogleFonts.ubuntu().fontFamily,
     fontWeight: FontWeight.bold,
     fontSize: 16,
@@ -45,19 +47,12 @@ class _ReqServiceDetailState extends State<ReqServiceDetail> {
         toolbarHeight: 70,
         title: Row(
           children: [
-            const Icon(
-              Icons.details,
-              color: AppColors.appTertiary,
-            ),
-            const SizedBox(
-              width: 10,
-            ),
             Text(
-              'Service Detail',
+              '${widget.status}',
               style: TextStyle(
                 fontFamily: GoogleFonts.ubuntu().fontFamily,
                 fontWeight: FontWeight.bold,
-                fontSize: 24,
+                fontSize: 18,
               ),
             ),
           ],
@@ -107,7 +102,6 @@ class _ReqServiceDetailState extends State<ReqServiceDetail> {
               },
             ),
             const SizedBox(height: 16),
-            
             const Text(
               'Service Request Details',
               style: TextStyle(
@@ -138,7 +132,143 @@ class _ReqServiceDetailState extends State<ReqServiceDetail> {
                 ),
               ],
             ),
-            const SizedBox(height: 5),
+            const SizedBox(height: 20),
+            Expanded(
+              child: ListView(
+                children: [
+                  TimelineTile(
+                    alignment: TimelineAlign.manual,
+                    lineXY: 0.3,
+                    isFirst: true,
+                    indicatorStyle: const IndicatorStyle(
+                      width: 30,
+                      color: Colors.blue, // Color of the dot
+                      indicatorXY: 0.5,
+                    ),
+                    startChild: Container(
+                      padding: const EdgeInsets.all(8),
+                      child: const Text(
+                        'Requested',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    endChild: Container(
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        'Time: ${widget.requestedTime}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (widget.status == "Accepted" || widget.status == "Declined")
+                    TimelineTile(
+                      alignment: TimelineAlign.manual,
+                      lineXY: 0.3,
+                      indicatorStyle: const IndicatorStyle(
+                        width: 30,
+                        color: Colors.green,
+                        indicatorXY: 0.5,
+                      ),
+                      startChild: Container(
+                        padding: const EdgeInsets.all(8),
+                        child: Text(
+                          widget.status == "Accepted" ? 'Accepted' : 'Declined',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      endChild: Container(
+                        padding: const EdgeInsets.all(8),
+                        child: Text(
+                           'Time: ${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now())}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (widget.status == "Accepted")
+                    StreamBuilder<DocumentSnapshot>(
+                      stream: providerStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          final providerData = snapshot.data!;
+                          final providerPH = providerData["Phone Number"];
+
+                          return TimelineTile(
+                            alignment: TimelineAlign.manual,
+                            lineXY: 0.3,
+                            indicatorStyle: const IndicatorStyle(
+                              width: 30,
+                              color: Colors.orange,
+                              indicatorXY: 0.5,
+                            ),
+                            startChild: Container(
+                              padding: const EdgeInsets.all(8),
+                              child: const Text(
+                                'On the Way',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            endChild: Container(
+                              padding: const EdgeInsets.all(8),
+                              child: Text(
+                                'Provider Phone: $providerPH',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          );
+                        } else {
+                          return const SizedBox();
+                        }
+                      },
+                    ),
+                  if (widget.status == "Completed")
+                    TimelineTile(
+                      alignment: TimelineAlign.manual,
+                      lineXY: 0.3,
+                      isLast: true,
+                      indicatorStyle: const IndicatorStyle(
+                        width: 30,
+                        color: Colors.red,
+                        indicatorXY: 0.5,
+                      ),
+                      startChild: Container(
+                        padding: const EdgeInsets.all(8),
+                        child: const Text(
+                          'Service Completed',
+                          style: TextStyle(
+                            fontSize:
+                            16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      endChild: Container(
+                        padding: const EdgeInsets.all(8),
+                        child: Text(
+                          'Time: ${DateTime.now().toString()}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

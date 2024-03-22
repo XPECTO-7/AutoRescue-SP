@@ -26,46 +26,65 @@ class _SquaretileState extends State<Squaretile> {
     return GestureDetector(
       onTap: widget.onTap,
       child: SizedBox(
-        height: MediaQuery.of(context).size.height /
-            6,
-        width: MediaQuery.of(context).size.width /
-            3.48,
-        child: Container(
-          padding: const EdgeInsets.all(7),
-          decoration: BoxDecoration(
-            border: Border.all(color: AppColors.appTertiary),
-            borderRadius: BorderRadius.circular(2),
-            color: widget.isSelected ? AppColors.appPrimary : Colors.grey[950],
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 70,
-                width: 125,
-                child: Container(
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
+        height: MediaQuery.of(context).size.height / 6,
+        width: MediaQuery.of(context).size.width / 3.48,
+        child: Stack(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(7),
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.appTertiary),
+                borderRadius: BorderRadius.circular(2),
+                color: widget.isSelected
+                    ? AppColors.appPrimary
+                    : Colors.grey[950],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 70,
+                    width: 125,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
                           image: AssetImage(widget.imagePath),
-                          fit: BoxFit.contain)),
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Center(
+                    child: Text(
+                      widget.text,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: GoogleFonts.strait().fontFamily,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign
+                          .center, // Optional if you want to explicitly set text alignment
+                    ),
+                  )
+                ],
+              ),
+            ),
+            if (widget.isSelected)
+              const Positioned(
+                top: 5,
+                right: 5,
+                child: Padding(
+                  padding: EdgeInsets.all(0.2),
+                  child: Icon(
+                    Icons.check,
+                    color: Colors.black,
+                    size: 20,
+                  ),
                 ),
               ),
-              const SizedBox(height: 5),
-              Center(
-                child: Text(
-                  widget.text,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: GoogleFonts.strait().fontFamily,
-                    color: Colors.white,
-                  ),
-                  textAlign: TextAlign
-                      .center, // Optional if you want to explicitly set text alignment
-                ),
-              )
-            ],
-          ),
+          ],
         ),
       ),
     );

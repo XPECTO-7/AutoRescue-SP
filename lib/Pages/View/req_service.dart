@@ -1,13 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Pages/Components/custom_button.dart';
 import 'package:provider/Pages/View/req_servicedetail.dart';
+import 'package:provider/Colors/appcolor.dart';
 
 class ReqServicePage extends StatefulWidget {
   const ReqServicePage({Key? key}) : super(key: key);
@@ -34,6 +33,18 @@ class _ReqServicePageState extends State<ReqServicePage> {
         .where("UserID", isEqualTo: currentUser.email)
         .snapshots()
         .map((snapshot) => snapshot.docs);
+  }
+
+  Future<void> _deleteRequest(String requestId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("SERVICE-REQUEST")
+          .doc(requestId)
+          .delete();
+    } catch (e) {
+      print("Error deleting request: $e");
+      // Handle error as per your requirement
+    }
   }
 
   @override
@@ -90,17 +101,14 @@ class _ReqServicePageState extends State<ReqServicePage> {
               DateTime requestedTime =
                   (request["Requested-Time"] as Timestamp).toDate();
               String formattedTime =
-                  DateFormat('yyyy-MM-dd HH:mm').format(requestedTime);
+                  DateFormat('yyyy-MM-dd hh:mm').format(requestedTime);
 
               // Change text color based on status
               Color statusColor = Colors.white; // Default color
 
-             
-
               if (request["Status"] == "Pending") {
                 statusColor =
                     Colors.yellow; // Change to yellow if status is pending
-              
               } else if (request["Status"] == "Accepted") {
                 statusColor =
                     Colors.green; // Change to green if status is accepted
@@ -110,61 +118,105 @@ class _ReqServicePageState extends State<ReqServicePage> {
                 print('Unknown status: ${request["Status"]}');
               }
 
-              return ExpansionTile(
-                title: Text(
-                  request["Service-Request-Type"]
-                      .toString()
-                      .toUpperCase(), // Formatted time
-                  style: TextStyle(
+              return Card(
+                margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                color: Colors.grey[900],
+                child: ExpansionTile(
+                  title: Text(
+                    request["Service-Request-Type"]
+                        .toString()
+                        .toUpperCase(), // Formatted time
+                    style: TextStyle(
                       color: statusColor,
                       fontSize: 20,
-                      fontFamily: GoogleFonts.ubuntu().fontFamily),
-                ),
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Status: ${request["Status"].toString()}',
-                          style: TextStyle(color: statusColor),
-                        ),
-                        Text(
-                          'Service Requested Time: $formattedTime', // Formatted time
-                          
-                        ),
-                        SizedBox(
-                          height: 7,
-                        ),
-                        CustomButton(
-                          h: 40,
-                          text: 'More Details',
-                          textColor: Colors.black,
-                          fsize: 16,
-                          suffixIcon: Icons.arrow_right_sharp,
-                          buttonColor: Colors.white,
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ReqServiceDetail(
-                                  providerID:
-                                      request["ProviderID"], // Pass provider ID
-                                  serviceRequestType: request[
-                                      "Service-Request-Type"], // Pass service request type
-                                  requestedTime:
-                                      formattedTime, // Pass formatted time
-                                  status: request["Status"], // Pass status
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+                      fontFamily: GoogleFonts.ubuntu().fontFamily,
                     ),
                   ),
-                ],
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Status: ${request["Status"].toString()}',
+                            style: TextStyle(color: statusColor),
+                          ),
+                          Text(
+                            'Service Requested Time: $formattedTime', // Formatted time
+                          ),
+                          SizedBox(
+                            height: 7,
+                          ),
+                          CustomButton(
+                            h: 40,
+                            text: 'More Details',
+                            textColor: Colors.black,
+                            fsize: 16,
+                            suffixIcon: Icons.arrow_right_sharp,
+                            buttonColor: Colors.white,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ReqServiceDetail(
+                                    providerID: request[
+                                        "ProviderID"], // Pass provider ID
+                                    serviceRequestType: request[
+                                        "Service-Request-Type"], // Pass service request type
+                                    requestedTime:
+                                        formattedTime, // Pass formatted time
+                                    status: request["Status"], // Pass status
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          CustomButton(
+                            h: 40,
+                            text: 'Cancel Request',
+                            textColor: Colors.white,
+                            fsize: 16,
+                            suffixIcon: Icons.cancel_sharp,
+                            buttonColor: Colors.red.shade500,
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("Confirm Cancellation"),
+                                    content: Text(
+                                        "Are you sure you want to cancel this request?"),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text("No"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () async {
+                                          await _deleteRequest(
+                                              userRequest[index].id);
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text("Yes"),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
           );

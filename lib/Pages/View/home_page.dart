@@ -8,12 +8,14 @@ import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Pages/Components/custom_button.dart';
 import 'package:provider/Pages/Components/label_textfield.dart';
+import 'package:provider/Pages/Utils/alert_error.dart';
 import 'package:provider/Pages/Utils/sqauretile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/Pages/View/account.dart';
 import 'package:provider/Pages/View/manage.dart';
 import 'package:provider/Pages/View/req_service.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -162,7 +164,7 @@ class _HomePageContentState extends State<HomePageContent> {
               style: TextStyle(
                 fontFamily: GoogleFonts.ubuntu().fontFamily,
                 fontWeight: FontWeight.bold,
-                fontSize: 24,
+                fontSize: 26,
               ),
             ),
           ],
@@ -180,13 +182,13 @@ class _HomePageContentState extends State<HomePageContent> {
                     CustomButton(
                       borderRadius: 2,
                       text: 'Select Service',
-                      fsize: 14,
-                      iconsize: 14,
+                      fsize: 16,
+                      iconsize: 16,
                       onPressed: () {},
                       textColor: Colors.black,
                       buttonColor: AppColors.appPrimary,
                       suffixIcon: FontAwesomeIcons.wrench,
-                      h: 24,
+                      h: 34,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -245,16 +247,19 @@ class _HomePageContentState extends State<HomePageContent> {
                         ),
                       ],
                     ),
+                    const SizedBox(
+                      height: 12,
+                    ),
                     CustomButton(
                       borderRadius: 2,
                       text: 'Select Vehicle',
-                      fsize: 14,
-                      iconsize: 14,
+                      fsize: 16,
+                      iconsize: 16,
                       onPressed: () {},
                       textColor: Colors.black,
                       buttonColor: AppColors.appPrimary,
                       suffixIcon: FontAwesomeIcons.car,
-                      h: 24,
+                      h: 34,
                     ),
                     Padding(
                       padding:
@@ -302,12 +307,30 @@ class _HomePageContentState extends State<HomePageContent> {
                                                 vehicleDetails['manufacturer'] +
                                                     " " +
                                                     vehicleDetails[
-                                                        'vehicleName'] +
-                                                    " " +
-                                                    vehicleDetails[
-                                                        'registrationNumber'],
+                                                        'vehicleName'],
                                                 style: TextStyle(
-                                                  color: Colors.white,
+                                                  color: isSelected
+                                                      ? AppColors.appPrimary
+                                                      : Colors.white,
+                                                  fontSize: 16,
+                                                  fontFamily:
+                                                      GoogleFonts.strait()
+                                                          .fontFamily,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                width: 25,
+                                              ),
+                                              Text(
+                                                "[" +
+                                                    vehicleDetails[
+                                                        'registrationNumber'] +
+                                                    "]",
+                                                style: TextStyle(
+                                                  color: isSelected
+                                                      ? AppColors.appPrimary
+                                                      : Colors.white,
                                                   fontSize: 16,
                                                   fontFamily:
                                                       GoogleFonts.strait()
@@ -335,94 +358,93 @@ class _HomePageContentState extends State<HomePageContent> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 25),
-                    if (selectedService.isNotEmpty &&
-                        selectedVehicleName.isNotEmpty)
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment
-                            .start, // Align children to the top
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 20.0),
-                                  child: Container(
-                                    height: 50,
-                                    width: 1000,
-                                    padding: const EdgeInsets.all(7),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: AppColors.appPrimary),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        if (selectedService.isNotEmpty)
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 17.0),
-                                            child: Text(
-                                              '$selectedService',
-                                              style: TextStyle(
-                                                fontSize: 17,
-                                                color: Colors.white,
-                                                fontFamily: GoogleFonts.strait()
-                                                    .fontFamily,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                    const SizedBox(height: 10),
+                    Row(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start, // Align children to the top
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20.0),
+                                child: Container(
+                                  height: 50,
+                                  width: 1000,
+                                  padding: const EdgeInsets.all(7),
+                                  decoration: BoxDecoration(
+                                    border:
+                                        Border.all(color: AppColors.appPrimary),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      if (selectedService.isNotEmpty)
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 17.0),
+                                          child: Text(
+                                            '$selectedService',
+                                            style: TextStyle(
+                                              fontSize: 17,
+                                              color: Colors.white,
+                                              fontFamily: GoogleFonts.strait()
+                                                  .fontFamily,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                      ],
-                                    ),
+                                        ),
+                                    ],
                                   ),
                                 ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 20.0, top: 7),
-                                  child: Container(
-                                    height: 50,
-                                    width: 1000,
-                                    padding: const EdgeInsets.all(7),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: AppColors.appPrimary),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        if (selectedVehicleName != null)
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 17.0),
-                                            child: Text(
-                                              '$selectedVehicleName',
-                                              style: TextStyle(
-                                                fontSize: 17,
-                                                color: Colors.white,
-                                                fontFamily: GoogleFonts.strait()
-                                                    .fontFamily,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 20.0, top: 7),
+                                child: Container(
+                                  height: 50,
+                                  width: 1000,
+                                  padding: const EdgeInsets.all(7),
+                                  decoration: BoxDecoration(
+                                    border:
+                                        Border.all(color: AppColors.appPrimary),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      if (selectedVehicleName != null)
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 17.0),
+                                          child: Text(
+                                            '$selectedVehicleName',
+                                            style: TextStyle(
+                                              fontSize: 17,
+                                              color: Colors.white,
+                                              fontFamily: GoogleFonts.strait()
+                                                  .fontFamily,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                      ],
-                                    ),
+                                        ),
+                                    ],
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(
-                              width: 10), // Add space between the two widgets
-                          Padding(
-                            padding: const EdgeInsets.only(right: 20.0),
-                            child: SizedBox(
-                              width: 70, // Increase width for testing
-                              height: 107,
-                              child: ElevatedButton(
-                                onPressed: () {
+                        ),
+                        const SizedBox(width: 10),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 20.0),
+                          child: SizedBox(
+                            width: 70, // Increase width for testing
+                            height: 107,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                if (selectedService.isNotEmpty &&
+                                    selectedVehicleName.isNotEmpty) {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -433,25 +455,37 @@ class _HomePageContentState extends State<HomePageContent> {
                                       ),
                                     ),
                                   );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.appPrimary,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
+                                } else {
+                                  CustomAlert.show(
+                                    context: context,
+                                    title: "Missing Information",
+                                    message:
+                                        "Please select a service and a vehicle.",
+                                    messageTextColor: Colors.red,
+                                    backgroundColor: Colors.white,
+                                    buttonColor: Colors.grey,
+                                  );
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors
+                                    .appPrimary, // Change this to your desired color
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: const Center(
-                                  child: Icon(
-                                    FontAwesomeIcons.chevronRight,
-                                    size: 24,
-                                    color: Colors.black,
-                                  ),
+                              ),
+                              child: const Center(
+                                child: Icon(
+                                  FontAwesomeIcons.chevronRight,
+                                  size: 26,
+                                  color: Colors.black,
                                 ),
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(
                       height: 25,
                     )
