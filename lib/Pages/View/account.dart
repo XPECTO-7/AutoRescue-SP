@@ -225,7 +225,7 @@ class _AccountPageState extends State<AccountPage> {
       body: Center(
         child: SafeArea(
           child: SingleChildScrollView(
-            child: Column(
+            child: Column(          
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
