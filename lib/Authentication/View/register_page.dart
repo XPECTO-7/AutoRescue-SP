@@ -146,7 +146,6 @@ class _RegisterPageState extends State<RegisterPage>
         'License No': 'licenseController',
         'Insurance No': 'insuranceController',
         'Service Type': 'serviceTypeController',
-        'MecSerCharge': 'MecPriceController',
         'Approved': false
       });
     } on FirebaseAuthException catch (e) {

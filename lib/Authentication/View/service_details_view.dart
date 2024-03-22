@@ -7,13 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
 import 'package:provider/Authentication/Controller/main_page.dart';
-import 'package:provider/Authentication/View/Widgets/ev_slider.dart';
-import 'package:provider/Authentication/View/Widgets/fuel_slider.dart';
-import 'package:provider/Authentication/View/Widgets/mec_slider.dart';
 import 'package:provider/Authentication/View/Widgets/pick_location_pop_up.dart';
-import 'package:provider/Authentication/View/Widgets/towing_slider.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Components/myalert_box.dart';
 import 'package:provider/Components/mybutton.dart';
@@ -42,10 +37,8 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
   TextEditingController licenseController = TextEditingController();
   TextEditingController insuranceController = TextEditingController();
   TextEditingController locationController = TextEditingController();
-  TextEditingController mecPriceController = TextEditingController();
-  TextEditingController fuelPriceController = TextEditingController();
-  TextEditingController towingPriceController = TextEditingController();
-  TextEditingController evPriceController = TextEditingController();
+  TextEditingController priceChargeController =
+      TextEditingController(text: '100');
 
   String imgUrl = "";
   String longitude = "";
@@ -57,13 +50,6 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
     'Emergency Towing Service',
     'EV Charging service',
   ];
-
-  late Map<String, TextEditingController> priceControllers = {
-    "Mechanical Service": mecPriceController,
-    "Fuel Delivery Service": fuelPriceController,
-    "Emergency Towing Service": towingPriceController,
-    "EV Charging service": evPriceController,
-  };
 
   bool isSigningUp = false;
 
@@ -86,10 +72,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
     print("Longitude: $longitude");
     print("License: ${licenseController.text}");
     print("Insurance: ${insuranceController.text}");
-    print("Mechanical Price: ${mecPriceController.text}");
-    print("Towing Price: ${towingPriceController.text}");
-    print("Fuel Price: ${fuelPriceController.text}");
-    print("EV Price: ${evPriceController.text}");
+    print("Price Charge: ${priceChargeController.text}");
 
     if (companyNameController.text.isEmpty) {
       showAlertDialog("Company Name cannot be empty");
@@ -103,12 +86,8 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
       showAlertDialog("Insurance Number cannot be empty");
     } else {
       // Check if at least one of the price controllers has a non-empty value
-      if (mecPriceController.text.isEmpty &&
-          towingPriceController.text.isEmpty &&
-          fuelPriceController.text.isEmpty &&
-          evPriceController.text.isEmpty) {
-        // None of the price controllers have a value
-        showAlertDialog("At least one service charge field is required");
+      if (priceChargeController.text.isEmpty) {
+        showAlertDialog("Price charge is required");
       } else {
         signUp();
       }
@@ -163,10 +142,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
         'License No': licenseController.text,
         'Insurance No': insuranceController.text,
         'Service Type': serviceTypeController.text,
-        'MecSerCharge': mecPriceController.text,
-        'FuelSerCharge': fuelPriceController.text,
-        'evSerCharge': evPriceController.text,
-        'towSerCharge': towingPriceController.text,
+        'Min Price': priceChargeController.text,
         'Approved': false
       });
     }
@@ -203,23 +179,26 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
   }
 
   void pickLocation() async {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return PinLocationMap(
-          currentLocationX: position
-          !.latitude,
-          currentLocationY: position!.longitude,
-          onTap: (p0, p1) {
-            setState(() {
-              longitude = p1.longitude.toString();
-              lattitude = p1.latitude.toString();
-            });
-            Navigator.pop(context);
-          },
-        );
-      },
-    );
+    if (position != null) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return PinLocationMap(
+            currentLocationX: position!.latitude,
+            currentLocationY: position!.longitude,
+            onTap: (p0, p1) {
+              setState(() {
+                longitude = p1.longitude.toString();
+                lattitude = p1.latitude.toString();
+              });
+              Navigator.pop(context);
+            },
+          );
+        },
+      );
+    } else {
+      print('Current position is null');
+    }
   }
 
   @override
@@ -246,7 +225,8 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Column(
+                    child: Column
+(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         TextField(
@@ -274,8 +254,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                               border: Border.all(color: Colors.grey),
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Row(
                               children: [
                                 const Icon(Icons.map),
@@ -343,7 +322,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                         TextField(
                           controller: insuranceController,
                           decoration: const InputDecoration(
-                            suffixIcon: Icon(Icons.edit_document),
+                            suffixIcon: Icon(Icons.verified),
                             hintText: 'Insurance Number',
                             hintStyle: TextStyle(color: Colors.white),
                             border: OutlineInputBorder(
@@ -357,7 +336,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                           ),
                         ),
                         const SizedBox(height: 15),
-                        DropdownButtonFormField<String>(
+                       DropdownButtonFormField<String>(
                           isExpanded: true,
                           decoration: const InputDecoration(
                             hintText: "Select Service",
@@ -396,23 +375,29 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                           },
                         ),
                         const SizedBox(height: 15),
-                        const Text('Service Charge Price Range :'),
-                        if (serviceTypeController.text == 'Mechanical Service')
-                          MecSlider(mecPriceController: mecPriceController),
-                        if (serviceTypeController.text ==
-                            'EV Charging service')
-                          evSlider(evPriceController: evPriceController),
-                        if (serviceTypeController.text ==
-                            'Emergency Towing Service')
-                          towSlider(
-                              towingPriceController: towingPriceController),
-                        if (serviceTypeController.text ==
-                            'Fuel Delivery Service')
-                          fuelSlider(fuelPriceController: fuelPriceController),
-                        const SizedBox(
-                          height: 10,
+                        TextField(
+                          controller: priceChargeController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'^\d+\.?\d{0,2}'),
+                            ),
+                          ],
+                          decoration: const InputDecoration(
+                            hintText: "Minimum Service Charge",
+                            hintStyle: TextStyle(color: Colors.white),
+                            border: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: AppColors.appPrimary),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: AppColors.appPrimary),
+                            ),
+                          ),
                         ),
-                        MyButton(
+                        const SizedBox(height: 25),
+                           MyButton(
                           onTap: isSigningUp ? null : validate,
                           text: 'Register',
                           textColor: Colors.black,
@@ -426,7 +411,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
               ),
             ),
           ),
-          if (isSigningUp)
+            if (isSigningUp)
             Container(
               color: Colors.black.withOpacity(0.5),
               child: const Center(
