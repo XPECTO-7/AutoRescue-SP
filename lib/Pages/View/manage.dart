@@ -11,7 +11,7 @@ import 'package:latlong2/latlong.dart' as latlong;
 import 'package:provider/Constants/app_strings.dart';
 import 'package:provider/Pages/Components/custom_button.dart';
 import 'package:provider/Pages/Components/text_area_simple.dart';
-import 'package:provider/Pages/View/notification_page.dart';
+import 'package:provider/Pages/View/req_service.dart';
 
 class ManagePage extends StatefulWidget {
   final String servicetype, vehicleID, userEmail;
@@ -128,6 +128,7 @@ class _ManagePageState extends State<ManagePage> {
                                           vehicleID: widget.vehicleID,
                                           userID: widget.userEmail);
                                       Navigator.pop(context);
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => ReqServicePage()));
                                     },
                                     buttonColor: AppColors.appPrimary,
                                     textColor: AppColors.appSecondary,
@@ -170,9 +171,7 @@ class _ManagePageState extends State<ManagePage> {
     setState(() {
       isLoading=false;
     });
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return NotificationPage();
-    },));
+     
   }
 
   @override
@@ -198,11 +197,11 @@ class _ManagePageState extends State<ManagePage> {
                     width: 10,
                   ),
                   Text(
-                    'Manage Service',
+                    'Service Providers Nearby',
                     style: TextStyle(
                       fontFamily: GoogleFonts.ubuntu().fontFamily,
                       fontWeight: FontWeight.bold,
-                      fontSize: 24,
+                      fontSize: 18,
                     ),
                   ),
                 ],

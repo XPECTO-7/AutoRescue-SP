@@ -13,6 +13,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/Pages/View/account.dart';
 import 'package:provider/Pages/View/manage.dart';
+import 'package:provider/Pages/View/req_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -25,11 +26,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 1;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    ManagePage(
-      servicetype: "",
-      vehicleID: "",
-      userEmail: "",
-    ),
+    ReqServicePage(),
     HomePageContent(),
     AccountPage(),
   ];

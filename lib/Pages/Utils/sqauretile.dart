@@ -35,7 +35,7 @@ class _SquaretileState extends State<Squaretile> {
           decoration: BoxDecoration(
             border: Border.all(color: AppColors.appTertiary),
             borderRadius: BorderRadius.circular(2),
-            color: widget.isSelected ? Colors.black : Colors.grey[950],
+            color: widget.isSelected ? AppColors.appPrimary : Colors.grey[950],
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
