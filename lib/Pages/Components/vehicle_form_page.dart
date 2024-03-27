@@ -25,7 +25,7 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
   final TextEditingController _kilometersController = TextEditingController();
   String? _selectedFuelType;
   File? _pickedVehicleImage;
-
+  bool isLoading = false;
   List<String> addedVehicles = [];
 
   final _hintTextStyle = const TextStyle(
@@ -245,133 +245,153 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  final manufacturer = _manufacturerController.text;
-                  final year = _yearController.text;
-                  final vehicleName = _vehicleNameController.text;
-                  final registrationNumber = _registrationNumberController.text;
-                  final kilometers = _kilometersController.text;
-                  final fuelType = _selectedFuelType;
+              Stack(
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      final manufacturer = _manufacturerController.text;
+                      final year = _yearController.text;
+                      final vehicleName = _vehicleNameController.text;
+                      final registrationNumber =
+                          _registrationNumberController.text;
+                      final kilometers = _kilometersController.text;
+                      final fuelType = _selectedFuelType;
 
-                  if (manufacturer.isEmpty ||
-                      year.isEmpty ||
-                      vehicleName.isEmpty ||
-                      registrationNumber.isEmpty ||
-                      kilometers.isEmpty ||
-                      fuelType == null) {
-                    // Show error message if any field is empty
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text(
-                            "Error",
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: GoogleFonts.strait().fontFamily,
-                            ),
-                          ),
-                          content: const Text("Please Fill in all fields."),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text("OK"),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                    return; // Stop execution if any field is empty
-                  }
-
-                  // Upload image to Firebase Storage
-                  final vehicleImageURL =
-                      await _uploadImageToFirebase(_pickedVehicleImage!);
-
-                  // Add the vehicle details to the database
-                  final currentUser = FirebaseAuth.instance.currentUser!;
-                  final vehicleRef = FirebaseFirestore.instance
-                      .collection('USERS')
-                      .doc(currentUser.email)
-                      .collection('VEHICLES');
-
-                  // Use the registration number as the document ID
-                  final vehicleDocRef = vehicleRef.doc(registrationNumber);
-
-                  await vehicleDocRef.set({
-                    'Manufacturer': manufacturer,
-                    'Year': year,
-                    'VehicleName': vehicleName,
-                    'RegistrationNumber': registrationNumber,
-                    'Kilometers': kilometers,
-                    'FuelType': fuelType,
-                    'vehicleImageURL': vehicleImageURL,
-                  });
-
-                  setState(() {
-                    addedVehicles.add(vehicleName);
-                  });
-
-                  // Clear the text fields after submission
-                  _manufacturerController.clear();
-                  _yearController.clear();
-                  _vehicleNameController.clear();
-                  _registrationNumberController.clear();
-                  _kilometersController.clear();
-                  setState(() {
-                    _selectedFuelType = null;
-                    _pickedVehicleImage = null;
-                  });
-
-                  // Show a dialog to indicate successful submission
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text(
-                          "Vehicle Added Successfully",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontFamily: GoogleFonts.strait().fontFamily,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                  builder: (context) =>  HomePage(),
+                      if (manufacturer.isEmpty ||
+                          year.isEmpty ||
+                          vehicleName.isEmpty ||
+                          registrationNumber.isEmpty ||
+                          kilometers.isEmpty ||
+                          fuelType == null) {
+                        // Show error message if any field is empty
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text(
+                                "Error",
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: GoogleFonts.strait().fontFamily,
                                 ),
-                              );
-                            },
-                            child: const Text("OK"),
-                          ),
-                        ],
+                              ),
+                              content: const Text("Please Fill in all fields."),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text("OK"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                        return; // Stop execution if any field is empty
+                      }
+                      setState(() {
+                        isLoading = true;
+                      });
+
+                      // Upload image to Firebase Storage
+                      final vehicleImageURL =
+                          await _uploadImageToFirebase(_pickedVehicleImage!);
+
+                      // Add the vehicle details to the database
+                      final currentUser = FirebaseAuth.instance.currentUser!;
+                      final vehicleRef = FirebaseFirestore.instance
+                          .collection('USERS')
+                          .doc(currentUser.email)
+                          .collection('VEHICLES');
+
+                      // Use the registration number as the document ID
+                      final vehicleDocRef = vehicleRef.doc(registrationNumber);
+
+                      await vehicleDocRef.set({
+                        'Manufacturer': manufacturer,
+                        'Year': year,
+                        'VehicleName': vehicleName,
+                        'RegistrationNumber': registrationNumber,
+                        'Kilometers': kilometers,
+                        'FuelType': fuelType,
+                        'vehicleImageURL': vehicleImageURL,
+                      });
+
+                      setState(() {
+                        addedVehicles.add(vehicleName);
+                        isLoading = false;
+                      });
+
+                      // Clear the text fields after submission
+                      _manufacturerController.clear();
+                      _yearController.clear();
+                      _vehicleNameController.clear();
+                      _registrationNumberController.clear();
+                      _kilometersController.clear();
+                      setState(() {
+                        _selectedFuelType = null;
+                        _pickedVehicleImage = null;
+                      });
+
+                      // Show a dialog to indicate successful submission
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(
+                              "Vehicle Added Successfully",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontFamily: GoogleFonts.strait().fontFamily,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (context) => const HomePage(),
+                                    ),
+                                  );
+                                },
+                                child: const Text("OK"),
+                              ),
+                            ],
+                          );
+                        },
                       );
                     },
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.black,
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                    child: Text(
+                      'ADD VEHICLE',
+                      style: TextStyle(
+                          fontSize: 19,
+                          fontFamily: GoogleFonts.strait().fontFamily,
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
-                  minimumSize: const Size(double.infinity, 50),
-                ),
-                child: Text(
-                  'ADD VEHICLE',
-                  style: TextStyle(
-                      fontSize: 19,
-                      fontFamily: GoogleFonts.strait().fontFamily,
-                      fontWeight: FontWeight.bold),
-                ),
+                  // Circular progress indicator
+                  if (isLoading)
+                    Container(
+                      color: Colors.white.withOpacity(0.5),
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ],
           ),

@@ -33,7 +33,9 @@ class _AccountPageState extends State<AccountPage> {
   bool isTrue = false;
 
   List<Map<String, dynamic>> addedVehicles = [];
-
+    // Define variables to hold the previous DL and RC image paths
+  String? previousDLimage;
+  String? previousRCimage;
   @override
   void initState() {
     super.initState();
@@ -52,7 +54,7 @@ class _AccountPageState extends State<AccountPage> {
         .collection('USERS')
         .doc(currentUser.email)
         .get();
-                        
+
     if (userSnapshot.exists) {
       final userDetails = userSnapshot.data() as Map<String, dynamic>;
       setState(() {
@@ -70,44 +72,95 @@ class _AccountPageState extends State<AccountPage> {
       });
     }
   }
-
-  Future<void> updateUserData() async {
-    final currentUser = FirebaseAuth.instance.currentUser!;
-
-    String DLimageUrl = await uploadLicenseImage();
-    String RCimageUrl = await uploadRCBookImage();
-
-    await FirebaseFirestore.instance
-        .collection('USERS')
-        .doc(currentUser.email)
-        .update({
-      'Fullname': _nameController.text,
-      'Phone Number': _phoneNumberController.text,
-      'Email': _emailController.text,
-      'DL ImageURL': DLimageUrl,
-      'RC ImageURL': RCimageUrl,
-    });
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text(
-            "Updated Successfully",
-            style: TextStyle(color: AppColors.appPrimary, fontSize: 14),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
+    // Function to update the previous DL and RC image paths
+  void updatePreviousImagePaths() {
+    if (pickedDLimage != null) {
+      previousDLimage = pickedDLimage!.path;
+    }
+    if (pickedRCimage != null) {
+      previousRCimage = pickedRCimage!.path;
+    }
   }
+
+
+Future<void> updateUserData() async {
+  final currentUser = FirebaseAuth.instance.currentUser!;
+
+  String? DLimageUrl;
+  String? RCimageUrl;
+
+  // Update previous image paths before checking renewal
+  updatePreviousImagePaths();
+
+  // Function to check if DL image is renewed
+  bool checkIfDLRenewed(File? pickedDLimage, String? previousDLimage) {
+    // Implement your logic here to determine if DL image is renewed
+    // For example, you might check if a new DL image is selected compared to the previous one
+    // Return true if DL image is renewed, false otherwise
+    // Example logic:
+    return pickedDLimage != null && pickedDLimage.path != previousDLimage;
+  }
+
+  bool checkIfRCRenewed(File? pickedRCimage, String? previousRCimage) {
+    // Implement your logic here to determine if RC image is renewed
+    // For example, you might check if a new RC image is selected compared to the previous one
+    // Return true if RC image is renewed, false otherwise
+    // Example logic:
+    return pickedRCimage != null && pickedRCimage.path != previousRCimage;
+  }
+
+  // Assuming you have a function to upload the DL image
+  if (checkIfDLRenewed(pickedDLimage, previousDLimage)) {
+    DLimageUrl = await uploadLicenseImage();
+  }
+
+  // Assuming you have a function to upload the RC image
+  if (checkIfRCRenewed(pickedRCimage, previousRCimage)) {
+    RCimageUrl = await uploadRCBookImage();
+  }
+
+  // Update only DL and RC image URLs if renewed, otherwise update all data
+  Map<String, dynamic> userData = {
+    'Fullname': _nameController.text,
+    'Phone Number': _phoneNumberController.text,
+    'Email': _emailController.text,
+  };
+
+  if (DLimageUrl != null) {
+    userData['DL ImageURL'] = DLimageUrl;
+  }
+
+  if (RCimageUrl != null) {
+    userData['RC ImageURL'] = RCimageUrl;
+  }
+
+  // Update Firestore document
+  await FirebaseFirestore.instance
+      .collection('USERS')
+      .doc(currentUser.email)
+      .update(userData);
+
+  // Show success dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text(
+          "Updated Successfully",
+          style: TextStyle(color: AppColors.appPrimary, fontSize: 14),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("OK"),
+          ),
+        ],
+      );
+    },
+  );
+}
 
   Future<String> uploadLicenseImage() async {
     final Reference storageReference =
@@ -225,7 +278,7 @@ class _AccountPageState extends State<AccountPage> {
       body: Center(
         child: SafeArea(
           child: SingleChildScrollView(
-            child: Column(          
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
@@ -238,7 +291,6 @@ class _AccountPageState extends State<AccountPage> {
                       color: AppColors.appPrimary,
                       onPressed: () {},
                     ),
-                  
                     Text(
                       "Hello there!",
                       style: TextStyle(
