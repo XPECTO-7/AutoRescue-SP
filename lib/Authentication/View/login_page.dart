@@ -10,7 +10,7 @@ import 'package:provider/Components/log_textfield.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback showRegisterPage;
-  const LoginPage({super.key, required this.showRegisterPage});
+  const LoginPage({Key? key, required this.showRegisterPage}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -21,9 +21,18 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
 
   void signIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
-        password: passwordController.text.trim());
+        password: passwordController.text.trim(),
+      );
+    } catch (e) {
+      // If there's an error signing in
+      showDialog(
+        context: context,
+        builder: (context) => MyAlertBox(message: 'User not registered or incorrect password.'),
+      );
+    }
   }
 
   @override
@@ -131,25 +140,11 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(
                   height: 25,
                 ),
-                GestureDetector(
+                MyButton(
                   onTap: signIn,
-                  child: MyButton(
-                    buttonColor: Colors.black,
-                    textColor: Colors.white,
-                    text: 'Sign In',
-                    onTap: () {
-                      if (emailController.text.isNotEmpty &&
-                          passwordController.text.isNotEmpty) {
-                        signIn();
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (context) =>
-                          MyAlertBox(message: 'Fill all the Fields',)
-                        );
-                      }
-                    },
-                  ),
+                  buttonColor: Colors.black,
+                  textColor: Colors.white,
+                  text: 'Sign In',
                 ),
                 const SizedBox(
                   height: 30,

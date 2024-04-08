@@ -1,17 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Colors/appcolor.dart';
-import 'package:latlong2/latlong.dart' as latlong;
-import 'package:provider/Constants/app_strings.dart';
+import 'package:provider/Pages/Utils/custom_button.dart';
+
 class ManagePage extends StatefulWidget {
-  const ManagePage({super.key});
+  const ManagePage({Key? key}) : super(key: key);
 
   @override
   State<ManagePage> createState() => _ManagePageState();
 }
 
 class _ManagePageState extends State<ManagePage> {
+  late User currentUser;
+
+  late Stream<List<DocumentSnapshot>> serviceRequestStream = const Stream.empty();
+
+  @override
+  void initState() {
+    super.initState();
+    currentUser = FirebaseAuth.instance.currentUser!;
+    _initServiceRequestStream();
+  }
+
+  void _initServiceRequestStream() {
+    serviceRequestStream = FirebaseFirestore.instance
+        .collection("SERVICE-REQUEST")
+        .where("ProviderID", isEqualTo: currentUser.email)
+        .snapshots()
+        .map((snapshot) => snapshot.docs);
+  }
+
+  Future<void> _deleteRequest(String requestId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("SERVICE-REQUEST")
+          .doc(requestId)
+          .delete();
+    } catch (e) {
+      print("Error deleting request: $e");
+      // Handle error as per your requirement
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,13 +55,13 @@ class _ManagePageState extends State<ManagePage> {
           children: [
             const Icon(
               Icons.verified_rounded,
-              color: AppColors.appPrimary,
+              color: AppColors.appTertiary,
             ),
             const SizedBox(
               width: 10,
             ),
             Text(
-              'Manage Service',
+              'Requested Services',
               style: TextStyle(
                 fontFamily: GoogleFonts.ubuntu().fontFamily,
                 fontWeight: FontWeight.bold,
@@ -37,45 +71,142 @@ class _ManagePageState extends State<ManagePage> {
           ],
         ),
       ),
-      body: Center(
-        child:   FlutterMap(
-            
-              options: MapOptions(
-                  minZoom: 5,
-                  maxZoom: 18,
-                  initialZoom: 18,
-                  // initialCenter: latlong.LatLng(
-                  //     8.774774774774775, 76.8818346748862)
-                  initialCenter: latlong.LatLng(
-                   8.702702702702702,
-                    76.77583118610511,
-                  )
-                  ),
-              children: [
-                TileLayer(
-                  // urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  // subdomains: ['a', 'b', 'c'],
-        
-                  urlTemplate:
-                      AppStrings.urlTemplate,
-                  additionalOptions: {
-                    'accessToken':
-                       AppStrings.accessToken,
-                    'id': AppStrings.id
-                  },
+      body: StreamBuilder<List<DocumentSnapshot>>(
+        stream: serviceRequestStream,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          final userRequest = snapshot.data ?? [];
+          if (userRequest.isEmpty) {
+            return const Center(
+              child: Text('No service requests found.'),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: userRequest.length,
+            itemBuilder: (context, index) {
+              final request = userRequest[index].data() as Map<String, dynamic>;
+              DateTime requestedTime =
+                  (request["Requested-Time"] as Timestamp).toDate();
+              String formattedTime =
+                  DateFormat('yyyy-MM-dd hh:mm').format(requestedTime);
+
+              // Change text color based on status
+              Color statusColor = Colors.white; // Default color
+
+              if (request["Status"] == "Pending") {
+                statusColor =
+                    Colors.yellow; // Change to yellow if status is pending
+              } else if (request["Status"] == "Accepted") {
+                statusColor =
+                    Colors.green; // Change to green if status is accepted
+              } else if (request["Status"] == "Declined") {
+                statusColor = Colors.red; // Change to red if status is declined
+              } else {
+                print('Unknown status: ${request["Status"]}');
+              }
+
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(7),
                 ),
-                MarkerLayer(
-                  markers: [],
-                  // Marker(
-                  //     point: latlong.LatLng(double.parse(lattitude),
-                  //         double.parse(longitude)),
-                  //     child: Icon(
-                  //       Icons.man,
-                  //       size: 36,
-                  //       color: AppColors.aleartColor,
-                  //     ))
-                )
-              ]),
+                color: Colors.grey[900],
+                child: ExpansionTile(
+                  title: Text(
+                    request["Service-Request-Type"]
+                        .toString()
+                        .toUpperCase(), // Formatted time
+                    style: TextStyle(
+                      color: statusColor,
+                      fontSize: 20,
+                      fontFamily: GoogleFonts.ubuntu().fontFamily,
+                    ),
+                  ),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Status: ${request["Status"].toString()}',
+                            style: TextStyle(color: statusColor),
+                          ),
+                          Text(
+                            'Service Requested Time: $formattedTime', // Formatted time
+                          ),
+                          const SizedBox(
+                            height: 7,
+                          ),
+                          CustomButton(
+                            h: 40,
+                            text: 'More Details',
+                            textColor: Colors.black,
+                            fsize: 16,
+                            suffixIcon: Icons.arrow_right_sharp,
+                            buttonColor: Colors.white,
+                            onPressed: () {
+                             
+                            },
+                          ),
+                          CustomButton(
+                            h: 40,
+                            text: 'Cancel Request',
+                            textColor: Colors.white,
+                            fsize: 16,
+                            suffixIcon: Icons.cancel_sharp,
+                            buttonColor: Colors.red.shade500,
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text("Confirm Cancellation"),
+                                    content: const Text(
+                                        "Are you sure you want to cancel this request?"),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text("No"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () async {
+                                          await _deleteRequest(
+                                              userRequest[index].id);
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text("Yes"),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }

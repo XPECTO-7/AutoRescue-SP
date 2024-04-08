@@ -147,8 +147,12 @@ class _AccountPageState extends State<AccountPage> {
 
   bool isExpanded = false;
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+Widget build(BuildContext context) {
+  final Size screenSize = MediaQuery.of(context).size;
+
+  return SizedBox(
+    width: screenSize.width,
+    child: Scaffold(
       appBar: AppBar(
         toolbarHeight: 70,
         elevation: 0,
@@ -298,6 +302,7 @@ class _AccountPageState extends State<AccountPage> {
           ),
         ),
       ),
+    )
     );
   }
 

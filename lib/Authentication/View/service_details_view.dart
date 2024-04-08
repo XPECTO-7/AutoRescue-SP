@@ -412,14 +412,34 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
             ),
           ),
             if (isSigningUp)
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              child: const Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.appPrimary,
-                ),
+           Container(
+  color: Colors.black.withOpacity(0.5),
+  child:  Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children:  [
+      Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(
+              color: AppColors.appPrimary,
+            ),
+            const SizedBox(height: 10), // Adjust the spacing between the CircularProgressIndicator and the Text
+            Text(
+              "Please wait. It will take some time",
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: GoogleFonts.ubuntu().fontFamily,
+                fontSize: 16,
               ),
             ),
+          ],
+        ),
+      ),
+    ],
+  ),
+)
+
         ],
       ),
     );

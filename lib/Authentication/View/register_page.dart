@@ -182,140 +182,136 @@ class _RegisterPageState extends State<RegisterPage>
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              children: [
-                RegTextField(
-                  controller: fullNameController,
-                  hintText: 'Full name',
-                  obscureText: false,
-                  iconData: Icons.person,
-                ),
-                const SizedBox(height: 15),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: IntlPhoneField(
-                    decoration: const InputDecoration(
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: AppColors.appPrimary),
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                      fillColor: Colors.black,
-                      filled: true,
-                      hintStyle: TextStyle(color: Colors.white),
-                      hintText: 'Phone Number',
-                      suffixIcon: Icon(Icons.phone),
+          child: Column(
+            children: [
+              RegTextField(
+                controller: fullNameController,
+                hintText: 'Full name',
+                obscureText: false,
+                iconData: Icons.person,
+              ),
+              const SizedBox(height: 15),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: IntlPhoneField(
+                  decoration: const InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
                     ),
-                    initialCountryCode: 'IN',
-                    controller: numberController,
-                  ),
-                ),
-                AadharTextField(
-                  controller: aadharNoController,
-                  hintText: 'Aadhar Number',
-                  obscureText: false,
-                  iconData: Icons.numbers_rounded,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: InkWell(
-                    onTap: pickImage,
-                    child: SizedBox(
-                      height: 60,
-                      width: MediaQuery.of(context).size.width,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.black,
-                          border: Border.all(color: Colors.white),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: pickedImage == null
-                                  ? const Text(
-                                      "Add Aadhar Image",
-                                      style: TextStyle(
-                                          fontSize: 16, color: Colors.white),
-                                    )
-                                  : const Text(
-                                      "Update Image",
-                                      style: TextStyle(
-                                          fontSize: 16, color: Colors.white),
-                                    ),
-                            ),
-                           
-                            const Spacer(), // Add Spacer to push suffix icon to the right
-                            IconButton(
-                              icon: const Icon(Icons.add_a_photo,
-                                  color: Colors
-                                      .white), // Change the icon as per your requirement
-                              onPressed: pickImage,
-                            ),
-                          ],
-                        ),
-                      ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: AppColors.appPrimary),
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
                     ),
+                    fillColor: Colors.black,
+                    filled: true,
+                    hintStyle: TextStyle(color: Colors.white),
+                    hintText: 'Phone Number',
+                    suffixIcon: Icon(Icons.phone),
                   ),
+                  initialCountryCode: 'IN',
+                  controller: numberController,
                 ),
-                const SizedBox(height: 10,),
-                if (pickedImage != null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
+              ),
+              AadharTextField(
+                controller: aadharNoController,
+                hintText: 'Aadhar Number',
+                obscureText: false,
+                iconData: Icons.numbers_rounded,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25),
+                child: InkWell(
+                  onTap: pickImage,
+                  child: SizedBox(
+                    height: 60,
+                    width: MediaQuery.of(context).size.width,
                     child: Container(
                       decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.black,
                         border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(8)
                       ),
-                      height: 100,
-                      width:  MediaQuery.of(context).size.width,
-                      color: Colors.grey[950],
-                      child: Center(
-                        child: Image.file(
-                          File(pickedImage!.path),
-                          fit: BoxFit.cover,
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: pickedImage == null
+                                ? const Text(
+                                    "Add Aadhar Image",
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.white),
+                                  )
+                                : const Text(
+                                    "Update Image",
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.white),
+                                  ),
+                          ),
+                         
+                          const Spacer(), // Add Spacer to push suffix icon to the right
+                          IconButton(
+                            icon: const Icon(Icons.add_a_photo,
+                                color: Colors
+                                    .white), // Change the icon as per your requirement
+                            onPressed: pickImage,
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                const SizedBox(height: 15),
-                RegTextField(
-                  controller: emailController,
-                  hintText: 'Email',
-                  obscureText: false,
-                  iconData: Icons.mail,
                 ),
-                const SizedBox(height: 15),
-                MyPWTField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
+              ),
+              const SizedBox(height: 10,),
+              if (pickedImage != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8)
+                    ),
+                    height: 100,
+                    width:  MediaQuery.of(context).size.width,
+                    color: Colors.grey[950],
+                    child: Center(
+                      child: Image.file(
+                        File(pickedImage!.path),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
                 ),
-                RegTextField(
-                  controller: confirmPasswordController,
-                  hintText: 'Confirm Password',
-                  obscureText: true,
-                  iconData: Icons.lock,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                MyButton(
-                  onTap: validation,
-                  text: "Next",
-                  buttonColor: AppColors.appPrimary,
-                  textColor: Colors.black,
-                )
-              ],
-            ),
+              const SizedBox(height: 15),
+              RegTextField(
+                controller: emailController,
+                hintText: 'Email',
+                obscureText: false,
+                iconData: Icons.mail,
+              ),
+              const SizedBox(height: 15),
+              MyPWTField(
+                controller: passwordController,
+                hintText: 'Password',
+                obscureText: true,
+              ),
+              RegTextField(
+                controller: confirmPasswordController,
+                hintText: 'Confirm Password',
+                obscureText: true,
+                iconData: Icons.lock,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              MyButton(
+                onTap: validation,
+                text: "Next",
+                buttonColor: AppColors.appPrimary,
+                textColor: Colors.black,
+              )
+            ],
           ),
         ),
       ),
