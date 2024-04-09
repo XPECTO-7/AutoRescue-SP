@@ -1,21 +1,13 @@
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/Authentication/View/Widgets/pick_location_pop_up.dart';
-import 'package:provider/Colors/appcolor.dart';
-import 'package:provider/Components/mybutton.dart';
-import 'package:provider/Pages/Components/custom_button.dart';
-import 'package:provider/Pages/Components/label_textfield.dart';
-import 'package:provider/Pages/Utils/alert_error.dart';
-import 'package:provider/Pages/Utils/sqauretile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/Pages/View/account.dart';
 import 'package:provider/Pages/View/manage.dart';
-import 'package:provider/Pages/View/req_service.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:provider/Colors/appcolor.dart';
+import 'package:provider/Pages/Utils/custom_button.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -28,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 1;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    ReqServicePage(),
+    ManagePage(),
     HomePageContent(),
     AccountPage(),
   ];
@@ -41,18 +33,15 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: ConvexAppBar(
         items: const [
-          TabItem(icon: Icons.settings_suggest_rounded, title: 'SERVICE'),
-          TabItem(icon: Icons.home_rounded, title: 'HOME'),
-          TabItem(
-            icon: Icons.person,
-            title: 'ACCOUNT',
-          ),
+          TabItem(icon: Icons.settings_suggest_rounded, title: 'Service'),
+          TabItem(icon: Icons.home_rounded, title: 'Home'),
+          TabItem(icon: Icons.person, title: 'Account'),
         ],
-        style: TabStyle.reactCircle,
-        color: Colors.black,
+        style: TabStyle.textIn,
+        color: Colors.black54,
         activeColor: Colors.black,
-        backgroundColor: AppColors.appTertiary,
-        height: 60,
+        backgroundColor: Colors.white,
+        height: 50,
         initialActiveIndex: 1,
         elevation: 5,
         onTap: (int index) => setState(() {
@@ -71,431 +60,161 @@ class HomePageContent extends StatefulWidget {
 }
 
 class _HomePageContentState extends State<HomePageContent> {
-  bool isTrue = false;
-  String selectedVehicleName = "", selectedService = "", lat = "", long = "";
-  Position? position;
-  String userEmail = "";
-  String vehicleID = "";
-  late TextEditingController expchController;
-  late TextEditingController cuLockController;
+  late Map<String, dynamic> userDetails;
+  String currentDate = DateFormat.yMMMMd('en_US').format(DateTime.now());
+  String currentTime = DateFormat.jms().format(DateTime.now());
 
   @override
   void initState() {
     super.initState();
-    selectedService = '';
-    getAddedVehicles();
-    expchController = TextEditingController();
-    cuLockController = TextEditingController();
+    getUserData();
   }
 
-  void setLocation() async {
-    position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.bestForNavigation);
-    if (position != null) {
+  void getUserData() async {
+    final currentUser = FirebaseAuth.instance.currentUser!;
+    final userSnapshot = await FirebaseFirestore.instance
+        .collection('USERS')
+        .doc(currentUser.email)
+        .get();
+
+    if (userSnapshot.exists) {
       setState(() {
-        lat = position!.latitude.toString();
-        long = position!.longitude.toString();
+        userDetails = userSnapshot.data() as Map<String, dynamic>;
       });
+    } else {
+      // Handle case where user data does not exist
     }
   }
 
-  Future<void> getAddedVehicles() async {
-    final currentUser = FirebaseAuth.instance.currentUser!;
-    setState(() {
-      userEmail = currentUser.email!;
-    });
-    final vehicleRef = FirebaseFirestore.instance
-        .collection('USERS')
-        .doc(currentUser.email)
-        .collection('VEHICLES');
-
-    final querySnapshot = await vehicleRef.get();
-
-    final List<Map<String, dynamic>> vehicles = [];
-    querySnapshot.docs.forEach((doc) {
-      final data = doc.data();
-      vehicles.add({
-        'vehicleName': data['VehicleName'],
-        'manufacturer': data['Manufacturer'],
-        'registrationNumber': data['RegistrationNumber'],
-        'year': data['Year'],
-        'kilometers': data['Kilometers'],
-        'fueltype': data['FuelType'],
-        'vehicleImageURL': data['vehicleImageURL'],
-      });
-    });
-
-    setState(() {
-      addedVehicles = vehicles;
-    });
-  }
-
-  void updateSelectedService(String service) {
-    setState(() {
-      if (selectedService == service) {
-        // Deselect if the same service is clicked again
-        selectedService = '';
-      } else {
-        // Select the clicked service
-        selectedService = service;
-      }
-    });
-  }
-
-  List<Map<String, dynamic>> addedVehicles = [];
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        toolbarHeight: 80,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'lib/images/cserv.png',
-              color: AppColors.appPrimary,
-              width: 60,
-              height: 60,
-            ),
-            const SizedBox(width: 2),
-            Text(
-              'AutoRescue',
-              style: TextStyle(
-                fontFamily: GoogleFonts.ubuntu().fontFamily,
-                fontWeight: FontWeight.bold,
-                fontSize: 26,
-              ),
-            ),
-          ],
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
-            child: Expanded(
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomButton(
-                      borderRadius: 2,
-                      text: 'Select Service',
-                      fsize: 16,
-                      iconsize: 16,
-                      onPressed: () {},
-                      textColor: Colors.black,
-                      buttonColor: AppColors.appPrimary,
-                      suffixIcon: FontAwesomeIcons.wrench,
-                      h: 34,
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('PROVIDERS')
+          .doc(FirebaseAuth.instance.currentUser!.email)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        final userDetails = snapshot.data?.data() as Map<String, dynamic>?;
+
+        if (userDetails == null) {
+          return Center(
+            child: Text('User details not found.'),
+          );
+        }
+
+        return StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('SERVICE-REQUEST')
+              .where("UserID",
+                  isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              );
+            }
+
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            final userRequests = snapshot.data!.docs;
+            if (userRequests.isEmpty) {
+              return Center(
+                child: Text('No service requests found.'),
+              );
+            }
+
+            return Expanded(
+              child: ListView.builder(
+                itemCount: userRequests.length,
+                itemBuilder: (context, index) {
+                  final request =
+                      userRequests[index].data() as Map<String, dynamic>;
+                  DateTime requestedTime =
+                      (request["Requested-Time"] as Timestamp).toDate();
+                  String formattedTime =
+                      DateFormat('yyyy-MM-dd HH:mm').format(requestedTime);
+
+                  // Change text color based on status
+                  Color statusColor = Colors.white; // Default color
+
+                  if (request["Status"] == "Pending") {
+                    statusColor =
+                        Colors.yellow; // Change to yellow if status is pending
+                  } else if (request["Status"] == "Accepted") {
+                    statusColor =
+                        Colors.green; // Change to green if status is accepted
+                  } else if (request["Status"] == "Declined") {
+                    statusColor =
+                        Colors.red; // Change to red if status is declined
+                  } else {
+                    print('Unknown status: ${request["Status"]}');
+                  }
+
+                  return ExpansionTile(
+                    title: Text(
+                      request["Service-Request-Type"]
+                          .toString()
+                          .toUpperCase(), // Formatted time
+                      style: TextStyle(
+                          color: statusColor,
+                          fontSize: 20,
+                          fontFamily: GoogleFonts.ubuntu().fontFamily),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Squaretile(
-                          text: 'TYRE WORKS',
-                          imagePath: 'lib/images/tyre.png',
-                          isSelected: selectedService == 'TYRE WORKS',
-                          onTap: () => updateSelectedService('TYRE WORKS'),
-                        ),
-                        const SizedBox(width: 7),
-                        Squaretile(
-                          text: 'MECHANICAL WORKS',
-                          imagePath: 'lib/images/automotive.png',
-                          isSelected: selectedService == 'Mechanical Service',
-                          onTap: () =>
-                              updateSelectedService('Mechanical Service'),
-                        ),
-                        const SizedBox(width: 7),
-                        Squaretile(
-                          text: 'EV CHARGING',
-                          imagePath: 'lib/images/charging-station.png',
-                          isSelected: selectedService == 'EV Charging service',
-                          onTap: () =>
-                              updateSelectedService('EV Charging service'),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Squaretile(
-                          text: 'FUEL DELIVERY',
-                          imagePath: 'lib/images/fuel.png',
-                          isSelected:
-                              selectedService == 'Fuel Delivery Service',
-                          onTap: () =>
-                              updateSelectedService('Fuel Delivery Service'),
-                        ),
-                        const SizedBox(width: 7),
-                        Squaretile(
-                          text: 'TOWING',
-                          imagePath: 'lib/images/tow-truck.png',
-                          isSelected:
-                              selectedService == 'Emergency Towing Service',
-                          onTap: () =>
-                              updateSelectedService('Emergency Towing Service'),
-                        ),
-                        const SizedBox(width: 7),
-                        Squaretile(
-                          text: 'KEY LOCKOUT',
-                          imagePath: 'lib/images/key.png',
-                          isSelected: selectedService == 'KEY LOCKOUT',
-                          onTap: () => updateSelectedService('KEY LOCKOUT'),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    CustomButton(
-                      borderRadius: 2,
-                      text: 'Select Vehicle',
-                      fsize: 16,
-                      iconsize: 16,
-                      onPressed: () {},
-                      textColor: Colors.black,
-                      buttonColor: AppColors.appPrimary,
-                      suffixIcon: FontAwesomeIcons.car,
-                      h: 34,
-                    ),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(left: 20.0, top: 0, right: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ...addedVehicles.map((vehicleDetails) {
-                            final isSelected = selectedVehicleName ==
-                                '${vehicleDetails['manufacturer']} ${vehicleDetails['vehicleName']} ${vehicleDetails['registrationNumber']}';
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  vehicleID =
-                                      vehicleDetails["registrationNumber"];
-                                  selectedVehicleName =
-                                      '${vehicleDetails['manufacturer']} ${vehicleDetails['vehicleName']} ${vehicleDetails['registrationNumber']}';
-                                });
-                              },
-                              child: Container(
-                                margin: const EdgeInsets.only(bottom: 10),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 7),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.white),
-                                  borderRadius: BorderRadius.circular(2),
-                                  color: isSelected
-                                      ? Colors.black
-                                      : Colors.transparent,
-                                ),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Icon(FontAwesomeIcons.car,
-                                        size: 20, color: Colors.white),
-                                    const SizedBox(width: 17),
-                                    Expanded(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Text(
-                                                vehicleDetails['manufacturer'] +
-                                                    " " +
-                                                    vehicleDetails[
-                                                        'vehicleName'],
-                                                style: TextStyle(
-                                                  color: isSelected
-                                                      ? AppColors.appPrimary
-                                                      : Colors.white,
-                                                  fontSize: 16,
-                                                  fontFamily:
-                                                      GoogleFonts.strait()
-                                                          .fontFamily,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                width: 25,
-                                              ),
-                                              Text(
-                                                "[" +
-                                                    vehicleDetails[
-                                                        'registrationNumber'] +
-                                                    "]",
-                                                style: TextStyle(
-                                                  color: isSelected
-                                                      ? AppColors.appPrimary
-                                                      : Colors.white,
-                                                  fontSize: 16,
-                                                  fontFamily:
-                                                      GoogleFonts.strait()
-                                                          .fontFamily,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          if (isSelected)
-                                            const Icon(
-                                              Icons.check,
-                                              size: 17,
-                                              color: AppColors.appPrimary,
-                                            )
-                                          // Placeholder for check icon
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start, // Align children to the top
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 20.0),
-                                child: Container(
-                                  height: 50,
-                                  width: 1000,
-                                  padding: const EdgeInsets.all(7),
-                                  decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: AppColors.appPrimary),
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      if (selectedService.isNotEmpty)
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 17.0),
-                                          child: Text(
-                                            '$selectedService',
-                                            style: TextStyle(
-                                              fontSize: 17,
-                                              color: Colors.white,
-                                              fontFamily: GoogleFonts.strait()
-                                                  .fontFamily,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 20.0, top: 7),
-                                child: Container(
-                                  height: 50,
-                                  width: 1000,
-                                  padding: const EdgeInsets.all(7),
-                                  decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: AppColors.appPrimary),
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      if (selectedVehicleName != null)
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 17.0),
-                                          child: Text(
-                                            '$selectedVehicleName',
-                                            style: TextStyle(
-                                              fontSize: 17,
-                                              color: Colors.white,
-                                              fontFamily: GoogleFonts.strait()
-                                                  .fontFamily,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 20.0),
-                          child: SizedBox(
-                            width: 70, // Increase width for testing
-                            height: 107,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                if (selectedService.isNotEmpty &&
-                                    selectedVehicleName.isNotEmpty) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ManagePage(
-                                        servicetype: selectedService,
-                                        vehicleID: vehicleID,
-                                        userEmail: userEmail,
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  CustomAlert.show(
-                                    context: context,
-                                    title: "Missing Information",
-                                    message:
-                                        "Please select a service and a vehicle.",
-                                    messageTextColor: Colors.red,
-                                    backgroundColor: Colors.white,
-                                    buttonColor: Colors.grey,
-                                  );
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors
-                                    .appPrimary, // Change this to your desired color
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                              ),
-                              child: const Center(
-                                child: Icon(
-                                  FontAwesomeIcons.chevronRight,
-                                  size: 26,
-                                  color: Colors.black,
-                                ),
-                              ),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Status: ${request["Status"].toString()}',
+                              style: TextStyle(color: statusColor),
                             ),
-                          ),
+                            Text(
+                              'Service Requested Time: $formattedTime', // Formatted time
+                            ),
+                            SizedBox(
+                              height: 7,
+                            ),
+                            CustomButton(
+                              h: 40,
+                              text: 'More Details',
+                              textColor: Colors.black,
+                              fsize: 16,
+                              suffixIcon: Icons.arrow_right_sharp,
+                              buttonColor: Colors.white,
+                              onPressed: () {
+                                // Add your logic for handling more details button press
+                              },
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 25,
-                    )
-                  ],
-                ),
+                      ),
+                    ],
+                  );
+                },
               ),
-            ),
-          ),
-        ),
-      ),
+            );
+          },
+        );
+      },
     );
   }
 }

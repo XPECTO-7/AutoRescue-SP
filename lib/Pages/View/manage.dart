@@ -1,249 +1,213 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/Authentication/Controller/testing.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Colors/appcolor.dart';
-import 'package:latlong2/latlong.dart' as latlong;
-import 'package:provider/Constants/app_strings.dart';
-import 'package:provider/Pages/Components/custom_button.dart';
-import 'package:provider/Pages/Components/text_area_simple.dart';
-import 'package:provider/Pages/View/req_service.dart';
+import 'package:provider/Pages/Utils/custom_button.dart';
 
 class ManagePage extends StatefulWidget {
-  final String servicetype, vehicleID, userEmail;
-
-  const ManagePage(
-      {super.key,
-      required this.servicetype,
-      required this.vehicleID,
-      required this.userEmail});
+  const ManagePage({Key? key}) : super(key: key);
 
   @override
   State<ManagePage> createState() => _ManagePageState();
 }
 
 class _ManagePageState extends State<ManagePage> {
-  bool isLoading = false;
-  Position? position;
-  String service = "";
-  List<Marker> services = [];
+  late User currentUser;
+
+  late Stream<List<DocumentSnapshot>> serviceRequestStream =
+      const Stream.empty();
 
   @override
   void initState() {
-    // TODO: implement initState
-    getCurrentLocation();
     super.initState();
+    currentUser = FirebaseAuth.instance.currentUser!;
+    _initServiceRequestStream();
   }
 
-  void getCurrentLocation() async {
-    setState(() {
-      isLoading = true;
-    });
-    if (widget.servicetype == "TYRE WORKS" ||
-        widget.servicetype == "KEY LOCKOUT") {
-      setState(() {
-        service = "Mechanical Service";
-      });
-    } else {
-      setState(() {
-        service = widget.servicetype;
-      });
+  void _initServiceRequestStream() {
+    serviceRequestStream = FirebaseFirestore.instance
+        .collection("SERVICE-REQUEST")
+        .where("ProviderID", isEqualTo: currentUser.email)
+        .snapshots()
+        .map((snapshot) => snapshot.docs);
+  }
+
+  Future<void> _deleteRequest(String requestId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("SERVICE-REQUEST")
+          .doc(requestId)
+          .delete();
+    } catch (e) {
+      print("Error deleting request: $e");
+      // Handle error as per your requirement
     }
-    position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.bestForNavigation);
-    setState(() {
-      isLoading = false;
-    });
-  }
-
-  void getServiceLocations(
-      {required List<dynamic> providerList,
-      required String lattitude,
-      required String longitude}) async {
-    String asset = "";
-    List providers = providerList;
-
-    providerList.forEach(
-      (element) {
-        switch (element["Service Type"]) {
-          case "Fuel Delivery Service":
-            asset = "lib/images/fuel.png";
-            break;
-          case "Mechanical Service":
-            asset = "lib/images/automotive.png";
-            break;
-          case "Emergency Towing service":
-            asset = "lib/images/tow-truck.png";
-            break;
-          case "EV Charging service":
-            asset = "lib/images/charging-station.png";
-            break;
-          default:
-            asset = "lib/images/cserv.png";
-        }
-
-        if (element["Service Type"] == service) {
-          services.add(Marker(
-              point: latlong.LatLng(double.parse(element[lattitude]),
-                  double.parse(element[longitude])),
-              child: GestureDetector(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          backgroundColor: Colors.grey[950],
-                          surfaceTintColor: Colors.transparent,
-                          content: SizedBox(
-                            height: MediaQuery.of(context).size.height / 2,
-                            width: MediaQuery.of(context).size.width,
-                            child: Container(
-                              alignment: Alignment.center,
-                              child: Column(
-                                children: [
-                                  SimpleTextArea(
-                                      content: element["Company Name"],
-                                      title: "Name : "),
-                                  SimpleTextArea(
-                                      content: element["Experience"],
-                                      title: "Experience : "),
-                                  SimpleTextArea(
-                                      content: element["Phone Number"],
-                                      title: "Ph : "),
-                                  SimpleTextArea(
-                                      content: element["Service Type"],
-                                      title: "Service Type : "),
-                                  const SizedBox(
-                                    height: 30,
-                                  ),
-                                  CustomButton(
-                                    text: 'CONTINUE',
-                                    onPressed: () {
-                                      sentRequest(
-                                          providerID: element["Email"],
-                                          vehicleID: widget.vehicleID,
-                                          userID: widget.userEmail);
-                                      Navigator.pop(context);
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => ReqServicePage()));
-                                    },
-                                    buttonColor: AppColors.appPrimary,
-                                    textColor: AppColors.appSecondary,
-                                    suffixIcon: FontAwesomeIcons.arrowRight,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  child:
-                      Transform.scale(scale: 1.7, child: Image.asset(asset)))));
-        }
-      },
-    );
-  }
-
-  void sentRequest(
-      {required String providerID,
-      required String vehicleID,
-      required String userID}) async {
-        setState(() {
-          isLoading=true;
-        });
-    DateTime dateTime = DateTime.now();
-   
-    await FirebaseFirestore.instance.collection("SERVICE-REQUEST").add({
-      "UserLocation-Lat": position!.latitude.toString(),
-      "UserLocation-Long": position!.longitude.toString(),
-      "UserID": userID,
-      "VehicleID": vehicleID,
-      "Service-Request-Type": service,
-      "Requested-Time": dateTime,
-      "Status": "Pending",
-      "ProviderID": providerID
-    });
-    setState(() {
-      isLoading=false;
-    });
-     
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection("PROVIDERS").snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          getServiceLocations(
-              providerList: snapshot.data!.docs,
-              lattitude: "location - lattitude",
-              longitude: "location - longitude");
-          return Scaffold(
-            appBar: AppBar(
-              toolbarHeight: 70,
-              title: Row(
-                children: [
-                  const Icon(
-                    Icons.verified_rounded,
-                    color: AppColors.appTertiary,
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    'Service Providers Nearby',
-                    style: TextStyle(
-                      fontFamily: GoogleFonts.ubuntu().fontFamily,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                ],
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 70,
+        title: Row(
+          children: [
+            const Icon(
+              Icons.verified_rounded,
+              color: AppColors.appTertiary,
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            Text(
+              'Requested Services',
+              style: TextStyle(
+                fontFamily: GoogleFonts.ubuntu().fontFamily,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
               ),
             ),
-            body: isLoading
-                ? const CircularProgressIndicator(
-                    color: AppColors.appPrimary,
-                  )
-                : Center(
-                    child: FlutterMap(
-                        options: MapOptions(
-                            minZoom: 5,
-                            maxZoom: 24,
-                            initialZoom: 18,
-                            // initialCenter: latlong.LatLng(
-                            //     8.774774774774775, 76.8818346748862)
-                            initialCenter: latlong.LatLng(
-                              position!.latitude,
-                              position!.longitude,
-                            )),
-                        children: [
-                          TileLayer(
-                            // urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            // subdomains: ['a', 'b', 'c'],
+          ],
+        ),
+      ),
+      body: StreamBuilder<List<DocumentSnapshot>>(
+        stream: serviceRequestStream,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          }
 
-                            urlTemplate: AppStrings.urlTemplate,
-                            additionalOptions: {
-                              'accessToken': AppStrings.accessToken,
-                              'id': AppStrings.id
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          final userRequest = snapshot.data ?? [];
+          if (userRequest.isEmpty) {
+            return const Center(
+              child: Text('No service requests found.'),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: userRequest.length,
+            itemBuilder: (context, index) {
+              final request = userRequest[index].data() as Map<String, dynamic>;
+              DateTime requestedTime =
+                  (request["Requested-Time"] as Timestamp).toDate();
+              String formattedTime =
+                  DateFormat('yyyy-MM-dd hh:mm').format(requestedTime);
+
+              // Change text color based on status
+              Color statusColor = Colors.white; // Default color
+
+              if (request["Status"] == "Pending") {
+                statusColor =
+                    Colors.yellow; // Change to yellow if status is pending
+              } else if (request["Status"] == "Accepted") {
+                statusColor =
+                    Colors.green; // Change to green if status is accepted
+              } else if (request["Status"] == "Declined") {
+                statusColor = Colors.red; // Change to red if status is declined
+              } else {
+                print('Unknown status: ${request["Status"]}');
+              }
+
+              return Card(
+                margin:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                color: Colors.grey[900],
+                child: ExpansionTile(
+                  title: Text(
+                    request["Service-Request-Type"]
+                        .toString()
+                        .toUpperCase(), // Formatted time
+                    style: TextStyle(
+                      color: statusColor,
+                      fontSize: 20,
+                      fontFamily: GoogleFonts.ubuntu().fontFamily,
+                    ),
+                  ),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Status: ${request["Status"].toString()}',
+                            style: TextStyle(color: statusColor),
+                          ),
+                          Text(
+                            'Service Requested Time: $formattedTime', // Formatted time
+                          ),
+                          const SizedBox(
+                            height: 7,
+                          ),
+                          CustomButton(
+                            h: 40,
+                            text: 'More Details',
+                            textColor: Colors.black,
+                            fsize: 16,
+                            suffixIcon: Icons.arrow_right_sharp,
+                            buttonColor: Colors.white,
+                            onPressed: () {},
+                          ),
+                          CustomButton(
+                            h: 40,
+                            text: 'Cancel Request',
+                            textColor: Colors.white,
+                            fsize: 16,
+                            suffixIcon: Icons.cancel_sharp,
+                            buttonColor: Colors.red.shade500,
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text("Confirm Cancellation"),
+                                    content: const Text(
+                                        "Are you sure you want to cancel this request?"),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text("No"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () async {
+                                          await _deleteRequest(
+                                              userRequest[index].id);
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text("Yes"),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                             },
                           ),
-                          MarkerLayer(markers: services)
-                        ]),
-                  ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           );
-        } else {
-          return CircularProgressIndicator(
-            color: AppColors.appPrimary,
-          );
-        }
-      },
+        },
+      ),
     );
   }
 }

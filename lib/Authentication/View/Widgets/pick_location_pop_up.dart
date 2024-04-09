@@ -29,7 +29,7 @@ class PinLocationMap extends StatelessWidget {
               initialCenter: latlong.LatLng(currentLocationX, currentLocationY),
             ),
             children: [
-               TileLayer(
+              TileLayer(
                 urlTemplate: AppStrings.urlTemplate,
                 additionalOptions: const {
                   'accessToken': AppStrings.accessToken,
@@ -44,7 +44,10 @@ class PinLocationMap extends StatelessWidget {
           left: 16.0, // Adjust this value to position the text horizontally
           child: Text(
             'TAP WHERE YOU WANT TO SET YOUR LOCATION',
-            style: TextStyle(color: Colors.black,fontSize: 14,backgroundColor: Colors.yellow),
+            style: TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+                backgroundColor: Colors.yellow),
           ),
         ),
       ],
