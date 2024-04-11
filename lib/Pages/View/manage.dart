@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Pages/Utils/custom_button.dart';
 
@@ -17,7 +16,8 @@ class ManagePage extends StatefulWidget {
 class _ManagePageState extends State<ManagePage> {
   late User currentUser;
 
-  late Stream<List<DocumentSnapshot>> serviceRequestStream = const Stream.empty();
+  late Stream<List<DocumentSnapshot>> serviceRequestStream =
+      const Stream.empty();
 
   @override
   void initState() {
@@ -30,6 +30,7 @@ class _ManagePageState extends State<ManagePage> {
     serviceRequestStream = FirebaseFirestore.instance
         .collection("SERVICE-REQUEST")
         .where("ProviderID", isEqualTo: currentUser.email)
+        .where("Status", isEqualTo: "Accepted") // Filter only accepted requests
         .snapshots()
         .map((snapshot) => snapshot.docs);
   }
@@ -61,7 +62,7 @@ class _ManagePageState extends State<ManagePage> {
               width: 10,
             ),
             Text(
-              'Requested Services',
+              'Accepted Request Details',
               style: TextStyle(
                 fontFamily: GoogleFonts.ubuntu().fontFamily,
                 fontWeight: FontWeight.bold,
@@ -96,41 +97,29 @@ class _ManagePageState extends State<ManagePage> {
           return ListView.builder(
             itemCount: userRequest.length,
             itemBuilder: (context, index) {
-              final request = userRequest[index].data() as Map<String, dynamic>;
+              final request =
+                  userRequest[index].data() as Map<String, dynamic>;
               DateTime requestedTime =
                   (request["Requested-Time"] as Timestamp).toDate();
               String formattedTime =
                   DateFormat('yyyy-MM-dd hh:mm').format(requestedTime);
 
-              // Change text color based on status
-              Color statusColor = Colors.white; // Default color
-
-              if (request["Status"] == "Pending") {
-                statusColor =
-                    Colors.yellow; // Change to yellow if status is pending
-              } else if (request["Status"] == "Accepted") {
-                statusColor =
-                    Colors.green; // Change to green if status is accepted
-              } else if (request["Status"] == "Declined") {
-                statusColor = Colors.red; // Change to red if status is declined
-              } else {
-                print('Unknown status: ${request["Status"]}');
-              }
-
               return Card(
-                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                margin: const EdgeInsets.symmetric(
+                    vertical: 8.0, horizontal: 16.0),
                 elevation: 3,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(7),
                 ),
                 color: Colors.grey[900],
                 child: ExpansionTile(
+                   initiallyExpanded: true,
                   title: Text(
                     request["Service-Request-Type"]
                         .toString()
                         .toUpperCase(), // Formatted time
                     style: TextStyle(
-                      color: statusColor,
+                      color: Colors.green, // Assuming all are accepted
                       fontSize: 20,
                       fontFamily: GoogleFonts.ubuntu().fontFamily,
                     ),
@@ -143,7 +132,7 @@ class _ManagePageState extends State<ManagePage> {
                         children: [
                           Text(
                             'Status: ${request["Status"].toString()}',
-                            style: TextStyle(color: statusColor),
+                            style: TextStyle(color: Colors.green),
                           ),
                           Text(
                             'Service Requested Time: $formattedTime', // Formatted time
@@ -151,17 +140,7 @@ class _ManagePageState extends State<ManagePage> {
                           const SizedBox(
                             height: 7,
                           ),
-                          CustomButton(
-                            h: 40,
-                            text: 'More Details',
-                            textColor: Colors.black,
-                            fsize: 16,
-                            suffixIcon: Icons.arrow_right_sharp,
-                            buttonColor: Colors.white,
-                            onPressed: () {
-                             
-                            },
-                          ),
+                          
                           CustomButton(
                             h: 40,
                             text: 'Cancel Request',

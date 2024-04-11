@@ -71,6 +71,8 @@ flutter:
     - assets/City driver.gif
     - assets/Order ride.gif
     - assets/Delivery.gif
+    - assets/waiting.json
+    - assets/check.json
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
