@@ -29,9 +29,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: darktheme,
-      home: const OnboardingPage(),
+      home: const MainPage(),
       routes: {
-        '/HomePage': (context) => const HomePage(),
         '/ManagePage': (context) => const ManagePage(),
         '/AccountPage': (context) => const AccountPage(),
       },

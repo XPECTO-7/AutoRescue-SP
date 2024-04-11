@@ -29,7 +29,7 @@ class _HomePageState extends State<BottomNavPage> {
       bottomNavigationBar: ConvexAppBar(
         items: const [
           TabItem(icon: Icons.settings_suggest_rounded, title: 'Service'),
-          TabItem(icon: Icons.home_rounded, title: 'Home'),
+          TabItem(icon: Icons.notifications_rounded, title: 'Notifications'),
           TabItem(icon: Icons.person, title: 'Account'),
         ],
         style: TabStyle.textIn,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/Authentication/Controller/auth_page.dart';
 import 'package:provider/Authentication/Controller/main_page.dart';
 import 'package:provider/Authentication/Controller/onboarding_data.dart';
 import 'package:provider/Colors/appcolor.dart';
@@ -102,7 +103,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           if (currentIndex == controller.items.length - 1) {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (context) => const MainPage(),
+                builder: (context) => const AuthPage(),
               ),
             );
           } else {
