@@ -375,6 +375,8 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                           },
                         ),
                         const SizedBox(height: 15),
+                        const Text('Minimum Charge'),
+                        const SizedBox(height: 5,),
                         TextField(
                           controller: priceChargeController,
                           keyboardType: TextInputType.number,

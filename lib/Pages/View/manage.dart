@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Pages/Utils/custom_button.dart';
+import 'package:provider/Pages/View/show_userdetails.dart';
 
 class ManagePage extends StatefulWidget {
   const ManagePage({Key? key}) : super(key: key);
@@ -62,7 +64,7 @@ class _ManagePageState extends State<ManagePage> {
               width: 10,
             ),
             Text(
-              'Accepted Request Details',
+              'Accepted Requests',
               style: TextStyle(
                 fontFamily: GoogleFonts.ubuntu().fontFamily,
                 fontWeight: FontWeight.bold,
@@ -97,29 +99,26 @@ class _ManagePageState extends State<ManagePage> {
           return ListView.builder(
             itemCount: userRequest.length,
             itemBuilder: (context, index) {
-              final request =
-                  userRequest[index].data() as Map<String, dynamic>;
+              final request = userRequest[index].data() as Map<String, dynamic>;
               DateTime requestedTime =
                   (request["Requested-Time"] as Timestamp).toDate();
               String formattedTime =
-                  DateFormat('yyyy-MM-dd hh:mm').format(requestedTime);
-
+                  DateFormat('MMMM dd, yyyy hh:mm a').format(requestedTime);
               return Card(
-                margin: const EdgeInsets.symmetric(
-                    vertical: 8.0, horizontal: 16.0),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 elevation: 3,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(7),
                 ),
                 color: Colors.grey[900],
                 child: ExpansionTile(
-                   initiallyExpanded: true,
+                  initiallyExpanded: true,
                   title: Text(
-                    request["Service-Request-Type"]
-                        .toString()
-                        .toUpperCase(), // Formatted time
+                    request["UserID"].toString(),
                     style: TextStyle(
-                      color: Colors.green, // Assuming all are accepted
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
                       fontSize: 20,
                       fontFamily: GoogleFonts.ubuntu().fontFamily,
                     ),
@@ -132,50 +131,82 @@ class _ManagePageState extends State<ManagePage> {
                         children: [
                           Text(
                             'Status: ${request["Status"].toString()}',
-                            style: TextStyle(color: Colors.green),
+                            style: const TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold),
                           ),
-                          Text(
-                            'Service Requested Time: $formattedTime', // Formatted time
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                  height: 2), // Adjust the height as needed
+                              Text(
+                                formattedTime,
+                                style: TextStyle(
+                                  color: AppColors.appPrimary,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: GoogleFonts.ubuntu().fontFamily,
+                                ),
+                              )
+                            ],
                           ),
                           const SizedBox(
                             height: 7,
                           ),
-                          
                           CustomButton(
                             h: 40,
-                            text: 'Cancel Request',
+                            text: 'Get Location',
                             textColor: Colors.white,
                             fsize: 16,
-                            suffixIcon: Icons.cancel_sharp,
-                            buttonColor: Colors.red.shade500,
+                            suffixIcon: FontAwesomeIcons.locationArrow,
+                            buttonColor: Colors.blue.shade500,
+                            onPressed: () {},
+                          ),
+                          const SizedBox(
+                            height: 7,
+                          ),
+                          CustomButton(
+                            h: 40,
+                            text: 'User Details',
+                            textColor: Colors.white,
+                            fsize: 16,
+                            suffixIcon: FontAwesomeIcons.squarePhone,
+                            buttonColor: Colors.green.shade500,
                             onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: const Text("Confirm Cancellation"),
-                                    content: const Text(
-                                        "Are you sure you want to cancel this request?"),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: const Text("No"),
-                                      ),
-                                      TextButton(
-                                        onPressed: () async {
-                                          await _deleteRequest(
-                                              userRequest[index].id);
-                                          Navigator.pop(context);
-                                        },
-                                        child: const Text("Yes"),
-                                      ),
-                                    ],
-                                  );
-                                },
+                              String userId = request["UserID"].toString();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ShowUserDetailsPage(userId: userId),
+                                ),
                               );
                             },
+                          ),
+                          const SizedBox(
+                            height: 7,
+                          ),
+                          CustomButton(
+                            h: 40,
+                            text: 'Vehicle Details',
+                            textColor: Colors.black,
+                            fsize: 16,
+                            suffixIcon: FontAwesomeIcons.carBurst,
+                            buttonColor: Colors.white,
+                            onPressed: () {},
+                          ),
+                          const SizedBox(
+                            height: 7,
+                          ),
+                          CustomButton(
+                            h: 40,
+                            text: 'Service Completed',
+                            textColor: Colors.white,
+                            fsize: 16,
+                            suffixIcon: FontAwesomeIcons.listCheck,
+                            buttonColor: Colors.redAccent,
+                            onPressed: () {},
                           ),
                         ],
                       ),

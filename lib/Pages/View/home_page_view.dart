@@ -146,9 +146,7 @@ class _HomePageViewState extends State<HomePageView> {
                                     children: [
                                       ListTile(
                                         title: Text(
-                                          request["UserID"]
-                                              .toString()
-                                              .toUpperCase(),
+                                          request["UserID"].toString(),
                                           style: TextStyle(
                                             fontSize: 20,
                                             fontFamily:
@@ -163,45 +161,34 @@ class _HomePageViewState extends State<HomePageView> {
                                         height: 7,
                                       ),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
                                         children: [
                                           ElevatedButton(
                                             onPressed: () {
-                                              String newStatus =
-                                                  request["Status"] == "Accepted"
-                                                      ? "Rejected"
-                                                      : "Accepted";
-                                              FirebaseFirestore.instance
-                                                  .collection("SERVICE-REQUEST")
-                                                  .doc(serviceRequests[index]
-                                                      .id) // Assuming "id" is the field name containing the document ID
-                                                  .update({
-                                                "Status": newStatus
-                                              }).then((_) {
-                                                print(
-                                                    "Status updated to $newStatus");
-                                              }).catchError((error) {
-                                                print(
-                                                    "Error updating status: $error");
-                                              });
+                                              _updateStatus(
+                                                  serviceRequests[index].id,
+                                                  "Accepted");
                                             },
                                             style: ButtonStyle(
                                               shape: MaterialStateProperty.all<
                                                   RoundedRectangleBorder>(
                                                 RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(
-                                                      7.0), // Adjust the radius as per your requirement
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          7.0), // Adjust the radius as per your requirement
                                                 ),
                                               ),
-                                              backgroundColor: MaterialStateProperty
-                                                  .resolveWith<Color>(
+                                              backgroundColor:
+                                                  MaterialStateProperty
+                                                      .resolveWith<Color>(
                                                 (Set<MaterialState> states) {
                                                   // Color based on the current status
                                                   if (request["Status"] ==
                                                       "Accepted") {
                                                     return Colors.green;
                                                   } else {
-                                                    return Colors.red;
+                                                    return Colors.grey.shade700;
                                                   }
                                                 },
                                               ),
@@ -209,16 +196,62 @@ class _HomePageViewState extends State<HomePageView> {
                                             child: Text(
                                               request["Status"] == "Accepted"
                                                   ? 'Accepted'
-                                                  : 'Rejected',
+                                                  : 'Accept',
                                               style: TextStyle(
                                                 color: AppColors.appTertiary,
-                                                fontFamily:
-                                                    GoogleFonts.ubuntu().fontFamily,
+                                                fontFamily: GoogleFonts.ubuntu()
+                                                    .fontFamily,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                           ),
-                                          const SizedBox(width: 4,)
+                                          const SizedBox(
+                                            width: 4,
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              _updateStatus(
+                                                  serviceRequests[index].id,
+                                                  "Rejected");
+                                            },
+                                            style: ButtonStyle(
+                                              shape: MaterialStateProperty.all<
+                                                  RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          7.0), // Adjust the radius as per your requirement
+                                                ),
+                                              ),
+                                              backgroundColor:
+                                                  MaterialStateProperty
+                                                      .resolveWith<Color>(
+                                                (Set<MaterialState> states) {
+                                                  // Color based on the current status
+                                                  if (request["Status"] ==
+                                                      "Rejected") {
+                                                    return Colors.red;
+                                                  } else {
+                                                    return Colors.grey.shade700;
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                            child: Text(
+                                              request["Status"] == "Rejected"
+                                                  ? 'Rejected'
+                                                  : 'Reject',
+                                              style: TextStyle(
+                                                color: AppColors.appTertiary,
+                                                fontFamily: GoogleFonts.ubuntu()
+                                                    .fontFamily,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            width: 3,
+                                          ),
                                         ],
                                       ),
                                     ],
@@ -271,5 +304,16 @@ class _HomePageViewState extends State<HomePageView> {
         }
       },
     );
+  }
+
+  void _updateStatus(String requestId, String newStatus) {
+    FirebaseFirestore.instance
+        .collection("SERVICE-REQUEST")
+        .doc(requestId)
+        .update({"Status": newStatus}).then((_) {
+      print("Status updated to $newStatus");
+    }).catchError((error) {
+      print("Error updating status: $error");
+    });
   }
 }

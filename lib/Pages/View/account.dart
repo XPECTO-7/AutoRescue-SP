@@ -26,6 +26,8 @@ class _AccountPageState extends State<AccountPage> {
   late TextEditingController insuranceController;
   late TextEditingController serTypeController;
   late TextEditingController expController;
+  late TextEditingController minChargeController;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -39,6 +41,7 @@ class _AccountPageState extends State<AccountPage> {
     insuranceController = TextEditingController();
     serTypeController = TextEditingController();
     expController = TextEditingController();
+    minChargeController = TextEditingController();
     getUserData();
   }
 
@@ -57,6 +60,9 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   Future<void> getUserData() async {
+     setState(() {
+    isLoading = true;
+  });
     final currentUser = FirebaseAuth.instance.currentUser!;
     final userSnapshot = await FirebaseFirestore.instance
         .collection('PROVIDERS')
@@ -74,8 +80,12 @@ class _AccountPageState extends State<AccountPage> {
         insuranceController.text = userDetails['Insurance No'];
         serTypeController.text = userDetails['Service Type'];
         expController.text = userDetails['Experience'];
+        minChargeController.text = userDetails['Min Price'];
       });
     }
+     setState(() {
+    isLoading = false;
+  });
   }
 
   void updateUserData() async {
@@ -190,7 +200,13 @@ Widget build(BuildContext context) {
         onRefresh: _refresh,
         child: Center(
           child: SafeArea(
-            child: SingleChildScrollView(
+            child: isLoading
+    ? const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(AppColors.appPrimary),
+        ),
+      )
+    : SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -281,6 +297,10 @@ Widget build(BuildContext context) {
                           height: 17,
                         ),
                         buildEditableField("Experience", expController),
+                        const SizedBox(
+                          height: 17,
+                        ),
+                        buildEditableField("Minimum Charge", minChargeController),
                         const SizedBox(
                           height: 17,
                         ),

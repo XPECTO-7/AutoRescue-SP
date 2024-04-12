@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/Authentication/Controller/onboarding_screen.dart';
 import 'package:provider/Pages/View/bottom_nav.dart';
-import 'package:provider/Pages/View/home_page.dart';
 
 
 class MainPage extends StatelessWidget {
