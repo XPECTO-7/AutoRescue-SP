@@ -420,7 +420,7 @@ class _HomePageContentState extends State<HomePageContent> {
                                           child: Text(
                                             '$selectedVehicleName',
                                             style: TextStyle(
-                                              fontSize: 17,
+                                              fontSize: 15,
                                               color: Colors.white,
                                               fontFamily: GoogleFonts.strait()
                                                   .fontFamily,

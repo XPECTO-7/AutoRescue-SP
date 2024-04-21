@@ -40,7 +40,7 @@ class _LicenseImageState extends State<LicenseImage> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 22),
       child: InkWell(
         onTap: pickImage,
         child: SizedBox(

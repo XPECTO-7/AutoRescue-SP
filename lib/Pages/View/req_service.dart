@@ -18,7 +18,7 @@ class ReqServicePage extends StatefulWidget {
 class _ReqServicePageState extends State<ReqServicePage> {
   late User currentUser;
 
-  late Stream<List<DocumentSnapshot>> serviceRequestStream = Stream.empty();
+  late Stream<List<DocumentSnapshot>> serviceRequestStream = const Stream.empty();
 
   @override
   void initState() {
@@ -82,14 +82,14 @@ class _ReqServicePageState extends State<ReqServicePage> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
 
           final userRequest = snapshot.data ?? [];
           if (userRequest.isEmpty) {
-            return Center(
+            return const Center(
               child: Text('No service requests found.'),
             );
           }
@@ -119,7 +119,7 @@ class _ReqServicePageState extends State<ReqServicePage> {
               }
 
               return Card(
-                margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 elevation: 3,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(7),
@@ -149,7 +149,7 @@ class _ReqServicePageState extends State<ReqServicePage> {
                           Text(
                             'Service Requested Time: $formattedTime', // Formatted time
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 7,
                           ),
                           CustomButton(
@@ -176,6 +176,7 @@ class _ReqServicePageState extends State<ReqServicePage> {
                               );
                             },
                           ),
+                          if (request["Status"] == "Pending") 
                           CustomButton(
                             h: 40,
                             text: 'Cancel Request',
@@ -188,15 +189,15 @@ class _ReqServicePageState extends State<ReqServicePage> {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    title: Text("Confirm Cancellation"),
-                                    content: Text(
+                                    title: const Text("Confirm Cancellation"),
+                                    content: const Text(
                                         "Are you sure you want to cancel this request?"),
                                     actions: [
                                       TextButton(
                                         onPressed: () {
                                           Navigator.pop(context);
                                         },
-                                        child: Text("No"),
+                                        child: const Text("No"),
                                       ),
                                       TextButton(
                                         onPressed: () async {
@@ -204,7 +205,7 @@ class _ReqServicePageState extends State<ReqServicePage> {
                                               userRequest[index].id);
                                           Navigator.pop(context);
                                         },
-                                        child: Text("Yes"),
+                                        child: const Text("Yes"),
                                       ),
                                     ],
                                   );

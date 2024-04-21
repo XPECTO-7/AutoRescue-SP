@@ -40,7 +40,7 @@ class _RCImageState extends State<RCImage> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 22),
       child: InkWell(
         onTap: pickImage,
         child: SizedBox(

@@ -257,7 +257,8 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                       final kilometers = _kilometersController.text;
                       final fuelType = _selectedFuelType;
 
-                      if (manufacturer.isEmpty ||
+                      if (_pickedVehicleImage == null ||
+                          manufacturer.isEmpty ||
                           year.isEmpty ||
                           vehicleName.isEmpty ||
                           registrationNumber.isEmpty ||
@@ -277,7 +278,9 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                                   fontFamily: GoogleFonts.strait().fontFamily,
                                 ),
                               ),
-                              content: const Text("Please Fill in all fields."),
+                              content: _pickedVehicleImage == null
+                                  ? const Text("Please select a vehicle image.")
+                                  : const Text("Please fill in all fields."),
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () {
@@ -291,6 +294,7 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                         );
                         return; // Stop execution if any field is empty
                       }
+
                       setState(() {
                         isLoading = true;
                       });
@@ -383,9 +387,9 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                   // Circular progress indicator
                   if (isLoading)
                     Container(
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.black.withOpacity(0.5),
                       child: const Center(
-                        child: CircularProgressIndicator(
+                        child: const CircularProgressIndicator(
                           valueColor:
                               AlwaysStoppedAnimation<Color>(Colors.white),
                         ),

@@ -20,6 +20,8 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
+  bool isLoading = false;
+
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _phoneNumberController;
@@ -33,7 +35,7 @@ class _AccountPageState extends State<AccountPage> {
   bool isTrue = false;
 
   List<Map<String, dynamic>> addedVehicles = [];
-    // Define variables to hold the previous DL and RC image paths
+  // Define variables to hold the previous DL and RC image paths
   String? previousDLimage;
   String? previousRCimage;
   @override
@@ -49,6 +51,9 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   Future<void> getUserData() async {
+    setState(() {
+      isLoading = true;
+    });
     final currentUser = FirebaseAuth.instance.currentUser!;
     final userSnapshot = await FirebaseFirestore.instance
         .collection('USERS')
@@ -71,8 +76,12 @@ class _AccountPageState extends State<AccountPage> {
         }
       });
     }
+    setState(() {
+      isLoading = false;
+    });
   }
-    // Function to update the previous DL and RC image paths
+
+  // Function to update the previous DL and RC image paths
   void updatePreviousImagePaths() {
     if (pickedDLimage != null) {
       previousDLimage = pickedDLimage!.path;
@@ -80,87 +89,95 @@ class _AccountPageState extends State<AccountPage> {
     if (pickedRCimage != null) {
       previousRCimage = pickedRCimage!.path;
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
+  Future<void> updateUserData() async {
+    setState(() {
+      isLoading = true;
+    });
+    final currentUser = FirebaseAuth.instance.currentUser!;
 
-Future<void> updateUserData() async {
-  final currentUser = FirebaseAuth.instance.currentUser!;
+    String? DLimageUrl;
+    String? RCimageUrl;
 
-  String? DLimageUrl;
-  String? RCimageUrl;
+    // Update previous image paths before checking renewal
+    updatePreviousImagePaths();
 
-  // Update previous image paths before checking renewal
-  updatePreviousImagePaths();
+    // Function to check if DL image is renewed
+    bool checkIfDLRenewed(File? pickedDLimage, String? previousDLimage) {
+      // Implement your logic here to determine if DL image is renewed
+      // For example, you might check if a new DL image is selected compared to the previous one
+      // Return true if DL image is renewed, false otherwise
+      // Example logic:
+      return pickedDLimage != null && pickedDLimage.path != previousDLimage;
+    }
 
-  // Function to check if DL image is renewed
-  bool checkIfDLRenewed(File? pickedDLimage, String? previousDLimage) {
-    // Implement your logic here to determine if DL image is renewed
-    // For example, you might check if a new DL image is selected compared to the previous one
-    // Return true if DL image is renewed, false otherwise
-    // Example logic:
-    return pickedDLimage != null && pickedDLimage.path != previousDLimage;
-  }
+    bool checkIfRCRenewed(File? pickedRCimage, String? previousRCimage) {
+      // Implement your logic here to determine if RC image is renewed
+      // For example, you might check if a new RC image is selected compared to the previous one
+      // Return true if RC image is renewed, false otherwise
+      // Example logic:
+      return pickedRCimage != null && pickedRCimage.path != previousRCimage;
+    }
 
-  bool checkIfRCRenewed(File? pickedRCimage, String? previousRCimage) {
-    // Implement your logic here to determine if RC image is renewed
-    // For example, you might check if a new RC image is selected compared to the previous one
-    // Return true if RC image is renewed, false otherwise
-    // Example logic:
-    return pickedRCimage != null && pickedRCimage.path != previousRCimage;
-  }
+    // Assuming you have a function to upload the DL image
+    if (checkIfDLRenewed(pickedDLimage, previousDLimage)) {
+      DLimageUrl = await uploadLicenseImage();
+    }
 
-  // Assuming you have a function to upload the DL image
-  if (checkIfDLRenewed(pickedDLimage, previousDLimage)) {
-    DLimageUrl = await uploadLicenseImage();
-  }
+    // Assuming you have a function to upload the RC image
+    if (checkIfRCRenewed(pickedRCimage, previousRCimage)) {
+      RCimageUrl = await uploadRCBookImage();
+    }
 
-  // Assuming you have a function to upload the RC image
-  if (checkIfRCRenewed(pickedRCimage, previousRCimage)) {
-    RCimageUrl = await uploadRCBookImage();
-  }
+    // Update only DL and RC image URLs if renewed, otherwise update all data
+    Map<String, dynamic> userData = {
+      'Fullname': _nameController.text,
+      'Phone Number': _phoneNumberController.text,
+      'Email': _emailController.text,
+    };
 
-  // Update only DL and RC image URLs if renewed, otherwise update all data
-  Map<String, dynamic> userData = {
-    'Fullname': _nameController.text,
-    'Phone Number': _phoneNumberController.text,
-    'Email': _emailController.text,
-  };
+    if (DLimageUrl != null) {
+      userData['DL ImageURL'] = DLimageUrl;
+    }
 
-  if (DLimageUrl != null) {
-    userData['DL ImageURL'] = DLimageUrl;
-  }
+    if (RCimageUrl != null) {
+      userData['RC ImageURL'] = RCimageUrl;
+    }
 
-  if (RCimageUrl != null) {
-    userData['RC ImageURL'] = RCimageUrl;
-  }
+    // Update Firestore document
+    await FirebaseFirestore.instance
+        .collection('USERS')
+        .doc(currentUser.email)
+        .update(userData);
 
-  // Update Firestore document
-  await FirebaseFirestore.instance
-      .collection('USERS')
-      .doc(currentUser.email)
-      .update(userData);
-
-  // Show success dialog
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text(
-          "Updated Successfully",
-          style: TextStyle(color: AppColors.appPrimary, fontSize: 14),
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text("OK"),
+    // Show success dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            "Updated Successfully",
+            style: TextStyle(color: AppColors.appPrimary, fontSize: 14),
           ),
-        ],
-      );
-    },
-  );
-}
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   Future<String> uploadLicenseImage() async {
     final Reference storageReference =
@@ -275,343 +292,293 @@ Future<void> updateUserData() async {
           ),
         ],
       ),
-      body: Center(
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const SizedBox(width: 12),
-                    IconButton(
-                      icon: const FaIcon(FontAwesomeIcons.bicycle),
-                      iconSize: 20,
-                      color: AppColors.appPrimary,
-                      onPressed: () {},
-                    ),
-                    Text(
-                      "Hello there!",
-                      style: TextStyle(
-                          color: AppColors.appTertiary,
-                          fontFamily: GoogleFonts.ubuntu().fontFamily,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                buildEditableField("Fullname", _nameController),
-                const SizedBox(
-                  height: 17,
-                ),
-                buildEditableField("Email", _emailController),
-                const SizedBox(
-                  height: 17,
-                ),
-                buildEditableField("Phone Number", _phoneNumberController),
-                const SizedBox(
-                  height: 17,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isTrue = !isTrue;
-                    });
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 17),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        color: Colors.grey[700],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('ADD VEHICLE',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                  fontFamily: GoogleFonts.strait().fontFamily,
-                                  fontWeight: FontWeight.bold)),
-                          Transform.rotate(
-                            angle: isTrue ? 3.14 : 0, // Rotate arrow
-                            child: IconButton(
-                              icon: const FaIcon(
-                                  FontAwesomeIcons.squareArrowUpRight),
-                              splashRadius: 1,
-                              iconSize: 30,
-                              onPressed: () {
-                                setState(() {
-                                  isTrue = !isTrue;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                if (isTrue)
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20.0, top: 10, right: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Display added vehicles
-                        // Display added vehicles
-                        ...addedVehicles.map((vehicleDetails) {
-                          return GestureDetector(
-                            onTap: () {
-                              // Navigate to the edit vehicle details page
-                              // You can pass the vehicle details as arguments if needed
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditVehiclePage(
-                                      vehicleDetails: vehicleDetails),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(bottom: 10),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 5),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4),
-                                color: Colors.grey[300],
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Icon(
-                                    Icons.directions_car,
-                                    color: AppColors.appSecondary,
-                                  ),
-                                  const SizedBox(width: 5),
-                                  Expanded(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              vehicleDetails['manufacturer'],
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 16,
-                                                  fontFamily:
-                                                      GoogleFonts.strait()
-                                                          .fontFamily,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            const SizedBox(
-                                              width: 5,
-                                            ),
-                                            Text(
-                                              vehicleDetails['vehicleName'],
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 16,
-                                                  fontFamily:
-                                                      GoogleFonts.strait()
-                                                          .fontFamily,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ],
-                                        ),
-                                        Text(
-                                          vehicleDetails['registrationNumber'],
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 16,
-                                              fontFamily: GoogleFonts.strait()
-                                                  .fontFamily,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList(),
-
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                // Navigate to the vehicle adding page
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const VehicleFormPage(),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4),
-                                  color: Colors.grey,
-                                ),
-                                child: const Icon(
-                                  Icons.add,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                const SizedBox(
-                  height: 17,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isExpanded = !isExpanded;
-                    });
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 17),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        color: Colors.grey[700],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('UPLOAD FILES',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                  fontFamily: GoogleFonts.strait().fontFamily,
-                                  fontWeight: FontWeight.bold)),
-                          Transform.rotate(
-                            angle: isExpanded ? 3.14 : 0, // Rotate arrow
-                            child: IconButton(
-                              icon: const FaIcon(
-                                  FontAwesomeIcons.squareArrowUpRight),
-                              splashRadius: 1,
-                              iconSize: 30,
-                              onPressed: () {
-                                setState(() {
-                                  isExpanded = !isExpanded;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 17,
-                ),
-                if (isExpanded) // Show this row if isExpanded is true
-
-                  Row(
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.appPrimary),
+              ),
+            )
+          : Center(
+              child: SafeArea(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          LicenseImage(
-                            controller: drLicenseImgController,
-                            label: 'Driving License Image',
-                            onImageSelected: (File image) {
-                              setState(() {
-                                pickedDLimage = image;
-                              });
-                            },
-                            dlImageURL: '',
+                          const SizedBox(width: 12),
+                          IconButton(
+                            icon: const FaIcon(FontAwesomeIcons.bicycle),
+                            iconSize: 20,
+                            color: AppColors.appPrimary,
+                            onPressed: () {},
                           ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          // Display the image preview below the ImageUploader field
-                          Padding(
-                            padding: const EdgeInsets.only(left: 25, right: 5),
-                            child: pickedDLimage != null
-                                ? Container(
-                                    height: 170,
-                                    width: 170,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Image.file(
-                                      pickedDLimage!,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  )
-                                : dlImageURL != null
-                                    ? Container(
-                                        height: 170,
-                                        width: 170,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: Image.network(
-                                          dlImageURL!,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      )
-                                    : Container(),
-                          ),
-                          const SizedBox(
-                            height: 10,
+                          Text(
+                            "Hello there!",
+                            style: TextStyle(
+                                color: AppColors.appTertiary,
+                                fontFamily: GoogleFonts.ubuntu().fontFamily,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24),
                           ),
                         ],
                       ),
                       const SizedBox(
-                        width: 10,
+                        height: 10,
                       ),
-                      Column(
-                        children: [
-                          RCImage(
-                            controller: rcImgController,
-                            label: 'RC Book Image',
-                            onImageSelected: (File image) {
-                              setState(() {
-                                pickedRCimage = image;
-                              });
-                            },
-                            rcImageURL: '',
+                      buildEditableField("Fullname", _nameController),
+                      const SizedBox(
+                        height: 17,
+                      ),
+                      buildEditableField("Email", _emailController),
+                      const SizedBox(
+                        height: 17,
+                      ),
+                      buildEditableField(
+                          "Phone Number", _phoneNumberController),
+                      const SizedBox(
+                        height: 17,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isTrue = !isTrue;
+                          });
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Container(
+                            padding: const EdgeInsets.only(left: 17),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              color: Colors.grey[700],
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('ADD VEHICLE',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                        fontFamily:
+                                            GoogleFonts.strait().fontFamily,
+                                        fontWeight: FontWeight.bold)),
+                                Transform.rotate(
+                                  angle: isTrue ? 3.14 : 0, // Rotate arrow
+                                  child: IconButton(
+                                    icon: const FaIcon(
+                                        FontAwesomeIcons.squareArrowUpRight),
+                                    splashRadius: 1,
+                                    iconSize: 30,
+                                    onPressed: () {
+                                      setState(() {
+                                        isTrue = !isTrue;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          // Display the image preview below the ImageUploader field
-                          Padding(
-                            padding: const EdgeInsets.only(left: 5, right: 25),
-                            child: pickedRCimage != null
-                                ? Container(
-                                    height: 170,
-                                    width: 170,
+                        ),
+                      ),
+                      if (isTrue)
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 20.0, top: 10, right: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Display added vehicles
+                              // Display added vehicles
+                              ...addedVehicles.map((vehicleDetails) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    // Navigate to the edit vehicle details page
+                                    // You can pass the vehicle details as arguments if needed
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EditVehiclePage(
+                                            vehicleDetails: vehicleDetails),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 10),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 5),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(4),
+                                      color: Colors.grey[300],
                                     ),
-                                    child: Image.file(
-                                      pickedRCimage!,
-                                      fit: BoxFit.cover,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Icon(
+                                          Icons.directions_car,
+                                          color: AppColors.appSecondary,
+                                        ),
+                                        const SizedBox(width: 5),
+                                        Expanded(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    vehicleDetails[
+                                                        'manufacturer'],
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 16,
+                                                        fontFamily:
+                                                            GoogleFonts.strait()
+                                                                .fontFamily,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Text(
+                                                    vehicleDetails[
+                                                        'vehicleName'],
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 16,
+                                                        fontFamily:
+                                                            GoogleFonts.strait()
+                                                                .fontFamily,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ],
+                                              ),
+                                              Text(
+                                                vehicleDetails[
+                                                    'registrationNumber'],
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 16,
+                                                    fontFamily:
+                                                        GoogleFonts.strait()
+                                                            .fontFamily,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  )
-                                : rcImageURL != null
+                                  ),
+                                );
+                              }).toList(),
+
+                              Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      // Navigate to the vehicle adding page
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const VehicleFormPage(),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(4),
+                                        color: Colors.grey,
+                                      ),
+                                      child: const Icon(
+                                        Icons.add,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      const SizedBox(
+                        height: 17,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isExpanded = !isExpanded;
+                          });
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Container(
+                            padding: const EdgeInsets.only(left: 17),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              color: Colors.grey[700],
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('UPLOAD FILES',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                        fontFamily:
+                                            GoogleFonts.strait().fontFamily,
+                                        fontWeight: FontWeight.bold)),
+                                Transform.rotate(
+                                  angle: isExpanded ? 3.14 : 0, // Rotate arrow
+                                  child: IconButton(
+                                    icon: const FaIcon(
+                                        FontAwesomeIcons.squareArrowUpRight),
+                                    splashRadius: 1,
+                                    iconSize: 30,
+                                    onPressed: () {
+                                      setState(() {
+                                        isExpanded = !isExpanded;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 17,
+                      ),
+                      if (isExpanded) // Show this row if isExpanded is true
+
+                        Column(
+                          children: [
+                            Column(
+                              children: [
+                                LicenseImage(
+                                  controller: drLicenseImgController,
+                                  label: 'Driving License Image',
+                                  onImageSelected: (File image) {
+                                    setState(() {
+                                      pickedDLimage = image;
+                                    });
+                                  },
+                                  dlImageURL: '',
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                // Display the image preview below the ImageUploader field
+                                pickedDLimage != null
                                     ? Container(
                                         height: 170,
                                         width: 170,
@@ -619,46 +586,109 @@ Future<void> updateUserData() async {
                                           borderRadius:
                                               BorderRadius.circular(8),
                                         ),
-                                        child: Image.network(
-                                          rcImageURL!,
+                                        child: Image.file(
+                                          pickedDLimage!,
                                           fit: BoxFit.cover,
                                         ),
                                       )
-                                    : Container(),
+                                    : dlImageURL != null
+                                        ? Container(
+                                            height: 170,
+                                            width: 170,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: Image.network(
+                                              dlImageURL!,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          )
+                                        : Container(),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Column(
+                              children: [
+                                RCImage(
+                                  controller: rcImgController,
+                                  label: 'RC Book Image',
+                                  onImageSelected: (File image) {
+                                    setState(() {
+                                      pickedRCimage = image;
+                                    });
+                                  },
+                                  rcImageURL: '',
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                // Display the image preview below the ImageUploader field
+                                pickedRCimage != null
+                                    ? Container(
+                                        height: 170,
+                                        width: 170,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Image.file(
+                                          pickedRCimage!,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : rcImageURL != null
+                                        ? Container(
+                                            height: 170,
+                                            width: 170,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: Image.network(
+                                              rcImageURL!,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          )
+                                        : Container(),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: ElevatedButton(
+                          onPressed: updateUserData,
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.black,
+                            backgroundColor: AppColors.appPrimary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            minimumSize: const Size(double.infinity, 50),
                           ),
-                          const SizedBox(
-                            height: 10,
+                          child: Text(
+                            'UPDATE PROFILE',
+                            style: TextStyle(
+                                fontSize: 19,
+                                fontFamily: GoogleFonts.strait().fontFamily,
+                                fontWeight: FontWeight.bold),
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: ElevatedButton(
-                    onPressed: updateUserData,
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.black,
-                      backgroundColor: AppColors.appPrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      minimumSize: const Size(double.infinity, 50),
-                    ),
-                    child: Text(
-                      'UPDATE PROFILE',
-                      style: TextStyle(
-                          fontSize: 19,
-                          fontFamily: GoogleFonts.strait().fontFamily,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 
