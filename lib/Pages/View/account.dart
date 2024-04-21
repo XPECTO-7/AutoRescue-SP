@@ -252,7 +252,7 @@ class _AccountPageState extends State<AccountPage> {
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     image: (_imageFile != null ||
-                                            _profilePhotoURL != '')
+                                            _profilePhotoURL != null)
                                         ? (_imageFile != null
                                             ? DecorationImage(
                                                 image: FileImage(_imageFile!),

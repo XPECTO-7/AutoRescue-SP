@@ -89,6 +89,7 @@ class _HomePageViewState extends State<HomePageView> {
                         stream: FirebaseFirestore.instance
                             .collection("SERVICE-REQUEST")
                             .where("ProviderID", isEqualTo: user.email)
+                            .where("Status", isNotEqualTo: "Completed")
                             .snapshots()
                             .map((snapshot) => snapshot.docs),
                         builder: (context, snapshot) {
@@ -125,7 +126,7 @@ class _HomePageViewState extends State<HomePageView> {
                                     (request["Requested-Time"] as Timestamp)
                                         .toDate();
                                 String formattedTime =
-                                    DateFormat('yyyy-MM-dd hh:mm')
+                                    DateFormat('MMMM dd, yyyy hh:mm a')
                                         .format(requestedTime);
 
                                 return Container(

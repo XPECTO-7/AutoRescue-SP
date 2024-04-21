@@ -32,23 +32,98 @@ class _ManagePageState extends State<ManagePage> {
     serviceRequestStream = FirebaseFirestore.instance
         .collection("SERVICE-REQUEST")
         .where("ProviderID", isEqualTo: currentUser.email)
-        .where("Status", isEqualTo: "Accepted") // Filter only accepted requests
+        .where("Status", whereIn: [
+          "Accepted",
+          "Completed"
+        ]) // Filter accepted and completed requests
         .snapshots()
         .map((snapshot) => snapshot.docs);
   }
 
-  Future<void> _deleteRequest(String requestId) async {
+Future<void> _deleteRequest(String requestId) async {
+  bool confirmDeletion = await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("Confirm Deletion"),
+        content: const Text("Are you sure you want to delete this request?"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(true); // Return true if confirmed
+            },
+            child: const Text("Yes"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false); // Return false if canceled
+            },
+            child: const Text("No"),
+          ),
+        ],
+      );
+    },
+  );
+
+  // Delete the request if confirmation is true
+  if (confirmDeletion == true) {
     try {
       await FirebaseFirestore.instance
           .collection("SERVICE-REQUEST")
           .doc(requestId)
           .delete();
+      // Trigger UI rebuild
+      setState(() {});
     } catch (e) {
       print("Error deleting request: $e");
       // Handle error as per your requirement
     }
   }
+}
 
+
+  Future<void> _completeService(String requestId) async {
+    // Show confirmation dialog
+    bool confirmServiceCompletion = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirm Service Completion"),
+          content: const Text("Is the service completed successfully?"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // Return true if confirmed
+              },
+              child: const Text("Yes"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // Return false if canceled
+              },
+              child: const Text("No"),
+            ),
+          ],
+        );
+      },
+    );
+
+    // Update status if service completion is confirmed
+    if (confirmServiceCompletion == true) {
+      try {
+        await FirebaseFirestore.instance
+            .collection("SERVICE-REQUEST")
+            .doc(requestId)
+            .update({"Status": "Completed"});
+        // Trigger UI rebuild
+        setState(() {});
+      } catch (e) {
+        print("Error completing service: $e");
+        // Handle error as per your requirement
+      }
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,6 +179,7 @@ class _ManagePageState extends State<ManagePage> {
                   (request["Requested-Time"] as Timestamp).toDate();
               String formattedTime =
                   DateFormat('MMMM dd, yyyy hh:mm a').format(requestedTime);
+              bool isCompleted = request["Status"] == "Completed";
               return Card(
                 margin:
                     const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -113,7 +189,7 @@ class _ManagePageState extends State<ManagePage> {
                 ),
                 color: Colors.grey[900],
                 child: ExpansionTile(
-                  initiallyExpanded: true,
+                  initiallyExpanded: !isCompleted,
                   title: Text(
                     request["UserID"].toString(),
                     style: TextStyle(
@@ -131,9 +207,10 @@ class _ManagePageState extends State<ManagePage> {
                         children: [
                           Text(
                             'Status: ${request["Status"].toString()}',
-                            style: const TextStyle(
-                                color: Colors.green,
-                                fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: isCompleted ? Colors.white : Colors.green,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,13 +278,38 @@ class _ManagePageState extends State<ManagePage> {
                           ),
                           CustomButton(
                             h: 40,
-                            text: 'Service Completed',
-                            textColor: Colors.white,
+                            text: request["Status"] == "Completed"
+                                ? 'Service Completed'
+                                : 'Complete Service',
+                            textColor: request["Status"] == "Completed"
+                                ? Colors.black
+                                : Colors
+                                    .white, // Change text color based on status
                             fsize: 16,
                             suffixIcon: FontAwesomeIcons.listCheck,
-                            buttonColor: Colors.redAccent,
-                            onPressed: () {},
+                            buttonColor: request["Status"] == "Completed"
+                                ? AppColors.app1Three
+                                : Colors
+                                    .redAccent, // Change button color based on status
+                            onPressed: () {
+                              if (request["Status"] != "Completed") {
+                                _completeService(userRequest[index]
+                                    .id); // Pass requestId only if status is not completed
+                              }
+                            },
                           ),
+                          if (request["Status"] == "Completed")
+                            CustomButton(
+                              h: 40,
+                              text: 'Delete Request',
+                              textColor: Colors.white,
+                              fsize: 16,
+                              suffixIcon: FontAwesomeIcons.trash,
+                              buttonColor: Colors.red,
+                              onPressed: () {
+                                _deleteRequest(userRequest[index].id);
+                              },
+                            ),
                         ],
                       ),
                     ),
