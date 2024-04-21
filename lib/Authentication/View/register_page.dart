@@ -50,21 +50,6 @@ class _RegisterPageState extends State<RegisterPage>
   }
 
   bool regCheck = false;
-  // void check() {
-  //   if (companyNameController.text.isNotEmpty &&
-  //       expController.text.isNotEmpty &&
-  //       locationController.text.isNotEmpty &&
-  //       licenseController.text.isNotEmpty &&
-  //       insuranceController.text.isNotEmpty &&
-  //       serviceTypeController.text.isNotEmpty &&
-  //       MecPriceController.text.isNotEmpty &&
-  //       aadharNoController.text.isNotEmpty &&
-  //       aadharImgController.text.isNotEmpty) {
-  //     regCheck = true;
-  //   } else {
-  //     regCheck = false;
-  //   }
-  // }
 
   void validation() {
     if (emailController.text.isNotEmpty &&

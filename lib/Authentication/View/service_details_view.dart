@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -52,11 +53,38 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
   ];
 
   bool isSigningUp = false;
+  int _secondsRemaining = 60; // Define _secondsRemaining here
+  late Timer _timer;
+
+  void startTimer() {
+    const oneSecond = Duration(seconds: 1); // Duration for 1 second
+    _secondsRemaining = 80; // Set initial value to 60
+    _timer = Timer.periodic(
+      oneSecond,
+      (Timer timer) {
+        if (_secondsRemaining == 0) {
+          timer.cancel();
+          // Handle timeout here if needed
+        } else {
+          setState(() {
+            _secondsRemaining--; // Decrement _secondsRemaining
+          });
+        }
+      },
+    );
+  }
 
   @override
   void initState() {
     super.initState();
+    startTimer();
     getCurrentLocation();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel(); // Cancel the timer when the widget is disposed
+    super.dispose();
   }
 
   void getCurrentLocation() async {
@@ -134,6 +162,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
         'Phone Number': widget.phoneNumber,
         'Email': widget.email,
         'Aadhar Photo': imgUrl,
+        'Profile Photo':'',
         'Aadhar Number': widget.adhaarNum,
         'Company Name': companyNameController.text,
         'location - lattitude': lattitude,
@@ -225,8 +254,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Column
-(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         TextField(
@@ -336,7 +364,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                           ),
                         ),
                         const SizedBox(height: 15),
-                       DropdownButtonFormField<String>(
+                        DropdownButtonFormField<String>(
                           isExpanded: true,
                           decoration: const InputDecoration(
                             hintText: "Select Service",
@@ -376,7 +404,9 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                         ),
                         const SizedBox(height: 15),
                         const Text('Minimum Charge'),
-                        const SizedBox(height: 5,),
+                        const SizedBox(
+                          height: 5,
+                        ),
                         TextField(
                           controller: priceChargeController,
                           keyboardType: TextInputType.number,
@@ -399,7 +429,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                           ),
                         ),
                         const SizedBox(height: 25),
-                           MyButton(
+                        MyButton(
                           onTap: isSigningUp ? null : validate,
                           text: 'Register',
                           textColor: Colors.black,
@@ -413,35 +443,34 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
               ),
             ),
           ),
-            if (isSigningUp)
-           Container(
-  color: Colors.black.withOpacity(0.5),
-  child:  Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children:  [
-      Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(
-              color: AppColors.appPrimary,
-            ),
-            const SizedBox(height: 10), // Adjust the spacing between the CircularProgressIndicator and the Text
-            Text(
-              "Please wait. It will take some time",
-              style: TextStyle(
-                color: Colors.white,
-                fontFamily: GoogleFonts.ubuntu().fontFamily,
-                fontSize: 16,
+          if (isSigningUp)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const CircularProgressIndicator(
+                          color: AppColors.appPrimary,
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          "Please wait. $_secondsRemaining seconds remaining",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: GoogleFonts.ubuntu().fontFamily,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-      ),
-    ],
-  ),
-)
-
+            )
         ],
       ),
     );

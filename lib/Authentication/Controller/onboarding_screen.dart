@@ -95,7 +95,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       width: MediaQuery.of(context).size.width * .9,
       height: 55,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(50),
         color: AppColors.appPrimary,
       ),
       child: TextButton(

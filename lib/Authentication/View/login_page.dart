@@ -7,6 +7,8 @@ import 'package:provider/Components/log_pfield.dart';
 import 'package:provider/Components/myalert_box.dart';
 import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Components/log_textfield.dart';
+import 'package:provider/Pages/View/bottom_nav.dart';
+import 'package:provider/Pages/View/home_page_view.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback showRegisterPage;
@@ -22,25 +24,35 @@ class _LoginPageState extends State<LoginPage> {
   bool isLoading = false;
 
   void signIn() async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-    } catch (e) {
-      // If there's an error signing in
-      showDialog(
-        context: context,
-        builder: (context) => const MyAlertBox(message: 'User not registered or incorrect password.'),
+  setState(() {
+    isLoading = true;
+  });
+
+  try {
+    final UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
+    );
+
+    // Navigate to homepage if sign-in is successful
+    if (userCredential.user != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => BottomNavPage()), // Replace HomePage with your homepage widget
       );
     }
-    setState(() {
-      isLoading = false;
-    });
+  } catch (e) {
+    // If there's an error signing in
+    showDialog(
+      context: context,
+      builder: (context) =>
+          const MyAlertBox(message: 'User not registered or incorrect password.'),
+    );
   }
+
+ 
+}
 
   @override
   Widget build(BuildContext context) {
