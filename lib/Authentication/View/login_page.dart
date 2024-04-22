@@ -174,8 +174,8 @@ class _LoginPageState extends State<LoginPage> {
                             GestureDetector(
                               onTap: signIn,
                               child: MyButton(
-                                buttonColor: Colors.black,
-                                textColor: Colors.white,
+                                buttonColor: Colors.white,
+                                textColor: Colors.black,
                                 text: 'Sign In',
                                 onTap: () {
                                   if (emailController.text.isNotEmpty &&
@@ -191,39 +191,7 @@ class _LoginPageState extends State<LoginPage> {
                                 },
                               ),
                             ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Container(
-                              height: 60,
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 25),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  elevation: 0, // No elevation
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: Colors.red,
-                                  minimumSize: const Size(double.infinity, 50),
-                                ),
-                                icon: const FaIcon(FontAwesomeIcons.google),
-                                label: Text(
-                                  'Sign Up with Google',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: GoogleFonts.ubuntu().fontFamily,
-                                    fontSize: 18,
-                                  ),
-                                ),
-                                onPressed: () {},
-                              ),
-                            ),
+                           
                             const SizedBox(
                               height: 30,
                             ),
@@ -242,7 +210,7 @@ class _LoginPageState extends State<LoginPage> {
                                   child: const Text(
                                     'Create an account!',
                                     style: TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 17,
                                         color: AppColors.appPrimary,
                                         fontWeight: FontWeight.bold),
                                   ),

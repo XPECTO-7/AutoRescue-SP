@@ -236,9 +236,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             GestureDetector(
                               onTap: widget.showLoginPage,
                               child: const Text(
-                                ' Login',
+                                'Login',
                                 style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 17,
                                     color: AppColors.appPrimary,
                                     fontWeight: FontWeight.bold),
                               ),
