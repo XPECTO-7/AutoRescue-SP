@@ -10,7 +10,7 @@ class OnboardingData{
         description: "description",
         image: "lib/images/cserv.png"),
     OnboardingInfo(
-        title: "Unlimited Questions",
+        title: "Unlimited Answers",
         description: "High qualities questions and quizzes with hundreds of tests",
         image: "assets/City driver.gif"),
 
