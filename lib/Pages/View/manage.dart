@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Pages/Utils/custom_button.dart';
+import 'package:provider/Pages/View/get_location.dart';
 import 'package:provider/Pages/View/show_userdetails.dart';
 
 class ManagePage extends StatefulWidget {
@@ -40,47 +41,46 @@ class _ManagePageState extends State<ManagePage> {
         .map((snapshot) => snapshot.docs);
   }
 
-Future<void> _deleteRequest(String requestId) async {
-  bool confirmDeletion = await showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text("Confirm Deletion"),
-        content: const Text("Are you sure you want to delete this request?"),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(true); // Return true if confirmed
-            },
-            child: const Text("Yes"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(false); // Return false if canceled
-            },
-            child: const Text("No"),
-          ),
-        ],
-      );
-    },
-  );
+  Future<void> _deleteRequest(String requestId) async {
+    bool confirmDeletion = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirm Deletion"),
+          content: const Text("Are you sure you want to delete this request?"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // Return true if confirmed
+              },
+              child: const Text("Yes"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // Return false if canceled
+              },
+              child: const Text("No"),
+            ),
+          ],
+        );
+      },
+    );
 
-  // Delete the request if confirmation is true
-  if (confirmDeletion == true) {
-    try {
-      await FirebaseFirestore.instance
-          .collection("SERVICE-REQUEST")
-          .doc(requestId)
-          .delete();
-      // Trigger UI rebuild
-      setState(() {});
-    } catch (e) {
-      print("Error deleting request: $e");
-      // Handle error as per your requirement
+    // Delete the request if confirmation is true
+    if (confirmDeletion == true) {
+      try {
+        await FirebaseFirestore.instance
+            .collection("SERVICE-REQUEST")
+            .doc(requestId)
+            .delete();
+        // Trigger UI rebuild
+        setState(() {});
+      } catch (e) {
+        print("Error deleting request: $e");
+        // Handle error as per your requirement
+      }
     }
   }
-}
-
 
   Future<void> _completeService(String requestId) async {
     // Show confirmation dialog
@@ -123,7 +123,7 @@ Future<void> _deleteRequest(String requestId) async {
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -238,7 +238,17 @@ Future<void> _deleteRequest(String requestId) async {
                             fsize: 16,
                             suffixIcon: FontAwesomeIcons.locationArrow,
                             buttonColor: Colors.blue.shade500,
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => GetLocationPage(
+                                    currentLocationX: double.parse(request["UserLocation-Lat"]),
+                                    currentLocationY: double.parse(request["UserLocation-Long"]),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                           const SizedBox(
                             height: 7,
