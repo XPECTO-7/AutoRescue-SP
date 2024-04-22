@@ -1,17 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/Colors/appcolor.dart';
-import 'package:provider/Components/aadhar_field.dart';
-import 'package:provider/Components/licensenum_tf.dart';
 import 'package:provider/Components/myalert_box.dart';
 import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Components/pwcontrol.dart';
 import 'package:provider/Components/reg_textfield.dart';
+import 'package:provider/Pages/View/home_page.dart';
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;
@@ -28,8 +25,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final numberController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final numericRegex = RegExp(r'[0-9]');
+  bool isLoading = false;
 
-  void validation() {
+  void validation(BuildContext context) {
     if (emailController.text.isNotEmpty &&
         passwordController.text.isNotEmpty &&
         fullNameController.text.isNotEmpty &&
@@ -37,13 +35,13 @@ class _RegisterPageState extends State<RegisterPage> {
       if (passwordController.text.length >= 8 &&
           numericRegex.hasMatch(passwordController.text)) {
         if (passwordController.text == confirmPasswordController.text) {
-          signUp();
+          signUp(context); // Pass the context to signUp
         } else {
           //pw didnt match
           showDialog(
             context: context,
             builder: (context) => const MyAlertBox(
-              message: "Password didnt match",
+              message: "Password didn't match",
             ),
           );
         }
@@ -52,7 +50,7 @@ class _RegisterPageState extends State<RegisterPage> {
         showDialog(
           context: context,
           builder: (context) => const MyAlertBox(
-            message: " Password didnt meet requirements",
+            message: "Password didn't meet requirements",
           ),
         );
       }
@@ -61,13 +59,16 @@ class _RegisterPageState extends State<RegisterPage> {
       showDialog(
         context: context,
         builder: (context) => const MyAlertBox(
-          message: " Fill all fields",
+          message: "Fill all fields",
         ),
       );
     }
   }
 
-  void signUp() async {
+  void signUp(BuildContext context) async {
+    setState(() {
+      isLoading = true;
+    });
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailController.text.trim(),
@@ -79,8 +80,16 @@ class _RegisterPageState extends State<RegisterPage> {
         'Fullname': fullNameController.text.trim(),
         'Phone Number': numberController.text.trim(),
         'Email': emailController.text.trim(),
-        'Vehicle':'',
+        'Vehicle': '',
       });
+      setState(() {
+        isLoading = false;
+      });
+      // Navigate to the homepage
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
     } on FirebaseAuthException catch (e) {
       showDialog(
         context: context,
@@ -95,151 +104,153 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[950],
-      body: SafeArea(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.person_outlined,
-                        size: 40,
-                      ),
-                      const SizedBox(width: 7),
-                      Text(
-                        'Create Your Account',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontFamily: GoogleFonts.poppins().fontFamily,
-                          fontWeight: FontWeight.bold,
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.appPrimary),
+              ),
+            )
+          : SafeArea(
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.person_outlined,
+                              size: 40,
+                            ),
+                            const SizedBox(width: 7),
+                            Text(
+                              'Create Your Account',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontFamily: GoogleFonts.poppins().fontFamily,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(
-                    height: 3,
-                  ),
-                   const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Divider(
-                      thickness: 0.7,
-                      color: AppColors.appTertiary,
+                        const SizedBox(
+                          height: 3,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 25.0),
+                          child: Divider(
+                            thickness: 0.7,
+                            color: AppColors.appTertiary,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        //F U L L N A M E
+                        RegTextField(
+                          controller: fullNameController,
+                          hintText: 'Full name',
+                          obscureText: false,
+                          iconData: Icons.person,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          child: IntlPhoneField(
+                            decoration: const InputDecoration(
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(8)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: AppColors.appPrimary),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(8)),
+                                ),
+                                fillColor: Colors.black,
+                                filled: true,
+                                hintStyle: TextStyle(color: Colors.white),
+                                hintText: 'Phone Number',
+                                suffixIcon: Icon(Icons.phone)),
+                            initialCountryCode: 'IN',
+                            controller: numberController,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        //E M A I L
+                        RegTextField(
+                          controller: emailController,
+                          hintText: 'Email',
+                          obscureText: false,
+                          iconData: Icons.mail,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        //P A S S W O R D
+                        MyPWTField(
+                          controller: passwordController,
+                          hintText: 'Password',
+                          obscureText: true,
+                        ),
+                        //C O N F I R M P A S S W O R D
+                        RegTextField(
+                          controller: confirmPasswordController,
+                          hintText: 'Confirm Password',
+                          obscureText: true,
+                          iconData: Icons.lock,
+                        ),
+                        const SizedBox(
+                          height: 25,
+                        ),
+                        MyButton(
+                          text: 'Sign Up',
+                          onTap: () => validation(context),
+                          textColor: AppColors.appTertiary,
+                          buttonColor: Colors.black,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Already a member ?',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(
+                              width: 4,
+                            ),
+                            GestureDetector(
+                              onTap: widget.showLoginPage,
+                              child: const Text(
+                                ' Login',
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    color: AppColors.appPrimary,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            )
+                          ],
+                        )
+                      ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-
-                  //F U L L N A M E
-                  RegTextField(
-                    controller: fullNameController,
-                    hintText: 'Full name',
-                    obscureText: false,
-                    iconData: Icons.person,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: IntlPhoneField(
-                      decoration: const InputDecoration(
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.appPrimary),
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
-                          ),
-                          fillColor: Colors.black,
-                          filled: true,
-                          hintStyle: TextStyle(color: Colors.white),
-                          hintText: 'Phone Number',
-                          suffixIcon: Icon(Icons.phone)),
-                      initialCountryCode: 'IN',
-                      controller: numberController,
-                    ),
-                  ),
-
-                  const SizedBox(
-                    height: 5,
-                  ),
-
-                  //E M A I L
-                  RegTextField(
-                    controller: emailController,
-                    hintText: 'Email',
-                    obscureText: false,
-                    iconData: Icons.mail,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-
-                  //P A S S W O R D
-                  MyPWTField(
-                    controller: passwordController,
-                    hintText: 'Password',
-                    obscureText: true,
-                  ),
-
-                  //C O N F I R M P A S S W O R D
-                  RegTextField(
-                    controller: confirmPasswordController,
-                    hintText: 'Confirm Password',
-                    obscureText: true,
-                    iconData: Icons.lock,
-                  ),
-
-                  const SizedBox(
-                    height: 25,
-                  ),
-                  MyButton(
-                    text: 'Sign Up',
-                    onTap: validation,
-                    textColor: AppColors.appTertiary,
-                    buttonColor: Colors.black,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Already a member ?',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(
-                        width: 4,
-                      ),
-                      GestureDetector(
-                        onTap: widget.showLoginPage,
-                        child: const Text(
-                          ' Login',
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: AppColors.appPrimary,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      )
-                    ],
-                  )
-                ],
+                ),
               ),
             ),
-          ),
-        ),
-      ),
     );
   }
 }

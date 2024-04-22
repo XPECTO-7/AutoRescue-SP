@@ -8,6 +8,7 @@ import 'package:provider/Components/log_pfield.dart';
 import 'package:provider/Components/myalert_box.dart';
 import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Components/log_textfield.dart';
+import 'package:provider/Pages/View/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback showRegisterPage;
@@ -23,22 +24,36 @@ class _LoginPageState extends State<LoginPage> {
   bool isLoading = false;
 
   void signIn() async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailController.text.trim(),
-          password: passwordController.text.trim());
-    } on FirebaseAuthException catch (e) {
-      MyAlertBox(
-        message: e.code,
+  setState(() {
+    isLoading = true; // Assuming isLoading is a boolean variable to track loading state
+  });
+
+  try {
+    final UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
+    );
+
+    // Navigate to homepage if sign-in is successful
+    if (userCredential.user != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()), // Replace BottomNavPage with your homepage widget
       );
     }
-     setState(() {
-      isLoading = false;
+  } on FirebaseAuthException catch (e) {
+    // If there's an error signing in
+    showDialog(
+      context: context,
+      builder: (context) => MyAlertBox(message: e.message), // Display Firebase error message
+    );
+  } finally {
+    setState(() {
+      isLoading = false; // Set loading state to false regardless of success or failure
     });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
