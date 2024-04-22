@@ -89,7 +89,6 @@ class _HomePageViewState extends State<HomePageView> {
                         stream: FirebaseFirestore.instance
                             .collection("SERVICE-REQUEST")
                             .where("ProviderID", isEqualTo: user.email)
-                            .where("Status", isNotEqualTo: "Completed")
                             .snapshots()
                             .map((snapshot) => snapshot.docs),
                         builder: (context, snapshot) {

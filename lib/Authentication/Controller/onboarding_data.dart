@@ -6,22 +6,22 @@ class OnboardingData{
 
   List<OnboardingInfo> items = [
      OnboardingInfo(
-        title: "AutoRescue",
-        description: "description",
+        title: "AUTORESCUE",
+        description: "PROVIDER",
         image: "lib/images/cserv.png"),
     OnboardingInfo(
-        title: "Unlimited Answers",
-        description: "High qualities questions and quizzes with hundreds of tests",
+        title: "Stuck on Unknown Place because of your vehicle issues?",
+        description: "Don't worry.. AutoRescue is here",
         image: "assets/City driver.gif"),
 
     OnboardingInfo(
-        title: "Interesting stories",
-        description: "Reading top stories to learn and enhance your knowledge",
+        title: "Solve vehicle related problems.",
+        description: "No more stuck in road sides.",
         image: "assets/Order ride.gif"),
 
     OnboardingInfo(
-        title: "Reading Books",
-        description: "Reading new books with top content and excellent stories""Reading new books with top content and excellent stories",
+        title: "Services provided to your location",
+        description: "AutoRescue provides services to your location.No need of worrying about anything.",
         image: "assets/Delivery.gif"),
 
   ];

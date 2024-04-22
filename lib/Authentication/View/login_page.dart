@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
     if (userCredential.user != null) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => BottomNavPage()), // Replace HomePage with your homepage widget
+        MaterialPageRoute(builder: (context) => const BottomNavPage()), // Replace HomePage with your homepage widget
       );
     }
   } catch (e) {
