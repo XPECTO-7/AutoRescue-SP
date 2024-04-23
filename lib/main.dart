@@ -2,10 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/Authentication/Controller/main_page.dart';
-import 'package:provider/Authentication/View/login_page.dart';
 import 'package:provider/Pages/View/account.dart';
 import 'package:provider/Pages/View/home_page.dart';
-import 'package:provider/Pages/View/manage.dart';
 import 'package:provider/Theme/dark_theme.dart';
 import 'package:provider/firebase_options.dart';
 

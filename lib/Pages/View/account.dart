@@ -11,6 +11,7 @@ import 'package:provider/Pages/Components/edit_vehicle.dart';
 import 'package:provider/Pages/Components/license_image_up.dart';
 import 'package:provider/Pages/Components/rcbook_image_up.dart';
 import 'package:provider/Pages/Components/vehicle_form_page.dart';
+import 'package:provider/Pages/View/uploaddoc.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
@@ -514,10 +515,14 @@ class _AccountPageState extends State<AccountPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          setState(() {
-                            isExpanded = !isExpanded;
-                          });
-                        },
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const UploadDocPage(),
+                                      ),
+                                    );
+                                  },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: Container(
@@ -536,19 +541,19 @@ class _AccountPageState extends State<AccountPage> {
                                         fontFamily:
                                             GoogleFonts.strait().fontFamily,
                                         fontWeight: FontWeight.bold)),
-                                Transform.rotate(
-                                  angle: isExpanded ? 3.14 : 0, // Rotate arrow
-                                  child: IconButton(
-                                    icon: const FaIcon(
-                                        FontAwesomeIcons.squareArrowUpRight),
-                                    splashRadius: 1,
-                                    iconSize: 30,
-                                    onPressed: () {
-                                      setState(() {
-                                        isExpanded = !isExpanded;
-                                      });
-                                    },
-                                  ),
+                                IconButton(
+                                  icon: const FaIcon(FontAwesomeIcons.file),
+                                  splashRadius: 1,
+                                  iconSize: 30,
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const UploadDocPage(),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ],
                             ),

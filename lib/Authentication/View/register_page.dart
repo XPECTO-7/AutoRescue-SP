@@ -81,6 +81,9 @@ class _RegisterPageState extends State<RegisterPage> {
         'Phone Number': numberController.text.trim(),
         'Email': emailController.text.trim(),
         'Vehicle': '',
+        
+        "DlImage":"",
+
       });
       setState(() {
         isLoading = false;
