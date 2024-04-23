@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -32,7 +34,6 @@ class _RegisterPageState extends State<RegisterPage>
   final numberController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final numericRegex = RegExp(r'[0-9]');
-  bool profileCreation = true;
   String adharImage = "";
   XFile? pickedImage;
   TextEditingController aadharNoController = TextEditingController();
@@ -100,16 +101,36 @@ class _RegisterPageState extends State<RegisterPage>
     }
   }
 
-  void pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.camera);
-    if (image != null) {
+void pickImage() async {
+  final ImagePicker picker = ImagePicker();
+  final XFile? image = await picker.pickImage(source: ImageSource.camera);
+  if (image != null) {
+    // Get the path of the picked image
+    String imagePath = image.path;
+    
+    // Compress the image
+    Uint8List? compressedImage = await FlutterImageCompress.compressWithFile(
+      imagePath,
+      minWidth: 800,
+      minHeight: 600,
+      quality: 70,
+    );
+
+    if (compressedImage != null) {
+      // Convert Uint8List to List<int>
+      List<int> compressedImageData = compressedImage.toList();
+
+      // Save the compressed image to a temporary file
+      final File compressedFile = File(imagePath)..writeAsBytesSync(compressedImageData);
+
       setState(() {
-        pickedImage = image;
-        adharImage = image.path;
+        pickedImage = XFile(compressedFile.path);
+        adharImage = compressedFile.path;
       });
     }
   }
+}
+
 
   void signUp() async {
     try {
@@ -131,7 +152,7 @@ class _RegisterPageState extends State<RegisterPage>
         'License No': 'licenseController',
         'Insurance No': 'insuranceController',
         'Service Type': 'serviceTypeController',
-        'Approved': false
+        'Approved': 'Pending'
       });
     } on FirebaseAuthException catch (e) {
       showDialog(

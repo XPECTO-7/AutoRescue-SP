@@ -4,10 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
-import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Colors/appcolor.dart';
-import 'package:provider/Pages/Utils/custom_button.dart';
-import 'package:provider/Pages/View/manage.dart';
 
 class HomePageView extends StatefulWidget {
   const HomePageView({Key? key}) : super(key: key);
@@ -28,7 +25,7 @@ class _HomePageViewState extends State<HomePageView> {
       builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasData) {
           final userDetails = snapshot.data!.data() as Map<String, dynamic>;
-          final bool approved = userDetails['Approved'] == true;
+          final String approved = userDetails['Approved'];
 
           return Scaffold(
             appBar: AppBar(
@@ -83,7 +80,7 @@ class _HomePageViewState extends State<HomePageView> {
                   const SizedBox(
                     height: 10,
                   ),
-                  if (approved)
+                  if (approved=='Accepted')
                     Expanded(
                       child: StreamBuilder<List<DocumentSnapshot>>(
                         stream: FirebaseFirestore.instance
@@ -263,7 +260,7 @@ class _HomePageViewState extends State<HomePageView> {
                         },
                       ),
                     ),
-                  if (!approved)
+                  if (approved=='Pending')
                     Expanded(
                       child: Center(
                         child: Container(
@@ -287,6 +284,36 @@ class _HomePageViewState extends State<HomePageView> {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontFamily: GoogleFonts.ubuntu().fontFamily,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (approved=='Rejected')
+                    Expanded(
+                      child: Center(
+                        child: Container(
+                          margin: const EdgeInsets.all(20.0),
+                          padding: const EdgeInsets.all(20.0),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.white,
+                            ),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.cancel_outlined,color: Colors.red,size: 200,),
+                              Text(
+                                "We regret to inform you that your company details have been deemed inaccurate. We kindly request that you provide authentic and verifiable information during registration.\n\nRegrettably, your registration has not been approved at this time.\n\n Please consider registering again using authentic information.",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: GoogleFonts.ubuntu().fontFamily,
+                                  color: Colors.redAccent
                                 ),
                                 textAlign: TextAlign.center,
                               ),

@@ -172,7 +172,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
         'Insurance No': insuranceController.text,
         'Service Type': serviceTypeController.text,
         'Min Price': priceChargeController.text,
-        'Approved': false
+        'Approved': 'Pending'
       });
     }
     setState(() {
