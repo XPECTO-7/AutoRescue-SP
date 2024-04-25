@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,7 +8,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:provider/Colors/appcolor.dart';
-import 'package:provider/Pages/View/account.dart';
 import 'package:provider/Pages/View/home_page.dart';
 
 class VehicleFormPage extends StatefulWidget {
@@ -25,6 +26,7 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
   final TextEditingController _kilometersController = TextEditingController();
   String? _selectedFuelType;
   File? _pickedVehicleImage;
+  File? _pickedRCimage;
   bool isLoading = false;
   List<String> addedVehicles = [];
 
@@ -52,11 +54,24 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
     });
   }
 
+  Future<void> _pickRC(ImageSource source) async {
+    final pickedImageFile = await ImagePicker().pickImage(
+      source: source,
+      maxWidth: 500,
+    );
+
+    if (pickedImageFile == null) return;
+
+    setState(() {
+      _pickedRCimage = File(pickedImageFile.path);
+    });
+  }
+
   Future<String> _uploadImageToFirebase(File imageFile) async {
     final currentUser = FirebaseAuth.instance.currentUser;
     final storageRef = FirebaseStorage.instance
         .ref()
-        .child('vehicle_images')
+        .child('vehicle_RCimages')
         .child(
             '${currentUser!.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg');
 
@@ -107,6 +122,11 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Text(
+                ' Vehicle Image',
+                style: _labelTextStyle,
+              ),
+              const SizedBox(height: 8),
               Container(
                 height: 200,
                 color: Colors.grey[200],
@@ -128,6 +148,34 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                 ),
               ),
               const SizedBox(height: 20),
+              Text(
+                ' RC BOOK Image',
+                style: _labelTextStyle,
+              ),
+              const SizedBox(height: 8),
+              Container(
+                height: 200,
+                color: Colors.grey[200],
+                child: Center(
+                  child: _pickedRCimage == null
+                      ? IconButton(
+                          icon: const Icon(
+                            Icons.photo_camera,
+                            size: 150,
+                          ),
+                          onPressed: () {
+                            _pickRC(ImageSource.gallery);
+                          },
+                        )
+                      : Image.file(
+                          _pickedRCimage!,
+                          fit: BoxFit.cover,
+                        ),
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
               Text(
                 'Manufacture',
                 style: _labelTextStyle,
@@ -258,6 +306,7 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                       final fuelType = _selectedFuelType;
 
                       if (_pickedVehicleImage == null ||
+                          _pickedRCimage == null ||
                           manufacturer.isEmpty ||
                           year.isEmpty ||
                           vehicleName.isEmpty ||
@@ -278,8 +327,10 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                                   fontFamily: GoogleFonts.strait().fontFamily,
                                 ),
                               ),
-                              content: _pickedVehicleImage == null
-                                  ? const Text("Please select a vehicle image.")
+                              content: _pickedVehicleImage == null ||
+                                      _pickedRCimage == null
+                                  ? const Text(
+                                      "Please select both vehicle and RC book images.")
                                   : const Text("Please fill in all fields."),
                               actions: <Widget>[
                                 TextButton(
@@ -302,6 +353,9 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                       // Upload image to Firebase Storage
                       final vehicleImageURL =
                           await _uploadImageToFirebase(_pickedVehicleImage!);
+                      // Upload RCimage to Firebase Storage
+                      final vehicleRCImageURL =
+                          await _uploadImageToFirebase(_pickedRCimage!);
 
                       // Add the vehicle details to the database
                       final currentUser = FirebaseAuth.instance.currentUser!;
@@ -321,6 +375,7 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                         'Kilometers': kilometers,
                         'FuelType': fuelType,
                         'vehicleImageURL': vehicleImageURL,
+                        'vehicleRCImageURL': vehicleRCImageURL
                       });
 
                       setState(() {
@@ -337,6 +392,7 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                       setState(() {
                         _selectedFuelType = null;
                         _pickedVehicleImage = null;
+                        _pickedRCimage = null;
                       });
 
                       // Show a dialog to indicate successful submission
@@ -386,12 +442,11 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                   ),
                   // Circular progress indicator
                   if (isLoading)
-                    Container(
-                      color: Colors.black.withOpacity(0.5),
-                      child: const Center(
+                    Center(
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                         child: const CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
+                          color: Colors.white,
                         ),
                       ),
                     ),

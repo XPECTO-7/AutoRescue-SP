@@ -48,9 +48,7 @@ class _LoginPageState extends State<LoginPage> {
       builder: (context) => MyAlertBox(message: e.message), // Display Firebase error message
     );
   } finally {
-    setState(() {
-      isLoading = false; // Set loading state to false regardless of success or failure
-    });
+   
   }
 }
 

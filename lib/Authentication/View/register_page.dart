@@ -80,14 +80,9 @@ class _RegisterPageState extends State<RegisterPage> {
         'Fullname': fullNameController.text.trim(),
         'Phone Number': numberController.text.trim(),
         'Email': emailController.text.trim(),
-        'Vehicle': '',
-        
-        "DlImage":"",
-
+        "DlImage": "",
       });
-      setState(() {
-        isLoading = false;
-      });
+     
       // Navigate to the homepage
       Navigator.pushReplacement(
         context,

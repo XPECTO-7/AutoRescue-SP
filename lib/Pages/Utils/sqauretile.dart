@@ -36,7 +36,7 @@ class _SquaretileState extends State<Squaretile> {
                 border: Border.all(color: AppColors.appTertiary),
                 borderRadius: BorderRadius.circular(2),
                 color: widget.isSelected
-                    ? AppColors.appPrimary
+                    ? Colors.white
                     : Colors.grey[950],
               ),
               child: Column(
@@ -62,7 +62,9 @@ class _SquaretileState extends State<Squaretile> {
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         fontFamily: GoogleFonts.strait().fontFamily,
-                        color: Colors.white,
+                        color:  widget.isSelected
+                    ? Colors.black
+                    : Colors.white,
                       ),
                       textAlign: TextAlign
                           .center, // Optional if you want to explicitly set text alignment
@@ -80,7 +82,7 @@ class _SquaretileState extends State<Squaretile> {
                   child: Icon(
                     Icons.check,
                     color: Colors.black,
-                    size: 20,
+                    size: 17,
                   ),
                 ),
               ),

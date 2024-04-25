@@ -534,7 +534,7 @@ class _AccountPageState extends State<AccountPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('UPLOAD FILES',
+                                Text('UPLOAD DRIVING LICENSE',
                                     style: TextStyle(
                                         fontSize: 20,
                                         color: Colors.white,
@@ -563,111 +563,8 @@ class _AccountPageState extends State<AccountPage> {
                       const SizedBox(
                         height: 17,
                       ),
-                      if (isExpanded) // Show this row if isExpanded is true
-
-                        Column(
-                          children: [
-                            Column(
-                              children: [
-                                LicenseImage(
-                                  controller: drLicenseImgController,
-                                  label: 'Driving License Image',
-                                  onImageSelected: (File image) {
-                                    setState(() {
-                                      pickedDLimage = image;
-                                    });
-                                  },
-                                  dlImageURL: '',
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                // Display the image preview below the ImageUploader field
-                                pickedDLimage != null
-                                    ? Container(
-                                        height: 170,
-                                        width: 170,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: Image.file(
-                                          pickedDLimage!,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      )
-                                    : dlImageURL != null
-                                        ? Container(
-                                            height: 170,
-                                            width: 170,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            child: Image.network(
-                                              dlImageURL!,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          )
-                                        : Container(),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Column(
-                              children: [
-                                RCImage(
-                                  controller: rcImgController,
-                                  label: 'RC Book Image',
-                                  onImageSelected: (File image) {
-                                    setState(() {
-                                      pickedRCimage = image;
-                                    });
-                                  },
-                                  rcImageURL: '',
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                // Display the image preview below the ImageUploader field
-                                pickedRCimage != null
-                                    ? Container(
-                                        height: 170,
-                                        width: 170,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: Image.file(
-                                          pickedRCimage!,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      )
-                                    : rcImageURL != null
-                                        ? Container(
-                                            height: 170,
-                                            width: 170,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            child: Image.network(
-                                              rcImageURL!,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          )
-                                        : Container(),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                      
+                        
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: ElevatedButton(

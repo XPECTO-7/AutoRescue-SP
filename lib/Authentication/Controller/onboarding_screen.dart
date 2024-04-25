@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/Authentication/Controller/auth_page.dart';
-import 'package:provider/Authentication/Controller/main_page.dart';
 import 'package:provider/Authentication/Controller/onboarding_data.dart';
 import 'package:provider/Colors/appcolor.dart';
 
@@ -50,14 +50,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   const SizedBox(height: 15),
                   Text(
                     controller.items[currentIndex].title,
-                    style: const TextStyle(fontSize: 25, color: AppColors.appPrimary, fontWeight: FontWeight.bold),
+                    style:  TextStyle(fontSize: 20, color: AppColors.appPrimary, fontWeight: FontWeight.bold,fontFamily: GoogleFonts.ubuntu().fontFamily),
                     textAlign: TextAlign.center,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 25),
                     child: Text(
                       controller.items[currentIndex].description,
-                      style: const TextStyle(color: Colors.grey, fontSize: 16),
+                      style:  TextStyle(color: Colors.grey, fontSize: 16,fontFamily: GoogleFonts.ubuntu().fontFamily),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -114,7 +114,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         },
         child: Text(
           currentIndex == controller.items.length - 1 ? "Get started" : "Continue",
-          style: const TextStyle(color: Colors.white),
+          style:  TextStyle(color: Colors.white,fontSize: 20, fontWeight: FontWeight.bold,fontFamily: GoogleFonts.ubuntu().fontFamily),
         ),
       ),
     );

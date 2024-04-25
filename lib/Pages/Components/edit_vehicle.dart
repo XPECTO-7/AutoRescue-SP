@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -6,7 +8,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/Colors/appcolor.dart';
-import 'package:provider/Pages/View/account.dart';
 import 'package:provider/Pages/View/home_page.dart';
 
 class EditVehiclePage extends StatefulWidget {
@@ -28,6 +29,9 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
   late String? _selectedFuelType;
   File? _pickedVehicleImage;
   late String? _vehicleImageURL;
+  File? _pickedVehicleRCImage;
+  late String? _vehicleRCImageURL;
+  bool _isLoading = false; // Added loading state variable
 
   final _hintTextStyle = const TextStyle(
     fontSize: 16,
@@ -56,6 +60,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
     _selectedFuelType = widget.vehicleDetails['fueltype'];
 
     _vehicleImageURL = widget.vehicleDetails['vehicleImageURL'];
+    _vehicleRCImageURL= widget.vehicleDetails['vehicleRCImageURL'];
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -68,6 +73,18 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
 
     setState(() {
       _pickedVehicleImage = File(pickedImageFile.path);
+    });
+  }
+   Future<void> _pickRCImage(ImageSource source) async {
+    final pickedRCImageFile = await ImagePicker().pickImage(
+      source: source,
+      maxWidth: 500,
+    );
+
+    if (pickedRCImageFile == null) return;
+
+    setState(() {
+      _pickedVehicleRCImage = File(pickedRCImageFile.path);
     });
   }
 
@@ -84,8 +101,25 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
     final vehicleImageURL = await storageRef.getDownloadURL();
     return vehicleImageURL;
   }
+   Future<String?> _uploadRCImageToFirebase(File imageFile) async {
+    final currentUser = FirebaseAuth.instance.currentUser!;
+    final storageRef = FirebaseStorage.instance
+        .ref()
+        .child('vehicle_images')
+        .child(
+            '${currentUser.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg');
+
+    await storageRef.putFile(imageFile);
+
+    final vehicleRCImageURL = await storageRef.getDownloadURL();
+    return vehicleRCImageURL;
+  }
 
   Future<void> _updateVehicle() async {
+    setState(() {
+      _isLoading = true; // Set loading state to true when button is clicked
+    });
+
     final manufacturer = _manufacturerController.text;
     final year = _yearController.text;
     final vehicleName = _vehicleNameController.text;
@@ -125,17 +159,26 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
           );
         },
       );
+
+      setState(() {
+        _isLoading = false; // Set loading state to false
+      });
+
       return; // Stop execution if any field is empty
     }
 
     // Initialize vehicleImageURL as null
     String? vehicleImageURL;
+    String? vehicleRCImageURL;
 
     // Upload image to Firebase Storage if a new image is picked
     if (_pickedVehicleImage != null) {
       vehicleImageURL = await _uploadImageToFirebase(_pickedVehicleImage!);
     }
-
+    // Upload image to Firebase Storage if a new image is picked
+    if (_pickedVehicleRCImage != null) {
+      vehicleRCImageURL = await _uploadRCImageToFirebase(_pickedVehicleRCImage!);
+    }
     // Update the vehicle details in the database
     final currentUser = FirebaseAuth.instance.currentUser!;
     final vehicleRef = FirebaseFirestore.instance
@@ -151,7 +194,6 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
       'Manufacturer': manufacturer,
       'Year': year,
       'VehicleName': vehicleName,
-    
       'Kilometers': kilometers,
       'FuelType': fuelType,
     };
@@ -159,6 +201,9 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
     // Add vehicle image URL to the map if it's not null
     if (vehicleImageURL != null) {
       updatedVehicleDetails['vehicleImageURL'] = vehicleImageURL;
+    }
+     if (vehicleRCImageURL != null) {
+      updatedVehicleDetails['vehicleRCImageURL'] = vehicleRCImageURL;
     }
 
     // Update the vehicle document in Firestore
@@ -172,6 +217,8 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
     setState(() {
       _selectedFuelType = null;
       _pickedVehicleImage = null;
+      _pickedVehicleRCImage = null; // Corrected variable name
+      _isLoading = false; // Set loading state to false
     });
 
     // Show a dialog to indicate successful submission
@@ -192,7 +239,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
               onPressed: () {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: (context) =>  HomePage(),
+                    builder: (context) => HomePage(),
                   ),
                 );
               },
@@ -303,6 +350,11 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Text(
+                ' Vehicle Image',
+                style: _labelTextStyle,
+              ),
+              const SizedBox(height: 8),
               Container(
                 height: 200,
                 color: Colors.grey[200],
@@ -324,6 +376,37 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
                             )
                       : Image.file(
                           _pickedVehicleImage!,
+                          fit: BoxFit.cover,
+                        ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                ' RC BOOK Image',
+                style: _labelTextStyle,
+              ),
+              const SizedBox(height: 8),
+               Container(
+                height: 200,
+                color: Colors.grey[200],
+                child: Center(
+                  child: _pickedVehicleRCImage == null
+                      ? _vehicleRCImageURL != null
+                          ? Image.network(
+                              _vehicleRCImageURL!,
+                              fit: BoxFit.cover,
+                            )
+                          : IconButton(
+                              icon: const Icon(
+                                Icons.photo_camera,
+                                size: 150,
+                              ),
+                              onPressed: () {
+                                _pickRCImage(ImageSource.gallery);
+                              },
+                            )
+                      : Image.file(
+                          _pickedVehicleRCImage!,
                           fit: BoxFit.cover,
                         ),
                 ),
@@ -448,7 +531,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _updateVehicle,
+                onPressed: _isLoading ? null : _updateVehicle, // Disable button when loading
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.black,
                   backgroundColor: Colors.white,
@@ -457,7 +540,14 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
                   ),
                   minimumSize: const Size(double.infinity, 50),
                 ),
-                child: Text(
+                child: _isLoading ? Center(
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        child: const CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ) : Text( // Show loading indicator when loading
                   'UPDATE VEHICLE',
                   style: TextStyle(
                       fontSize: 19,
