@@ -6,11 +6,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/Authentication/View/forgot_password_page.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Components/log_pfield.dart';
-import 'package:provider/Components/myalert_box.dart';
 import 'package:provider/Components/mybutton.dart';
 import 'package:provider/Components/log_textfield.dart';
 import 'package:provider/Pages/View/bottom_nav.dart';
-import 'package:provider/Pages/View/home_page_view.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback showRegisterPage;
@@ -25,14 +23,13 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
   bool isLoading = false;
 
-  void signIn() async {
+void signIn() async {
   setState(() {
-    isLoading = true;
+    isLoading = true; // Assuming isLoading is a boolean variable to track loading state
   });
 
   try {
-    final UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
+    final UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: emailController.text.trim(),
       password: passwordController.text.trim(),
     );
@@ -41,20 +38,39 @@ class _LoginPageState extends State<LoginPage> {
     if (userCredential.user != null) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const BottomNavPage()), // Replace HomePage with your homepage widget
+        MaterialPageRoute(builder: (context) =>  BottomNavPage()), // Replace BottomNavPage with your homepage widget
       );
     }
-  } catch (e) {
+  } on FirebaseAuthException catch (e) {
     // If there's an error signing in
     showDialog(
       context: context,
-      builder: (context) =>
-          const MyAlertBox(message: 'User not registered or incorrect password.'),
-    );
+      builder: (context) => AlertDialog(
+        title: const Text("Error"),
+        content: Text(e.message ?? "An error occurred"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+              setState(() {
+                isLoading = false; // Set isLoading to false to remove the loading indicator
+              });
+            },
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    ).then((_) {
+      // After the dialog is closed, navigate back to the login page
+      // Navigator.pop(context); // Remove this line as it navigates back immediately after showing the dialog
+    });
+  } finally {
+    // You can optionally perform any cleanup here
   }
-
- 
 }
+
+
+
 
   @override
   Widget build(BuildContext context) {
