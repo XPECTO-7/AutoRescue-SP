@@ -67,6 +67,7 @@ class HomePageContent extends StatefulWidget {
 }
 
 class _HomePageContentState extends State<HomePageContent> {
+  bool isValid = false;
   bool isTrue = false;
   String selectedVehicleName = "", selectedService = "", lat = "", long = "";
   Position? position;
@@ -99,19 +100,6 @@ class _HomePageContentState extends State<HomePageContent> {
       setState(() {
         lat = position!.latitude.toString();
         long = position!.longitude.toString();
-      });
-    }
-  }
-
-  Future<void> fetchImages() async {
-    final userDoc = await FirebaseFirestore.instance
-        .collection("USERS")
-        .doc(FirebaseAuth.instance.currentUser!.email.toString())
-        .get();
-
-    if (mounted) { // Check if the widget is still mounted
-      setState(() {
-        dlImageUrl = userDoc.get('DlImage');
       });
     }
   }
@@ -380,29 +368,26 @@ class _HomePageContentState extends State<HomePageContent> {
                       ),
                       const SizedBox(height: 10),
                       Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 19.50),
                           child: ElevatedButton(
                             onPressed: () async {
-                              // Fetch images before validation
-                              await fetchImages();
-
-                              // Check if selected service and vehicle are not empty
-                              if (selectedService.isNotEmpty &&
-                                  selectedVehicleName.isNotEmpty) {
-                                // Fetch user data from Firestore
-                                final userDoc = await FirebaseFirestore.instance
-                                    .collection('USERS')
-                                    .doc(userEmail)
+                              // Fetch user data from Firestore
+                              final currentUser =
+                                  FirebaseAuth.instance.currentUser;
+                              if (currentUser != null) {
+                                final userData = await FirebaseFirestore
+                                    .instance
+                                    .collection("USERS")
+                                    .doc(currentUser.email!)
                                     .get();
+                                final isComplete = userData.exists &&
+                                    userData.data()?['Complete'] == true;
 
-                                // Check if the document exists and contains the DlImage field
-                                if (userDoc.exists &&
-                                    userDoc.data()!.containsKey('DlImage')) {
-                                  // Fetch the DlImage URL
-                                  final dlImageUrl = userDoc.data()!['DlImage'];
-
-                                  // Check if DlImage is not null
-                                  if (dlImageUrl != null) {
+                                // Check if the user data is complete
+                                if (isComplete) {
+                                  // Check if a service and a vehicle are selected
+                                  if (selectedService.isNotEmpty &&
+                                      selectedVehicleName.isNotEmpty) {
                                     // Proceed to request service
                                     Navigator.push(
                                       context,
@@ -415,30 +400,34 @@ class _HomePageContentState extends State<HomePageContent> {
                                       ),
                                     );
                                     return; // Exit onPressed method
+                                  } else {
+                                    // Show alert if service or vehicle is not selected
+                                    CustomAlert.show(
+                                      context: context,
+                                      title: "Missing Information",
+                                      message:
+                                          "Please select a service and a vehicle.",
+                                      messageTextColor: Colors.red,
+                                      backgroundColor: Colors.white,
+                                      buttonColor: Colors.grey,
+                                    );
+                                    return; // Exit onPressed method
                                   }
+                                } else {
+                                  // Show alert if user data is not complete
+                                  CustomAlert.show(
+                                    context: context,
+                                    title: "Incomplete Profile",
+                                    message:
+                                        "Upload your Driving License",
+                                    messageTextColor: Colors.red,
+                                    backgroundColor: Colors.white,
+                                    buttonColor: Colors.grey,
+                                  );
+                                  return; // Exit onPressed method
                                 }
-
-                                // Show alert if DlImage is missing or null
-                                CustomAlert.show(
-                                  context: context,
-                                  title: "Missing Information",
-                                  message:
-                                      "Please provide your Driver's License information.",
-                                  messageTextColor: Colors.red,
-                                  backgroundColor: Colors.white,
-                                  buttonColor: Colors.grey,
-                                );
                               } else {
-                                // Show alert if service or vehicle is not selected
-                                CustomAlert.show(
-                                  context: context,
-                                  title: "Missing Information",
-                                  message:
-                                      "Please select a service and a vehicle.",
-                                  messageTextColor: Colors.red,
-                                  backgroundColor: Colors.white,
-                                  buttonColor: Colors.grey,
-                                );
+                                // Handle the case where currentUser is null
                               }
                             },
                             style: ElevatedButton.styleFrom(

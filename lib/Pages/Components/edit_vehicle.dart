@@ -230,7 +230,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
             "Vehicle Updated Successfully",
             style: TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: 20,
                 fontFamily: GoogleFonts.strait().fontFamily,
                 fontWeight: FontWeight.bold),
           ),
@@ -540,14 +540,16 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
                   ),
                   minimumSize: const Size(double.infinity, 50),
                 ),
-                child: _isLoading ? Center(
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                        child: const CircularProgressIndicator(
-                          color: Colors.white,
+                child: _isLoading ? const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Center(
+                          child:  CircularProgressIndicator(
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                    ) : Text( // Show loading indicator when loading
+                  ],
+                ) : Text( // Show loading indicator when loading
                   'UPDATE VEHICLE',
                   style: TextStyle(
                       fontSize: 19,

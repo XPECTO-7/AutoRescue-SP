@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-
-// Import MyButton widget from the 'Components' directory
 import 'package:provider/Components/mybutton.dart';
 
 class UploadDocPage extends StatefulWidget {
@@ -31,7 +29,7 @@ class _UploadDocPageState extends State<UploadDocPage> {
 
   Future<void> fetchImages() async {
     final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser != null) {
+    if (currentUser != null && dlImage != null) {
       final userDoc = await FirebaseFirestore.instance
           .collection("USERS")
           .doc(currentUser.email)
@@ -66,11 +64,14 @@ class _UploadDocPageState extends State<UploadDocPage> {
         uploading = true;
       });
 
-      final Reference storageReference = FirebaseStorage.instance.ref().child('Users');
+      final Reference storageReference =
+          FirebaseStorage.instance.ref().child('Users');
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
-        final Reference userReference = storageReference.child(currentUser.email!);
-        final Reference dlReference = userReference.child("Vehicle_Details").child("Dl_Image");
+        final Reference userReference =
+            storageReference.child(currentUser.email!);
+        final Reference dlReference =
+            userReference.child("Vehicle_Details").child("Dl_Image");
 
         try {
           await dlReference.putFile(dlImage!);
@@ -80,10 +81,21 @@ class _UploadDocPageState extends State<UploadDocPage> {
         }
 
         if (dlImageUrl != null) {
-          await FirebaseFirestore.instance.collection("USERS").doc(currentUser.email!).update({"DlImage": dlImageUrl});
+          // Update Firestore with the DL image URL
+          await FirebaseFirestore.instance
+              .collection("USERS")
+              .doc(currentUser.email!)
+              .update({"DlImage": dlImageUrl});
+
+          // Update the 'Complete' field to true
+          await FirebaseFirestore.instance
+              .collection("USERS")
+              .doc(currentUser.email!)
+              .update({"Complete": true});
+
           // Show a SnackBar to indicate successful upload
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text('Driving License uploaded successfully'),
               duration: Duration(seconds: 2), // Adjust the duration as needed
             ),
@@ -139,8 +151,12 @@ class _UploadDocPageState extends State<UploadDocPage> {
                                 dlImage == null && dlImageUrl == null
                                     ? "Choose from device"
                                     : "Update Driving License Image",
-                                style:  TextStyle(
-                                    fontSize: 16, color: Colors.white,fontWeight: FontWeight.bold,fontFamily: GoogleFonts.habibi().fontFamily),
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily:
+                                        GoogleFonts.habibi().fontFamily),
                               ),
                             ),
                             const Spacer(),
@@ -158,35 +174,34 @@ class _UploadDocPageState extends State<UploadDocPage> {
                 const SizedBox(
                   height: 10,
                 ),
-                
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      height: 300,
-                      width: MediaQuery.of(context).size.width,
-                      color: Colors.grey[950],
-                      child: Center(
-                        child: dlImageUrl != null
-                            ? Image.network(
-                                dlImageUrl!,
-                                fit: BoxFit.cover,
-                              )
-                            : (dlImage != null
-                                ? Image.file(
-                                    dlImage!,
-                                    fit: BoxFit.cover,
-                                  )
-                                : const Text(
-                                    'Nothing',
-                                    style: TextStyle(color: Colors.white),
-                                  )),
-                      ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    height: 300,
+                    width: MediaQuery.of(context).size.width,
+                    color: Colors.grey[950],
+                    child: Center(
+                      child: dlImageUrl != null
+                          ? Image.network(
+                              dlImageUrl!,
+                              fit: BoxFit.cover,
+                            )
+                          : (dlImage != null
+                              ? Image.file(
+                                  dlImage!,
+                                  fit: BoxFit.cover,
+                                )
+                              : const Text(
+                                  'Nothing',
+                                  style: TextStyle(color: Colors.white),
+                                )),
                     ),
                   ),
+                ),
                 const SizedBox(height: 10),
                 MyButton(
                   onTap: uploadImages,
@@ -194,7 +209,6 @@ class _UploadDocPageState extends State<UploadDocPage> {
                   textColor: Colors.black,
                   buttonColor: Colors.white,
                 ),
-               
               ],
             ),
           ),

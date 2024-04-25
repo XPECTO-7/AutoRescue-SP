@@ -27,7 +27,7 @@ class _SquaretileState extends State<Squaretile> {
       onTap: widget.onTap,
       child: SizedBox(
         height: MediaQuery.of(context).size.height / 6,
-        width: MediaQuery.of(context).size.width / 3.48,
+        width: MediaQuery.of(context).size.width / 3.53,
         child: Stack(
           children: [
             Container(

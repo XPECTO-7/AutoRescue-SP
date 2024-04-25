@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/Colors/appcolor.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
 class ReqServiceDetail extends StatefulWidget {
@@ -38,7 +40,7 @@ class _ReqServiceDetailState extends State<ReqServiceDetail> {
   TextStyle sstyle = TextStyle(
     fontFamily: GoogleFonts.ubuntu().fontFamily,
     fontWeight: FontWeight.bold,
-    fontSize: 16,
+    fontSize: 18,
   );
 
   @override
@@ -64,14 +66,15 @@ class _ReqServiceDetailState extends State<ReqServiceDetail> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Provider Details',
+            Text(
+              'Service Provider Details',
               style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+                  fontSize: 22,
+                  color: Colors.cyanAccent,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.ubuntu().fontFamily),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 17),
             StreamBuilder<DocumentSnapshot>(
               stream: providerStream,
               builder: (context, snapshot) {
@@ -94,54 +97,69 @@ class _ReqServiceDetailState extends State<ReqServiceDetail> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ClipOval(
-                      child: Container(
-                        height: 100,
-                        width: 100,
-                        color: Colors.grey[300],
-                        child: Image.network(
-                          profilePhotoUrl,
-                          height: 100,
-                          width: 100,
-                          fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return const Center(
-                              child: CircularProgressIndicator(
-                                color: Colors
-                                    .blue, // or any other color you prefer
-                              ),
-                            );
-                          },
+                    Row(
+                      children: [
+                        ClipOval(
+                          child: Container(
+                            height: 150,
+                            width: 150,
+                            color: Colors.grey[300],
+                            child: profilePhotoUrl != null &&
+                                    profilePhotoUrl.isNotEmpty
+                                ? Image.network(
+                                    profilePhotoUrl,
+                                    height: 150,
+                                    width: 150,
+                                    fit: BoxFit.cover,
+                                    loadingBuilder:
+                                        (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return const Center(
+                                        child: CircularProgressIndicator(
+                                          color: Colors.blue,
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : const Icon(
+                                    Icons.account_circle,
+                                    size: 150,
+                                    color: Colors.white,
+                                  ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                    Text('Provider Name: $providerName', style: sstyle),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text('Name:  $providerName', style: sstyle),
                     const SizedBox(height: 5),
-                    Text('Company Name: $providerCompany', style: sstyle),
+                    Text('Company Name:   $providerCompany', style: sstyle),
                     const SizedBox(height: 5),
-                    Text('Phone Number: $providerPH', style: sstyle),
+                    Text('Phone Number:   $providerPH', style: sstyle),
                     const SizedBox(height: 5),
-                    Text('Email Address: $providerEmail', style: sstyle),
+                    Text('Email Address:  $providerEmail', style: sstyle),
                     const SizedBox(height: 5),
                   ],
                 );
               },
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Service Request Details',
               style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+                  fontSize: 22,
+                  color: Colors.cyanAccent,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.ubuntu().fontFamily),
             ),
             const SizedBox(height: 8),
-            Text('Service Request Type: ${widget.serviceRequestType}',
+            Text('Service Request Type:   ${widget.serviceRequestType}',
                 style: sstyle),
             const SizedBox(height: 5),
             Text(
-                'Requested Time: ${DateFormat('MMMM dd, yyyy hh:mm a').format(DateTime.parse(widget.requestedTime))}',
+                'Requested Time:   ${DateFormat('MMMM dd, yyyy hh:mm a').format(DateTime.parse(widget.requestedTime))}',
                 style: sstyle), // Modified line
             const SizedBox(height: 5),
             Row(
@@ -162,7 +180,7 @@ class _ReqServiceDetailState extends State<ReqServiceDetail> {
                                         .black, // Default text color for unknown status
                     fontFamily: GoogleFonts.ubuntu().fontFamily,
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    fontSize: 18,
                   ),
                 ),
               ],
@@ -176,7 +194,7 @@ class _ReqServiceDetailState extends State<ReqServiceDetail> {
                     lineXY: 0.3,
                     isFirst: true,
                     indicatorStyle: const IndicatorStyle(
-                      width: 30,
+                      width: 15,
                       color: Colors.blue,
                       indicatorXY: 0.5,
                     ),
@@ -195,8 +213,7 @@ class _ReqServiceDetailState extends State<ReqServiceDetail> {
                       child: Text(
                         '${widget.requestedTime}',
                         style: const TextStyle(
-                          fontSize: 14,
-                        ),
+                            fontSize: 14, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -206,7 +223,7 @@ class _ReqServiceDetailState extends State<ReqServiceDetail> {
                       alignment: TimelineAlign.manual,
                       lineXY: 0.3,
                       indicatorStyle: const IndicatorStyle(
-                        width: 30,
+                        width: 20,
                         color: Colors.green,
                         indicatorXY: 0.5,
                       ),
@@ -223,10 +240,9 @@ class _ReqServiceDetailState extends State<ReqServiceDetail> {
                       endChild: Container(
                         padding: const EdgeInsets.all(8),
                         child: Text(
-                          'RTime: ${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now())}',
+                          '${DateFormat('MMMM dd, yyyy hh:mm a').format(DateTime.now())}',
                           style: const TextStyle(
-                            fontSize: 14,
-                          ),
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -236,13 +252,14 @@ class _ReqServiceDetailState extends State<ReqServiceDetail> {
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           final providerData = snapshot.data!;
-                          final providerPH = providerData["Phone Number"];
+                          final providerPH = providerData[
+                              "Phone Number"]; // Define providerPH here
 
                           return TimelineTile(
                             alignment: TimelineAlign.manual,
                             lineXY: 0.3,
                             indicatorStyle: const IndicatorStyle(
-                              width: 30,
+                              width: 25,
                               color: Colors.orange,
                               indicatorXY: 0.5,
                             ),
@@ -258,40 +275,10 @@ class _ReqServiceDetailState extends State<ReqServiceDetail> {
                             ),
                             endChild: Container(
                               padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Colors.blue), // Border color
-                                borderRadius:
-                                    BorderRadius.circular(10), // Border radius
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: SelectableText(
-                                      // Wrapping with SelectableText
-                                      'Provider Phone No: $providerPH',
-                                      style: const TextStyle(
-                                        fontSize: 18, // Bigger font size
-                                        color: Colors.white, // Text color
-                                      ),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    // Copy icon button
-                                    onPressed: () {
-                                      Clipboard.setData(
-                                          ClipboardData(text: providerPH));
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                            content:
-                                                Text('Copied to clipboard')),
-                                      );
-                                    },
-                                    icon: const Icon(
-                                        Icons.content_copy), // Copy icon
-                                  ),
-                                ],
+                              child: const Text(
+                                'Service assistant will be with you shortly.',
+                                style: TextStyle(
+                                    fontSize: 17, fontWeight: FontWeight.bold),
                               ),
                             ),
                           );
@@ -325,9 +312,59 @@ class _ReqServiceDetailState extends State<ReqServiceDetail> {
                         child: Text(
                           'Completed On: ${DateFormat('MMMM dd, yyyy hh:mm a').format(DateTime.now())}',
                           style: const TextStyle(
-                            fontSize: 14,
+                            fontSize: 20,
                           ),
                         ),
+                      ),
+                    ),
+                  if (widget.status == "Accepted")
+                    Container(
+                      padding: const EdgeInsets.all(7),
+                      margin: const EdgeInsets.symmetric(vertical: 1),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color: Colors.white, // Change background color to grey
+                      ),
+                      child: StreamBuilder<DocumentSnapshot>(
+                        stream: providerStream,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final providerData = snapshot.data!;
+                            final providerPH = providerData[
+                                "Phone Number"]; // Define providerPH here
+
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: SelectableText(
+                                    '   $providerPH',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily:
+                                            GoogleFonts.ubuntu().fontFamily),
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    Clipboard.setData(
+                                        ClipboardData(text: providerPH));
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Copied to clipboard'),
+                                      ),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.phone,
+                                      color: Colors.black),
+                                ),
+                              ],
+                            );
+                          } else {
+                            return const SizedBox();
+                          }
+                        },
                       ),
                     ),
                 ],

@@ -90,7 +90,7 @@ class _ManagePageState extends State<ManagePage> {
       // Check if "Profile Photo" field exists in the document
       String profilePhotoUrl = data.containsKey("Profile Photo")
           ? data["Profile Photo"]
-          : ""; // Use empty string as default value if field doesn't exist
+          :const Icon(Icons.account_circle,color: AppColors.appPrimary,); // Use empty string as default value if field doesn't exist
 
       if (data["Service Type"] == service) {
         services.add(Marker(

@@ -81,6 +81,7 @@ class _RegisterPageState extends State<RegisterPage> {
         'Phone Number': numberController.text.trim(),
         'Email': emailController.text.trim(),
         "DlImage": "",
+        'Complete':false
       });
      
       // Navigate to the homepage

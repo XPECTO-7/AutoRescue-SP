@@ -160,9 +160,13 @@ class _AccountPageState extends State<AccountPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text(
+          title:  Text(
             "Updated Successfully",
-            style: TextStyle(color: AppColors.appPrimary, fontSize: 14),
+            style:TextStyle(
+                                color: AppColors.appTertiary,
+                                fontFamily: GoogleFonts.ubuntu().fontFamily,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20),
           ),
           actions: <Widget>[
             TextButton(
@@ -241,9 +245,13 @@ class _AccountPageState extends State<AccountPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text(
+          title: Text(
             "Logout Successful",
-            style: TextStyle(color: AppColors.appPrimary, fontSize: 14),
+            style: TextStyle(
+                color: AppColors.appTertiary,
+                fontFamily: GoogleFonts.ubuntu().fontFamily,
+                fontWeight: FontWeight.bold,
+                fontSize: 20),
           ),
           actions: <Widget>[
             TextButton(
@@ -515,14 +523,13 @@ class _AccountPageState extends State<AccountPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const UploadDocPage(),
-                                      ),
-                                    );
-                                  },
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const UploadDocPage(),
+                            ),
+                          );
+                        },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: Container(
@@ -563,8 +570,6 @@ class _AccountPageState extends State<AccountPage> {
                       const SizedBox(
                         height: 17,
                       ),
-                      
-                        
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: ElevatedButton(

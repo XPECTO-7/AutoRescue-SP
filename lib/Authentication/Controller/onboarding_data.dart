@@ -8,7 +8,7 @@ class OnboardingData{
      OnboardingInfo(
         title: "AUTORESCUE",
         description: "USER",
-        image: "lib/images/cserv.png"),
+        image: "lib/images/obsi2.png"),
     OnboardingInfo(
         title: "Stuck on Unknown Place because of your vehicle issues?",
         description: "Don't worry.. AutoRescue is here",

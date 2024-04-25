@@ -50,7 +50,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   const SizedBox(height: 15),
                   Text(
                     controller.items[currentIndex].title,
-                    style:  TextStyle(fontSize: 20, color: AppColors.appPrimary, fontWeight: FontWeight.bold,fontFamily: GoogleFonts.ubuntu().fontFamily),
+                    style:  TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold,fontFamily: GoogleFonts.ubuntu().fontFamily),
                     textAlign: TextAlign.center,
                   ),
                   Padding(
@@ -114,7 +114,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         },
         child: Text(
           currentIndex == controller.items.length - 1 ? "Get started" : "Continue",
-          style:  TextStyle(color: Colors.white,fontSize: 20, fontWeight: FontWeight.bold,fontFamily: GoogleFonts.ubuntu().fontFamily),
+          style:  TextStyle(color: Colors.black,fontSize: 20, fontWeight: FontWeight.bold,fontFamily: GoogleFonts.ubuntu().fontFamily),
         ),
       ),
     );

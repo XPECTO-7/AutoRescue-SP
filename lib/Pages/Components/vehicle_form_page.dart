@@ -404,7 +404,7 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                               "Vehicle Added Successfully",
                               style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 16,
+                                  fontSize: 20,
                                   fontFamily: GoogleFonts.strait().fontFamily,
                                   fontWeight: FontWeight.bold),
                             ),
@@ -442,13 +442,16 @@ class _VehicleFormPageState extends State<VehicleFormPage> {
                   ),
                   // Circular progress indicator
                   if (isLoading)
-                    Center(
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                        child: const CircularProgressIndicator(
-                          color: Colors.white,
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.appPrimary,
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                 ],
               ),

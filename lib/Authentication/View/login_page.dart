@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
   bool isLoading = false;
 
-  void signIn() async {
+void signIn() async {
   setState(() {
     isLoading = true; // Assuming isLoading is a boolean variable to track loading state
   });
@@ -45,12 +45,31 @@ class _LoginPageState extends State<LoginPage> {
     // If there's an error signing in
     showDialog(
       context: context,
-      builder: (context) => MyAlertBox(message: e.message), // Display Firebase error message
-    );
+      builder: (context) => AlertDialog(
+        title: const Text("Error"),
+        content: Text(e.message ?? "An error occurred"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+              setState(() {
+                isLoading = false; // Set isLoading to false to remove the loading indicator
+              });
+            },
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    ).then((_) {
+      // After the dialog is closed, navigate back to the login page
+      // Navigator.pop(context); // Remove this line as it navigates back immediately after showing the dialog
+    });
   } finally {
-   
+    // You can optionally perform any cleanup here
   }
 }
+
+
 
 
   @override
