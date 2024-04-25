@@ -8,6 +8,7 @@ import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Pages/Utils/custom_button.dart';
 import 'package:provider/Pages/View/get_location.dart';
 import 'package:provider/Pages/View/show_userdetails.dart';
+import 'package:provider/Pages/View/show_vehicledetails.dart';
 
 class ManagePage extends StatefulWidget {
   const ManagePage({Key? key}) : super(key: key);
@@ -128,6 +129,7 @@ class _ManagePageState extends State<ManagePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         toolbarHeight: 70,
         title: Row(
           children: [
@@ -243,8 +245,10 @@ class _ManagePageState extends State<ManagePage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => GetLocationPage(
-                                    currentLocationX: double.parse(request["UserLocation-Lat"]),
-                                    currentLocationY: double.parse(request["UserLocation-Long"]),
+                                    currentLocationX: double.parse(
+                                        request["UserLocation-Lat"]),
+                                    currentLocationY: double.parse(
+                                        request["UserLocation-Long"]),
                                   ),
                                 ),
                               );
@@ -281,7 +285,20 @@ class _ManagePageState extends State<ManagePage> {
                             fsize: 16,
                             suffixIcon: FontAwesomeIcons.carBurst,
                             buttonColor: Colors.white,
-                            onPressed: () {},
+                            onPressed: () {
+                              String userId = request["UserID"].toString();
+                              String vehicleId = request["VehicleID"]
+                                  .toString(); // Assuming request is a Map containing user and vehicle details
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ShowVehicleDetails(
+                                    userID: userId,
+                                    vehicleID: vehicleId,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                           const SizedBox(
                             height: 7,

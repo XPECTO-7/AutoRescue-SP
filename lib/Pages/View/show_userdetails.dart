@@ -1,6 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart'; // Import for Clipboard
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:provider/Colors/appcolor.dart';
 
 class ShowUserDetailsPage extends StatefulWidget {
   final String userId;
@@ -16,7 +18,6 @@ class _ShowUserDetailsPageState extends State<ShowUserDetailsPage> {
   late String _email = '';
   late String _phoneNumber = '';
   late String _dlImageURL = '';
-  late String _rcImageURL = '';
 
   late Stream<DocumentSnapshot> userStream;
 
@@ -37,103 +38,104 @@ class _ShowUserDetailsPageState extends State<ShowUserDetailsPage> {
           _name = userData['Fullname'] ?? '';
           _email = userData['Email'] ?? '';
           _phoneNumber = userData['Phone Number'] ?? '';
-          _dlImageURL = userData['DL ImageURL'] ?? '';
-          _rcImageURL = userData['RC ImageURL'] ?? '';
+          _dlImageURL = userData['DlImage'] ?? '';
         });
-
-        // Print the user data to the terminal
-        print('User Data:');
-        print('Name: $_name');
-        print('Email: $_email');
-        print('Phone Number: $_phoneNumber');
-        print('DL ImageURL: $_dlImageURL');
-        print('RC ImageURL: $_rcImageURL');
       }
     });
-  }
-
-  Future<String?> getImageURL(String imagePath) async {
-    if (imagePath.isNotEmpty) {
-      final ref = FirebaseStorage.instance.ref(imagePath);
-      return await ref.getDownloadURL();
-    }
-    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User Details'),
+        backgroundColor: Colors.black,
+        title:  const Row(
+          children: [
+            Icon(Icons.person_pin_rounded, color: AppColors.appPrimary,size: 37,),
+            SizedBox(width: 8),
+           
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'ID: ${widget.userId}',
-              style: const TextStyle(fontSize: 18),
-            ),
+           
+            userDetailsItem(Icons.person, 'Name: $_name'),
             const SizedBox(height: 10),
-            Text(
-              'Name: $_name',
-              style: const TextStyle(fontSize: 18),
-            ),
+            userDetailsItem(Icons.email, 'Email: $_email'),
             const SizedBox(height: 10),
-            Text(
-              'Email: $_email',
-              style: const TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Phone Number: $_phoneNumber',
-              style: const TextStyle(fontSize: 18),
+            userDetailsItem(Icons.phone, 'Phone Number: $_phoneNumber'),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(10.0),
+              decoration: BoxDecoration(
+                color: Colors.grey[800], // Change to grey color
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Driving License ',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                  const SizedBox(height: 10),
+                  // Show the driving license image if _dlImageURL is not empty
+                  _dlImageURL.isNotEmpty
+                      ? Image.network(
+                          _dlImageURL,
+                          height: 450, // Adjust height as needed
+                          width: MediaQuery.of(context).size.width, // Full width
+                          fit: BoxFit.cover, // Adjust the image size
+                        )
+                      : Container(), // Show an empty container if _dlImageURL is empty
+                ],
+              ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Driving License Image:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            FutureBuilder<String?>(
-              future: getImageURL(_dlImageURL),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                }
-                if (snapshot.hasError) {
-                  return Text('Error loading image: ${snapshot.error}');
-                }
-                final imageUrl = snapshot.data;
-                return imageUrl != null
-                    ? Image.network(imageUrl)
-                    : const Text('No image available');
-              },
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'RC Book Image:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            FutureBuilder<String?>(
-              future: getImageURL(_rcImageURL),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                }
-                if (snapshot.hasError) {
-                  return Text('Error loading image: ${snapshot.error}');
-                }
-                final imageUrl = snapshot.data;
-                return imageUrl != null
-                    ? Image.network(imageUrl)
-                    : const Text('No image available');
-              },
-            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget userDetailsItem(IconData icon, String text) {
+    return Container(
+      padding: const EdgeInsets.all(10.0),
+      decoration: BoxDecoration(
+        color: Colors.grey[800], // Change to grey color
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            color: Colors.white,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+          ),
+          if (icon == Icons.phone) // Only show the copy icon if the item is for phone number
+            GestureDetector(
+              onTap: () {
+                Clipboard.setData(ClipboardData(text: text)); // Copy text to clipboard
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Phone number copied to clipboard'),
+                ));
+              },
+              child: const Icon(
+                Icons.copy,
+                color: Colors.white,
+              ),
+            ),
+        ],
       ),
     );
   }

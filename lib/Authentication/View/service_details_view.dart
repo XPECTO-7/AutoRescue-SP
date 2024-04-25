@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,6 +14,7 @@ import 'package:provider/Authentication/View/Widgets/pick_location_pop_up.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Components/myalert_box.dart';
 import 'package:provider/Components/mybutton.dart';
+import 'package:provider/Pages/View/bottom_nav.dart';
 
 class ServiceDetailsView extends StatefulWidget {
   final String fullName, phoneNumber, adhaarImg, adhaarNum, email, password;
@@ -53,39 +55,15 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
   ];
 
   bool isSigningUp = false;
-  int _secondsRemaining = 60; // Define _secondsRemaining here
-  late Timer _timer;
 
-  void startTimer() {
-    const oneSecond = Duration(seconds: 1); // Duration for 1 second
-    _secondsRemaining = 80; // Set initial value to 60
-    _timer = Timer.periodic(
-      oneSecond,
-      (Timer timer) {
-        if (_secondsRemaining == 0) {
-          timer.cancel();
-          // Handle timeout here if needed
-        } else {
-          setState(() {
-            _secondsRemaining--; // Decrement _secondsRemaining
-          });
-        }
-      },
-    );
-  }
-
+ 
   @override
   void initState() {
     super.initState();
-    startTimer();
     getCurrentLocation();
   }
 
-  @override
-  void dispose() {
-    _timer.cancel(); // Cancel the timer when the widget is disposed
-    super.dispose();
-  }
+ 
 
   void getCurrentLocation() async {
     position = await Geolocator.getCurrentPosition(
@@ -93,14 +71,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
   }
 
   void validate() async {
-    print("Validating...");
-    print("Company Name: ${companyNameController.text}");
-    print("Experience: ${expController.text}");
-    print("Latitude: $lattitude");
-    print("Longitude: $longitude");
-    print("License: ${licenseController.text}");
-    print("Insurance: ${insuranceController.text}");
-    print("Price Charge: ${priceChargeController.text}");
+  
 
     if (companyNameController.text.isEmpty) {
       showAlertDialog("Company Name cannot be empty");
@@ -142,70 +113,67 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
     );
   }
 
-  void addImageAndDetails() async {
+ void signUp() async {
+  setState(() {
+    isSigningUp = true;
+  });
+  try {
+    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: widget.email, password: widget.password);
+
     Reference referenceRoot = FirebaseStorage.instance.ref();
     Reference referenceDirFolder = referenceRoot.child("Users");
     Reference referenceUser = referenceDirFolder.child(widget.email);
     Reference referenceImage = referenceUser.child(widget.adhaarNum);
     try {
       await referenceImage.putFile(File(widget.adhaarImg));
-      imgUrl = await referenceImage.getDownloadURL();
-    } catch (e) {
-      (e.toString());
-    }
-    if (imgUrl.isNotEmpty) {
-      await FirebaseFirestore.instance
-          .collection("PROVIDERS")
-          .doc(widget.email)
-          .set({
-        'Fullname': widget.fullName,
-        'Phone Number': widget.phoneNumber,
-        'Email': widget.email,
-        'Aadhar Photo': imgUrl,
-        'Profile Photo':'',
-        'Aadhar Number': widget.adhaarNum,
-        'Company Name': companyNameController.text,
-        'location - lattitude': lattitude,
-        'location - longitude': longitude,
-        'Experience': expController.text,
-        'License No': licenseController.text,
-        'Insurance No': insuranceController.text,
-        'Service Type': serviceTypeController.text,
-        'Min Price': priceChargeController.text,
-        'Approved': 'Pending'
-      });
-    }
-    setState(() {
-      isSigningUp = false;
-    });
-    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-      builder: (context) {
-        return const MainPage();
-      },
-    ), (route) => false);
-  }
+      String imgUrl = await referenceImage.getDownloadURL();
 
-  void signUp() async {
-    setState(() {
-      isSigningUp = true;
-    });
-    try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: widget.email, password: widget.password);
-      addImageAndDetails();
-    } on FirebaseAuthException catch (e) {
-      showDialog(
-        context: context,
-        builder: (context) => MyAlertBox(
-          message: e.code,
-        ),
-      ).then((_) {
-        setState(() {
-          isSigningUp = false;
+      if (imgUrl.isNotEmpty) {
+        await FirebaseFirestore.instance
+            .collection("PROVIDERS")
+            .doc(widget.email)
+            .set({
+          'Fullname': widget.fullName,
+          'Phone Number': widget.phoneNumber,
+          'Email': widget.email,
+          'Aadhar Photo': imgUrl,
+          'Profile Photo': '',
+          'Aadhar Number': widget.adhaarNum,
+          'Company Name': companyNameController.text,
+          'location - lattitude': lattitude,
+          'location - longitude': longitude,
+          'Experience': expController.text,
+          'License No': licenseController.text,
+          'Insurance No': insuranceController.text,
+          'Service Type': serviceTypeController.text,
+          'Min Price': priceChargeController.text,
+          'Approved': 'Pending'
         });
-      });
+
+        // Navigation to homepage upon successful signup
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => BottomNavPage()), // Replace HomePage with your actual homepage widget
+        );
+      }
+    } catch (e) {
+      print(e.toString()); // Handle error here if necessary
     }
+  } on FirebaseAuthException catch (e) {
+    showDialog(
+      context: context,
+      builder: (context) => MyAlertBox(
+        message: e.code,
+      ),
+    ).then((_) {
+      setState(() {
+        isSigningUp = false;
+      });
+    });
   }
+}
+
 
   void pickLocation() async {
     if (position != null) {
@@ -444,32 +412,18 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
             ),
           ),
           if (isSigningUp)
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                   Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const CircularProgressIndicator(
-                          color: AppColors.appPrimary,
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          "Please wait. $_secondsRemaining seconds remaining",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: GoogleFonts.ubuntu().fontFamily,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: const CircularProgressIndicator(
+                color: AppColors.appPrimary,
               ),
+            ),
+                        ),
+              ],
             )
         ],
       ),

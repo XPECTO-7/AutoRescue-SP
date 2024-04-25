@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -104,6 +105,19 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   void updateUserData() async {
+    // Show loading screen
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dismissing by tapping outside
+      builder: (BuildContext context) {
+        return   const Center(
+            child: CircularProgressIndicator(
+              color: AppColors.appPrimary,
+            ),
+                        );
+      },
+    );
+
     // Upload profile photo if it exists
     await _uploadImage();
 
@@ -135,6 +149,10 @@ class _AccountPageState extends State<AccountPage> {
         .doc(currentUser.email)
         .update(userUpdateData);
 
+    // Dismiss loading screen
+    Navigator.pop(context);
+
+    // Show update successful dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -194,19 +212,13 @@ class _AccountPageState extends State<AccountPage> {
       width: screenSize.width,
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           toolbarHeight: 70,
           elevation: 0,
-          title: Row(
+          title: const Row(
             children: [
-              Image.asset(
-                'lib/images/user.png',
-                height: 30,
-                width: 30,
-                alignment: Alignment.centerLeft,
-                color: AppColors.appPrimary,
-              ),
-              const SizedBox(width: 10),
-              const Text(
+              SizedBox(width: 10),
+              Text(
                 'My Profile',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -230,10 +242,12 @@ class _AccountPageState extends State<AccountPage> {
           child: Center(
             child: SafeArea(
               child: isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(AppColors.appPrimary),
+                  ? Center(
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        child: const CircularProgressIndicator(
+                          color: AppColors.appPrimary,
+                        ),
                       ),
                     )
                   : SingleChildScrollView(

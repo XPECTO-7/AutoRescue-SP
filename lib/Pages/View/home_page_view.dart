@@ -28,7 +28,9 @@ class _HomePageViewState extends State<HomePageView> {
           final String approved = userDetails['Approved'];
 
           return Scaffold(
+            
             appBar: AppBar(
+              automaticallyImplyLeading: false,
               toolbarHeight: 80,
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
