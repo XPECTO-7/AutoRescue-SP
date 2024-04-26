@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
@@ -9,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/Authentication/Controller/main_page.dart';
 import 'package:provider/Authentication/View/Widgets/pick_location_pop_up.dart';
 import 'package:provider/Colors/appcolor.dart';
 import 'package:provider/Components/myalert_box.dart';

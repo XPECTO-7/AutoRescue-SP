@@ -3,6 +3,12 @@ import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/Authentication/View/forgot_password_page.dart';
+import 'package:provider/Colors/appcolor.dart';
+import 'package:provider/Components/log_pfield.dart';
+import 'package:provider/Components/log_textfield.dart';
+import 'package:provider/Components/mybutton.dart';
+import 'package:provider/Pages/View/bottom_nav.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -184,8 +190,8 @@ void signIn() async {
                       ),
                       MyButton(
                         onTap: signIn,
-                        buttonColor: Colors.black,
-                        textColor: Colors.white,
+                        buttonColor: AppColors.appPrimary,
+                        textColor: Colors.black,
                         text: 'Sign In',
                       ),
                       const SizedBox(
