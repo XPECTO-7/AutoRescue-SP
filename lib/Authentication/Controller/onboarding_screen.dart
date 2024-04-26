@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/Authentication/Controller/auth_page.dart';
-import 'package:provider/Authentication/Controller/main_page.dart';
-import 'package:provider/Authentication/Controller/onboarding_data.dart';
-import 'package:provider/Colors/appcolor.dart';
+
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({Key? key});
@@ -53,7 +50,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     controller.items[currentIndex].title,
                     style: TextStyle(
                         fontSize: 20,
-                        color: AppColors.appPrimary,
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontFamily: GoogleFonts.ubuntu().fontFamily),
                     textAlign: TextAlign.center,
@@ -123,7 +120,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               : "Continue",
           style: TextStyle(
               fontSize: 20,
-              color: AppColors.appSecondary,
+              color: Colors.black,
               fontWeight: FontWeight.bold,
               fontFamily: GoogleFonts.ubuntu().fontFamily),
         ),
