@@ -171,7 +171,7 @@ class _ReqServiceDetailState extends State<ReqServiceDetail> {
                         ? Colors.yellow
                         : widget.status == "Accepted"
                             ? Colors.green
-                            : widget.status == "Declined"
+                            : widget.status == "Rejected"
                                 ? Colors.red
                                 : widget.status == "Completed"
                                     ? Colors.white
