@@ -1,5 +1,8 @@
 import 'dart:ui';
 
+import 'package:AutoRescue/Colors/appcolor.dart';
+import 'package:AutoRescue/Pages/View/bottom_nav_page.dart';
+import 'package:AutoRescue/Pages/View/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -7,8 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/Colors/appcolor.dart';
-import 'package:provider/Pages/View/home_page.dart';
+
 
 class EditVehiclePage extends StatefulWidget {
   final Map<String, dynamic> vehicleDetails;
@@ -239,7 +241,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
               onPressed: () {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: (context) => HomePage(),
+                    builder: (context) => const BottomNavPage(),
                   ),
                 );
               },

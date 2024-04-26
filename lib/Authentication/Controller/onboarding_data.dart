@@ -1,6 +1,7 @@
 
- import 'package:provider/Authentication/Controller/onboarding_info.dart';
 
+
+import 'package:AutoRescue/Authentication/Controller/onboarding_info.dart';
 
 class OnboardingData{
 

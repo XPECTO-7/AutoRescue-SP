@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/Colors/appcolor.dart';
 
 class SimpleTextArea extends StatelessWidget {
   final String title,content;

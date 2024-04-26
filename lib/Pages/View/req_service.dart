@@ -1,12 +1,12 @@
+import 'package:AutoRescue/Colors/appcolor.dart';
+import 'package:AutoRescue/Pages/Components/custom_button.dart';
+import 'package:AutoRescue/Pages/View/req_servicedetail.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/Components/mybutton.dart';
-import 'package:provider/Pages/Components/custom_button.dart';
-import 'package:provider/Pages/View/req_servicedetail.dart';
-import 'package:provider/Colors/appcolor.dart';
+
 
 class ReqServicePage extends StatefulWidget {
   const ReqServicePage({Key? key}) : super(key: key);

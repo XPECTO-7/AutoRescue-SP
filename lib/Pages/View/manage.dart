@@ -1,14 +1,15 @@
+import 'package:AutoRescue/Colors/appcolor.dart';
+import 'package:AutoRescue/Constants/app_strings.dart';
+import 'package:AutoRescue/Pages/Components/custom_button.dart';
+import 'package:AutoRescue/Pages/Components/text_area_simple.dart';
+import 'package:AutoRescue/Pages/View/req_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart' as latlong;
-import 'package:provider/Pages/Components/custom_button.dart';
-import 'package:provider/Pages/Components/text_area_simple.dart';
-import 'package:provider/Pages/View/req_service.dart';
-import 'package:provider/Colors/appcolor.dart';
-import 'package:provider/Constants/app_strings.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ManagePage extends StatefulWidget {

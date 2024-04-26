@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:AutoRescue/Components/mybutton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -7,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/Components/mybutton.dart';
 
 class UploadDocPage extends StatefulWidget {
   const UploadDocPage({Key? key}) : super(key: key);

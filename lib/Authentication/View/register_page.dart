@@ -1,14 +1,16 @@
+import 'package:AutoRescue/Colors/appcolor.dart';
+import 'package:AutoRescue/Components/myalert_box.dart';
+import 'package:AutoRescue/Components/mybutton.dart';
+import 'package:AutoRescue/Components/pwcontrol.dart';
+import 'package:AutoRescue/Components/reg_textfield.dart';
+import 'package:AutoRescue/Pages/View/bottom_nav_page.dart';
+import 'package:AutoRescue/Pages/View/home_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:provider/Colors/appcolor.dart';
-import 'package:provider/Components/myalert_box.dart';
-import 'package:provider/Components/mybutton.dart';
-import 'package:provider/Components/pwcontrol.dart';
-import 'package:provider/Components/reg_textfield.dart';
-import 'package:provider/Pages/View/home_page.dart';
+
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;
@@ -87,7 +89,7 @@ class _RegisterPageState extends State<RegisterPage> {
       // Navigate to the homepage
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(builder: (context) => const BottomNavPage()),
       );
     } on FirebaseAuthException catch (e) {
       showDialog(

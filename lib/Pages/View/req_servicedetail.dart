@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/Colors/appcolor.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
 class ReqServiceDetail extends StatefulWidget {

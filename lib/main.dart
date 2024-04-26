@@ -1,11 +1,13 @@
+import 'package:AutoRescue/Authentication/Controller/main_page.dart';
+import 'package:AutoRescue/Pages/View/account.dart';
+import 'package:AutoRescue/Pages/View/bottom_nav_page.dart';
+import 'package:AutoRescue/Pages/View/home_page.dart';
+import 'package:AutoRescue/Theme/dark_theme.dart';
+import 'package:AutoRescue/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:provider/Authentication/Controller/main_page.dart';
-import 'package:provider/Pages/View/account.dart';
-import 'package:provider/Pages/View/home_page.dart';
-import 'package:provider/Theme/dark_theme.dart';
-import 'package:provider/firebase_options.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,8 +30,7 @@ class MyApp extends StatelessWidget {
       theme: darktheme,
       home: const MainPage(),
       routes: {
-        '/HomePage': (context) => HomePage(),
-        // '/ManagePage': (context) => const ManagePage(),
+        '/HomePage': (context) => const BottomNavPage(),
         '/AccountPage': (context) => const AccountPage(),
       },
     );

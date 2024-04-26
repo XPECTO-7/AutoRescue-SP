@@ -1,14 +1,16 @@
+import 'package:AutoRescue/Authentication/View/forgot_password_page.dart';
+import 'package:AutoRescue/Colors/appcolor.dart';
+import 'package:AutoRescue/Components/log_pfield.dart';
+import 'package:AutoRescue/Components/log_textfield.dart';
+import 'package:AutoRescue/Components/myalert_box.dart';
+import 'package:AutoRescue/Components/mybutton.dart';
+import 'package:AutoRescue/Pages/View/bottom_nav_page.dart';
+import 'package:AutoRescue/Pages/View/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/Authentication/View/forgot_password_page.dart';
-import 'package:provider/Colors/appcolor.dart';
-import 'package:provider/Components/log_pfield.dart';
-import 'package:provider/Components/myalert_box.dart';
-import 'package:provider/Components/mybutton.dart';
-import 'package:provider/Components/log_textfield.dart';
-import 'package:provider/Pages/View/home_page.dart';
+
 
 class LoginPage extends StatefulWidget {
   final VoidCallback showRegisterPage;
@@ -38,7 +40,7 @@ void signIn() async {
     if (userCredential.user != null) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()), // Replace BottomNavPage with your homepage widget
+        MaterialPageRoute(builder: (context) => const BottomNavPage()), 
       );
     }
   } on FirebaseAuthException catch (e) {
@@ -94,7 +96,7 @@ void signIn() async {
                           children: [
                             Image.asset(
                               'lib/images/cserv.png',
-                              color: Colors.white,
+                              color: AppColors.appPrimary,
                               width: 100,
                               height: 100,
                             ),
@@ -191,7 +193,7 @@ void signIn() async {
                             GestureDetector(
                               onTap: signIn,
                               child: MyButton(
-                                buttonColor: Colors.white,
+                                buttonColor: AppColors.appPrimary,
                                 textColor: Colors.black,
                                 text: 'Sign In',
                                 onTap: () {

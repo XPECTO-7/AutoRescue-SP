@@ -1,72 +1,23 @@
-import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:AutoRescue/Colors/appcolor.dart';
+import 'package:AutoRescue/Pages/Components/custom_button.dart';
+import 'package:AutoRescue/Pages/Utils/alert_error.dart';
+import 'package:AutoRescue/Pages/Utils/sqauretile.dart';
+import 'package:AutoRescue/Pages/View/manage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/Colors/appcolor.dart';
-import 'package:provider/Pages/Components/custom_button.dart';
-import 'package:provider/Pages/Utils/alert_error.dart';
-import 'package:provider/Pages/Utils/sqauretile.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/Pages/View/account.dart';
-import 'package:provider/Pages/View/manage.dart';
-import 'package:provider/Pages/View/req_service.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class HomePageView extends StatefulWidget {
+  const HomePageView({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePageView> createState() => _HomePageViewState();
 }
 
-class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 1;
-
-  static const List<Widget> _widgetOptions = <Widget>[
-    ReqServicePage(),
-    HomePageContent(),
-    AccountPage(),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomNavigationBar: ConvexAppBar(
-        items: const [
-          TabItem(icon: Icons.settings_suggest_rounded, title: 'SERVICE'),
-          TabItem(icon: Icons.home_rounded, title: 'HOME'),
-          TabItem(
-            icon: Icons.person,
-            title: 'ACCOUNT',
-          ),
-        ],
-        style: TabStyle.reactCircle,
-        color: Colors.black,
-        activeColor: Colors.black,
-        backgroundColor: AppColors.appTertiary,
-        height: 50,
-        initialActiveIndex: 1,
-        elevation: 5,
-        onTap: (int index) => setState(() {
-          _selectedIndex = index;
-        }),
-      ),
-    );
-  }
-}
-
-class HomePageContent extends StatefulWidget {
-  const HomePageContent({Key? key}) : super(key: key);
-
-  @override
-  _HomePageContentState createState() => _HomePageContentState();
-}
-
-class _HomePageContentState extends State<HomePageContent> {
+class _HomePageViewState extends State<HomePageView> {
   bool isValid = false;
   bool isTrue = false;
   String selectedVehicleName = "", selectedService = "", lat = "", long = "";
@@ -368,7 +319,8 @@ class _HomePageContentState extends State<HomePageContent> {
                       ),
                       const SizedBox(height: 10),
                       Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 19.50),
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 19.50),
                           child: ElevatedButton(
                             onPressed: () async {
                               // Fetch user data from Firestore
@@ -418,8 +370,7 @@ class _HomePageContentState extends State<HomePageContent> {
                                   CustomAlert.show(
                                     context: context,
                                     title: "Incomplete Profile",
-                                    message:
-                                        "Upload your Driving License",
+                                    message: "Upload your Driving License",
                                     messageTextColor: Colors.red,
                                     backgroundColor: Colors.white,
                                     buttonColor: Colors.grey,

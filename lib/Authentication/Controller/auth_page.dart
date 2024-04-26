@@ -1,6 +1,7 @@
+import 'package:AutoRescue/Authentication/View/login_page.dart';
+import 'package:AutoRescue/Authentication/View/register_page.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/Authentication/View/login_page.dart';
-import 'package:provider/Authentication/View/register_page.dart';
+
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});

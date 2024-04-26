@@ -1,8 +1,8 @@
+import 'package:AutoRescue/Authentication/Controller/auth_page.dart';
+import 'package:AutoRescue/Authentication/Controller/onboarding_data.dart';
+import 'package:AutoRescue/Colors/appcolor.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/Authentication/Controller/auth_page.dart';
-import 'package:provider/Authentication/Controller/onboarding_data.dart';
-import 'package:provider/Colors/appcolor.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({Key? key});

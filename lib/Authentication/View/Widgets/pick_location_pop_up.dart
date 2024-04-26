@@ -1,8 +1,8 @@
+import 'package:AutoRescue/Constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' as latlong;
-import 'package:provider/Colors/appcolor.dart';
-import 'package:provider/Constants/app_strings.dart';
+
 
 class PinLocationMap extends StatelessWidget {
   final double currentLocationX, currentLocationY;

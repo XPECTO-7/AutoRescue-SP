@@ -1,3 +1,8 @@
+import 'package:AutoRescue/Authentication/Controller/main_page.dart';
+import 'package:AutoRescue/Colors/appcolor.dart';
+import 'package:AutoRescue/Pages/Components/edit_vehicle.dart';
+import 'package:AutoRescue/Pages/Components/vehicle_form_page.dart';
+import 'package:AutoRescue/Pages/View/uploaddoc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -5,13 +10,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
-import 'package:provider/Authentication/Controller/main_page.dart';
-import 'package:provider/Colors/appcolor.dart';
-import 'package:provider/Pages/Components/edit_vehicle.dart';
-import 'package:provider/Pages/Components/license_image_up.dart';
-import 'package:provider/Pages/Components/rcbook_image_up.dart';
-import 'package:provider/Pages/Components/vehicle_form_page.dart';
-import 'package:provider/Pages/View/uploaddoc.dart';
+
 
 class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
