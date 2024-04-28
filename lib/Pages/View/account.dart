@@ -261,8 +261,8 @@ class _AccountPageState extends State<AccountPage> {
                             child: Stack(
                               children: [
                                 Container(
-                                  width: 120,
-                                  height: 120,
+                                  width: 200,
+                                  height: 200,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     image: (_imageFile != null ||
@@ -283,7 +283,7 @@ class _AccountPageState extends State<AccountPage> {
                                           _profilePhotoURL == '')
                                       ? const Icon(
                                           Icons.account_circle,
-                                          size: 120,
+                                          size: 200,
                                           color: Colors.white, // Icon color
                                         )
                                       : null,

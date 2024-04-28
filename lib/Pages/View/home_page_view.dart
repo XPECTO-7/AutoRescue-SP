@@ -28,7 +28,6 @@ class _HomePageViewState extends State<HomePageView> {
           final String approved = userDetails['Approved'];
 
           return Scaffold(
-            
             appBar: AppBar(
               automaticallyImplyLeading: false,
               toolbarHeight: 80,
@@ -82,12 +81,13 @@ class _HomePageViewState extends State<HomePageView> {
                   const SizedBox(
                     height: 10,
                   ),
-                  if (approved=='Accepted')
+                  if (approved == 'Accepted')
                     Expanded(
                       child: StreamBuilder<List<DocumentSnapshot>>(
                         stream: FirebaseFirestore.instance
                             .collection("SERVICE-REQUEST")
                             .where("ProviderID", isEqualTo: user.email)
+                            .where("Status", whereIn: ["Accepted", "Pending"])
                             .snapshots()
                             .map((snapshot) => snapshot.docs),
                         builder: (context, snapshot) {
@@ -209,9 +209,38 @@ class _HomePageViewState extends State<HomePageView> {
                                           ),
                                           ElevatedButton(
                                             onPressed: () {
-                                              _updateStatus(
-                                                  serviceRequests[index].id,
-                                                  "Rejected");
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title: const Text("Confirmation"),
+                                                    content: const Text(
+                                                        "Are you sure you want to decline this service request?"),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        child: const Text("Cancel"),
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                      ),
+                                                      TextButton(
+                                                        child: const Text("Confirm"),
+                                                        onPressed: () {
+                                                          _updateStatus(
+                                                              serviceRequests[
+                                                                      index]
+                                                                  .id,
+                                                              "Declined");
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
                                             },
                                             style: ButtonStyle(
                                               shape: MaterialStateProperty.all<
@@ -228,7 +257,7 @@ class _HomePageViewState extends State<HomePageView> {
                                                 (Set<MaterialState> states) {
                                                   // Color based on the current status
                                                   if (request["Status"] ==
-                                                      "Rejected") {
+                                                      "Declined") {
                                                     return Colors.red;
                                                   } else {
                                                     return Colors.grey.shade700;
@@ -237,9 +266,9 @@ class _HomePageViewState extends State<HomePageView> {
                                               ),
                                             ),
                                             child: Text(
-                                              request["Status"] == "Rejected"
-                                                  ? 'Rejected'
-                                                  : 'Reject',
+                                              request["Status"] == "Declined"
+                                                  ? 'Declined'
+                                                  : 'Decline',
                                               style: TextStyle(
                                                 color: AppColors.appTertiary,
                                                 fontFamily: GoogleFonts.ubuntu()
@@ -262,7 +291,7 @@ class _HomePageViewState extends State<HomePageView> {
                         },
                       ),
                     ),
-                  if (approved=='Pending')
+                  if (approved == 'Pending')
                     Expanded(
                       child: Center(
                         child: Container(
@@ -294,7 +323,7 @@ class _HomePageViewState extends State<HomePageView> {
                         ),
                       ),
                     ),
-                    if (approved=='Rejected')
+                  if (approved == 'Rejected')
                     Expanded(
                       child: Center(
                         child: Container(
@@ -309,14 +338,17 @@ class _HomePageViewState extends State<HomePageView> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.cancel_outlined,color: Colors.red,size: 200,),
+                              const Icon(
+                                Icons.cancel_outlined,
+                                color: Colors.red,
+                                size: 200,
+                              ),
                               Text(
                                 "We regret to inform you that your company details have been deemed inaccurate. We kindly request that you provide authentic and verifiable information during registration.\n\nRegrettably, your registration has not been approved at this time.\n\n Please consider registering again using authentic information.",
                                 style: TextStyle(
-                                  fontSize: 14,
-                                  fontFamily: GoogleFonts.ubuntu().fontFamily,
-                                  color: Colors.redAccent
-                                ),
+                                    fontSize: 14,
+                                    fontFamily: GoogleFonts.ubuntu().fontFamily,
+                                    color: Colors.redAccent),
                                 textAlign: TextAlign.center,
                               ),
                             ],
