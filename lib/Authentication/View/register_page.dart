@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -52,26 +53,30 @@ class _RegisterPageState extends State<RegisterPage>
 
   bool regCheck = false;
 
-  void validation() {
-    if (emailController.text.isNotEmpty &&
-        passwordController.text.isNotEmpty &&
-        fullNameController.text.isNotEmpty &&
-        confirmPasswordController.text.isNotEmpty) {
+void validation() {
+  if (emailController.text.isNotEmpty &&
+      passwordController.text.isNotEmpty &&
+      fullNameController.text.isNotEmpty &&
+      confirmPasswordController.text.isNotEmpty) {
+    if (EmailValidator.validate(emailController.text)) {
       if (passwordController.text.length >= 8 &&
           numericRegex.hasMatch(passwordController.text)) {
         if (passwordController.text == confirmPasswordController.text) {
-          Navigator.push(context, MaterialPageRoute(
-            builder: (context) {
-              return ServiceDetailsView(
-                adhaarNum: aadharNoController.text,
-                email: emailController.text,
-                fullName: fullNameController.text,
-                password: confirmPasswordController.text,
-                phoneNumber: numberController.text,
-                adhaarImg: adharImage,
-              );
-            },
-          ));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return ServiceDetailsView(
+                  adhaarNum: aadharNoController.text,
+                  email: emailController.text,
+                  fullName: fullNameController.text,
+                  password: confirmPasswordController.text,
+                  phoneNumber: numberController.text,
+                  adhaarImg: adharImage,
+                );
+              },
+            ),
+          );
         } else {
           // Passwords didn't match
           showDialog(
@@ -91,15 +96,25 @@ class _RegisterPageState extends State<RegisterPage>
         );
       }
     } else {
-      // Fill all fields
+      // Invalid email format
       showDialog(
         context: context,
         builder: (context) => const MyAlertBox(
-          message: "Fill all fields",
+          message: "Enter valid Email address",
         ),
       );
     }
+  } else {
+    // Fill all fields
+    showDialog(
+      context: context,
+      builder: (context) => const MyAlertBox(
+        message: "Fill all fields",
+      ),
+    );
   }
+}
+
 
 void pickImage() async {
   final ImagePicker picker = ImagePicker();
