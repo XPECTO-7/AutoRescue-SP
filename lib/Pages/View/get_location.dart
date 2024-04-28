@@ -6,8 +6,9 @@ import 'package:provider/Constants/app_strings.dart';
 
 class GetLocationPage extends StatelessWidget {
   final double currentLocationX, currentLocationY;
+  final MapController mapController = MapController();
 
-  const GetLocationPage({
+  GetLocationPage({
     Key? key,
     required this.currentLocationX,
     required this.currentLocationY,
@@ -21,22 +22,26 @@ class GetLocationPage extends StatelessWidget {
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: FlutterMap(
+            mapController: mapController,
             options: MapOptions(
               initialZoom: 18,
               initialCenter: latlong.LatLng(currentLocationX, currentLocationY),
             ),
             children: [
-              MarkerLayer(markers: [
-                Marker(
-                    point: latlong.LatLng(currentLocationX, currentLocationY),
-                    child: const Icon(Icons.location_on,color: Colors.greenAccent,size: 25,))
-              ]),
               TileLayer(
                 urlTemplate: AppStrings.urlTemplate,
                 additionalOptions: const {
                   'accessToken': AppStrings.accessToken,
                   'id': AppStrings.id,
                 },
+              ),
+              MarkerLayer(
+                markers: [
+                  Marker(
+                    point: latlong.LatLng(currentLocationX, currentLocationY),
+                    child: const Icon(Icons.location_on, color: Colors.greenAccent, size: 25),
+                  ),
+                ],
               ),
             ],
           ),
@@ -50,6 +55,27 @@ class GetLocationPage extends StatelessWidget {
                 color: Colors.black,
                 fontSize: 14,
                 backgroundColor: Colors.greenAccent),
+          ),
+        ),
+        Positioned(
+          bottom: 50.0,
+          right: 10.0,
+          child: Column(
+            children: <Widget>[
+              FloatingActionButton(
+                child: const Icon(Icons.zoom_in,size: 30,color: AppColors.appPrimary,),
+                onPressed: () {
+                  mapController.move(mapController.center, mapController.zoom + 0.5);
+                },
+              ),
+              const SizedBox(height: 10),
+              FloatingActionButton(
+                child: const Icon(Icons.zoom_out),
+                onPressed: () {
+                  mapController.move(mapController.center, mapController.zoom - 0.5);
+                },
+              ),
+            ],
           ),
         ),
       ],

@@ -50,6 +50,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
     'Mechanical Service',
     'Emergency Towing Service',
     'EV Charging service',
+    'TYRE WORKS'
   ];
 
   bool isSigningUp = false;
