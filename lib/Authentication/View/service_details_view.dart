@@ -129,6 +129,9 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
       String imgUrl = await referenceImage.getDownloadURL();
 
       if (imgUrl.isNotEmpty) {
+        // Get the current time
+        DateTime regTime = DateTime.now();
+
         await FirebaseFirestore.instance
             .collection("PROVIDERS")
             .doc(widget.email)
@@ -147,7 +150,8 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
           'Insurance No': insuranceController.text,
           'Service Type': serviceTypeController.text,
           'Min Price': priceChargeController.text,
-          'Approved': 'Pending'
+          'Approved': 'Pending',
+          'Regtime': regTime.toString(), // Add the registration time here
         });
 
         // Navigation to homepage upon successful signup
